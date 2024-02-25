@@ -1,26 +1,21 @@
 import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import Navbar from "./components/NavBar";
+import { ThirdwebProvider } from "@thirdweb-dev/react";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import Home from "./pages/Home/Home";
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+    const router = createBrowserRouter([
+        {
+            path: "/",
+            element: <Home />,
+        },
+    ]);
+
+    return <ThirdwebProvider>
+        <Navbar />
+        <RouterProvider router={router} />
+    </ThirdwebProvider>;
 }
 
 export default App;
