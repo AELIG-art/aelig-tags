@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Button, Container, Form } from "react-bootstrap";
+import { Button, Form } from "react-bootstrap";
 import { getDoc, setDoc } from "@junobuild/core";
 import { Tag } from "../../utils/types";
 
@@ -7,7 +7,7 @@ const NewTag = () => {
     const [owner, setOwner] = useState(undefined as string|undefined);
     const [tags, setTags] = useState([] as string[]);
 
-    return <Container>
+    return <div>
         <Form>
             <Form.Group className="mb-3" controlId="formBasicEmail">
                 <Form.Label>Address</Form.Label>
@@ -63,7 +63,7 @@ const NewTag = () => {
                 Add new tags
             </Button>
         </Form>
-    </Container>;
+    </div>;
 }
 
 export default NewTag;
