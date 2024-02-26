@@ -11,7 +11,7 @@ const Navbar = () => {
     return (
         <RBNavbar className="bg-body-tertiary">
             <Container>
-                <RBNavbar.Brand href="#home">AELIG | tags</RBNavbar.Brand>
+                <RBNavbar.Brand href="/">AELIG | tags</RBNavbar.Brand>
                 <RBNavbar.Toggle />
                 <RBNavbar.Collapse className="justify-content-end">
                     {

@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Button, Container, Form } from "react-bootstrap";
-import { setDoc } from "@junobuild/core";
+import { getDoc, setDoc } from "@junobuild/core";
+import { Tag } from "../../utils/types";
 
 const NewTag = () => {
     const [owner, setOwner] = useState(undefined as string|undefined);
@@ -33,19 +34,30 @@ const NewTag = () => {
             <Button
                 variant="primary"
                 onClick={() => {
-                    tags.forEach((tag) => {
-                        setDoc({
-                            collection: "tags",
-                            doc: {
-                                key: `${new Date().getTime()}`,
-                                data: {
-                                    tagId: tag,
-                                    owner,
+                    if (owner) {
+                        getDoc({
+                            collection: 'tags',
+                            key: owner
+                        }).then((res) => {
+                            let tagsFormatted = tags.map((tag: string) => {
+                                return {
+                                    id: Number(tag),
                                     registered: false
                                 }
+                            }) as Tag[];
+                            if (res) {
+                                const oldTags = res.data as Tag[];
+                                tagsFormatted = tagsFormatted.concat(oldTags);
                             }
-                        }).then();
-                    });
+                            setDoc({
+                                collection: "tags",
+                                doc: {
+                                    key: owner,
+                                    data: tagsFormatted
+                                }
+                            }).then();
+                        });
+                    }
                 }}
             >
                 Add new tags
