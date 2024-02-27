@@ -5,6 +5,8 @@ import Home from "./pages/Home/Home";
 import NewTag from "./pages/NewTag/NewTag";
 import Layout from "./Layout";
 import { initJuno } from "@junobuild/core";
+import Tag from "./pages/Tag/Tag";
+import { thirdWebClientIt } from "./utils/constants";
 
 function App() {
     useEffect(() => {
@@ -26,12 +28,16 @@ function App() {
                 {
                     path: "/newTag",
                     element: <NewTag />
+                },
+                {
+                    path: "tag/:id",
+                    element: <Tag />
                 }
             ]
         }
     ]);
 
-    return <ThirdwebProvider>
+    return <ThirdwebProvider clientId={thirdWebClientIt}>
         <RouterProvider router={router} />
     </ThirdwebProvider>;
 }

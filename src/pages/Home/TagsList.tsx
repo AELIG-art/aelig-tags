@@ -1,54 +1,12 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { Table } from "react-bootstrap";
-import { useAddress } from "@thirdweb-dev/react";
-import { Metadata, Tag, TagExpanded } from "../../utils/types";
-import { getDoc } from "@junobuild/core";
 import { Link } from "react-router-dom";
+import { useTags } from "../../contexts/TagsContext";
 
 const TagsList = () => {
-    const address = useAddress();
-    const [tags, setTags] = useState([] as TagExpanded[]);
+    const { tags } = useTags();
 
-    const getTagsExpanded = async (address: string) => {
-        const tagsRes = await getDoc({
-            collection: 'tags',
-            key: address
-        });
-        if (tagsRes === undefined) {
-            return [];
-        } else {
-            const tags: TagExpanded[] = [];
-
-            for (const tag of (tagsRes.data as Tag[])) {
-                if (tag.registered) {
-                    const metadataRes = await getDoc({
-                        collection: 'metadata',
-                        key: tag.id.toString()
-                    });
-                    if (metadataRes) {
-                        tags.push({
-                            ...tag,
-                            metadata: metadataRes.data as Metadata
-                        });
-                    } else {
-                        tags.push(tag as TagExpanded);
-                    }
-                } else {
-                    tags.push(tag as TagExpanded);
-                }
-            }
-
-            return tags;
-        }
-    }
-
-    useEffect(() => {
-        if (address) {
-            getTagsExpanded(address).then((tags) => {
-                setTags(tags);
-            });
-        }
-    }, [address]);
+    console.log(tags);
 
     return <div>
         <h1>Your tags</h1>
@@ -73,12 +31,12 @@ const TagsList = () => {
                         <td>{
                             (() => {
                                 if (tag.registered) {
-                                    return <Link to={`/${tag.id}`}>SHOW</Link>
+                                    return <Link to={`/tag/${tag.id}`}>SHOW</Link>
                                 }
                                 if (tag.metadata) {
-                                    return <Link to={`/${tag.id}`}>CONFIRM</Link>
+                                    return <Link to={`/tag/${tag.id}`}>CONFIRM</Link>
                                 }
-                                return <Link to={`/${tag.id}`}>ADD METADATA</Link>
+                                return <Link to={`/tag/${tag.id}`}>ADD METADATA</Link>
                             })()
                         }</td>
                     </tr>
