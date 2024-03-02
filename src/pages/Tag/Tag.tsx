@@ -5,7 +5,7 @@ import { Button, Form } from "react-bootstrap";
 import { useAddress, useSigner, useStorageUpload } from "@thirdweb-dev/react";
 import { smartContractAddress } from "../../utils/constants";
 import { Metadata } from "../../utils/types";
-import { setDoc } from "@junobuild/core";
+import { getDoc, setDoc } from "@junobuild/core";
 
 const Tag = () => {
     const { tags } = useTags();
@@ -86,7 +86,6 @@ const Tag = () => {
                             identifier: `gnosis:${smartContractAddress}:${tag?.id}`
                         }
                         signer.signMessage(JSON.stringify(messageJson)).then((signature) => {
-                            console.log(signature);
                             const metadata = {
                                 name: name || tag?.metadata?.name || "",
                                 description: description || tag?.metadata?.description || "",
@@ -95,13 +94,30 @@ const Tag = () => {
                                 author: address,
                                 signature
                             } as Metadata;
-                            setDoc({
+                            getDoc({
                                 collection: 'metadata',
-                                doc: {
-                                    key: tag?.id.toString(),
-                                    data: metadata
+                                key: tag?.id.toString()
+                            }).then((metadataDoc) => {
+                                if (metadataDoc) {
+                                    setDoc({
+                                        collection: 'metadata',
+                                        doc: {
+                                            key: tag?.id.toString(),
+                                            updated_at: metadataDoc.updated_at,
+                                            data: metadata
+                                        }
+                                    }).then((r) => console.log(r));
+                                } else {
+                                    setDoc({
+                                        collection: 'metadata',
+                                        doc: {
+                                            key: tag?.id.toString(),
+                                            data: metadata
+                                        }
+                                    }).then((r) => console.log(r));
                                 }
-                            }).then((r) => console.log(r));
+                            });
+
                         });
                     }
                 }}
