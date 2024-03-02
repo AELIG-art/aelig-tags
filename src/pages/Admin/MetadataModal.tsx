@@ -20,6 +20,7 @@ const MetadataModal = (props: {
             {metadata?.image ?
                 <img
                     src={`https://w3s.link/ipfs/${metadata.image.slice(7)}`}
+                    alt={"Could not fetch from ipfs."}
                     className={'w-100 mb-3'}
                 /> : <p>-</p>
             }
