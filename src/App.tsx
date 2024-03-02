@@ -1,19 +1,20 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { ThirdwebProvider } from "@thirdweb-dev/react";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import Home from "./pages/Home/Home";
 import Layout from "./Layout";
 import { initJuno } from "@junobuild/core";
 import Tag from "./pages/Tag/Tag";
-import { thirdWebClientIt } from "./utils/constants";
-import Admin from "./pages/admin/Admin";
+import { satelliteId, thirdWebClientIt } from "./utils/constants";
+import Admin from "./pages/Admin/Admin";
 
 function App() {
+    const [junoLoaded, setJunoLoaded] = useState(false);
+
     useEffect(() => {
-        (async () =>
-            await initJuno({
-                satelliteId: "fq2tz-xqaaa-aaaal-adv3q-cai"
-            }))();
+        initJuno({satelliteId}).then(() => {
+            setJunoLoaded(true);
+        });
     }, []);
 
     const router = createBrowserRouter([
@@ -37,9 +38,9 @@ function App() {
         }
     ]);
 
-    return <ThirdwebProvider clientId={thirdWebClientIt}>
+    return junoLoaded ? <ThirdwebProvider clientId={thirdWebClientIt}>
         <RouterProvider router={router} />
-    </ThirdwebProvider>;
+    </ThirdwebProvider> : null;
 }
 
 export default App;
