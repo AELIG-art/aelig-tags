@@ -3,6 +3,7 @@ import { authSubscribe, User } from "@junobuild/core";
 import TopBar from "./TopBar";
 import { admin } from "../../utils/constants";
 import NewTagModal from "./NewTagModal";
+import Content from "./Content";
 
 const Admin = () => {
     const [user, setUser] = useState(null as null|User);
@@ -22,6 +23,7 @@ const Admin = () => {
             isAdmin={isAdmin}
             openModal={() => setNewTagModalOpen(true)}
         />
+        <Content isAdmin={isAdmin} />
         <NewTagModal
             close={() => setNewTagModalOpen(false)}
             open={newTagModalOpen}
