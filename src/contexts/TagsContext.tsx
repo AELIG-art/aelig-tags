@@ -7,7 +7,7 @@ import { useAddress } from "@thirdweb-dev/react";
 
 const Context = createContext({} as TagsContextInterface);
 
-export const StackedAmountContext = (props: {
+export const TagsContext = (props: {
     children: ReactNode;
 }) => {
     const [tags, setTags] = useState([] as TagExpanded[]);
