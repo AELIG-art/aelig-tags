@@ -6,8 +6,6 @@ import { useTags } from "../../contexts/TagsContext";
 const TagsList = () => {
     const { tags } = useTags();
 
-    console.log(tags);
-
     return <div>
         <h1>Your tags</h1>
         <Table striped bordered hover>
