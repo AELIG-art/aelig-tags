@@ -1,0 +1,27 @@
+{
+  "canisters": {
+    "aelig_tags_backend": {
+      "candid": "src/aelig_tags_backend/aelig_tags_backend.did",
+      "package": "aelig_tags_backend",
+      "type": "rust"
+    },
+    "aelig_tags_frontend": {
+      "dependencies": [
+        "aelig_tags_backend"
+      ],
+      "source": [
+        "src/aelig_tags_frontend/dist"
+      ],
+      "type": "assets",
+      "workspace": "aelig_tags_frontend"
+    }
+  },
+  "defaults": {
+    "build": {
+      "args": "",
+      "packtool": ""
+    }
+  },
+  "output_env_file": ".env",
+  "version": 1
+}

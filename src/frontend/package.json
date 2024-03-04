@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
     "@junobuild/config": "^0.0.2",
     "@junobuild/core": "^0.0.46",
     "@testing-library/jest-dom": "^5.17.0",
@@ -36,9 +37,9 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "test": "react-scripts test"
   },
+  "type": "module",
   "eslintConfig": {
     "extends": [
       "react-app",
