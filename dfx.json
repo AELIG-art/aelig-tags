@@ -1,19 +1,19 @@
 {
   "canisters": {
-    "aelig_tags_backend": {
-      "candid": "src/aelig_tags_backend/aelig_tags_backend.did",
-      "package": "aelig_tags_backend",
+    "backend": {
+      "candid": "src/backend/backend.did",
+      "package": "backend",
       "type": "rust"
     },
-    "aelig_tags_frontend": {
+    "frontend": {
       "dependencies": [
-        "aelig_tags_backend"
+        "backend"
       ],
       "source": [
-        "src/aelig_tags_frontend/dist"
+        "src/frontend/build"
       ],
       "type": "assets",
-      "workspace": "aelig_tags_frontend"
+      "workspace": "src/frontend"
     }
   },
   "defaults": {
