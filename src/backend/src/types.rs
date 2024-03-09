@@ -31,6 +31,8 @@ pub enum CollectionResult {
     Tag(Tag),
 }
 
+//todo: Add type for collections with permissions
+
 #[derive(candid::CandidType, Deserialize, Serialize)]
 pub enum Error {
     DataNotFound { msg: String },
