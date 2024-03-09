@@ -1,3 +1,41 @@
+type Metadata = record {
+    name: text;
+    description: text;
+    image: text;
+    attributes: vec Attribute;
+    author: text;
+    signature: text;
+};
+
+type Attribute = record {
+    trait_type: text;
+    value: text;
+};
+
+type Tag = record {
+    id: nat;
+    short_id: text;
+    registered: bool;
+    metadata: opt text;
+};
+
+type CollectionResult = variant {
+  Metadata : Metadata;
+  Tag : Tag;
+};
+
+type Error = variant {
+  DataNotFound: ErrorValue;
+  CollectionNotFound: ErrorValue;
+};
+
+type ErrorValue = record {
+    msg : text
+};
+
+type GetCollectionResult = variant { Ok : CollectionResult; Err : Error };
+
 service : {
     "greet": (text) -> (text) query;
+    "get_collection": (text, text) -> (GetCollectionResult) query;
 }
