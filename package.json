@@ -5,7 +5,9 @@
   "scripts": {
     "start": "npm run start --workspaces --if-present",
     "build": "npm run build --workspaces --if-present",
-    "test": "npm run test --workspaces --if-present"
+    "test": "npm run test --workspaces --if-present",
+    "local-canister": "dfx start",
+    "local-deploy": "dfx deploy"
   },
   "type": "module",
   "workspaces": [
