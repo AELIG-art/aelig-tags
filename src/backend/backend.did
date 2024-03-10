@@ -27,6 +27,7 @@ type CollectionResult = variant {
 type Error = variant {
   DataNotFound: ErrorValue;
   CollectionNotFound: ErrorValue;
+  PermissionDenied: ErrorValue;
 };
 
 type ErrorValue = record {

@@ -1,3 +1,4 @@
+use std::collections::HashMap;
 use candid::{CandidType, Deserialize};
 use serde::Serialize;
 
@@ -25,16 +26,33 @@ pub struct Tag {
     metadata: Option<String>
 }
 
-#[derive(CandidType, Clone)]
+#[derive(CandidType, Clone, Deserialize)]
 pub enum CollectionResult {
     Metadata(Metadata),
     Tag(Tag),
 }
 
-//todo: Add type for collections with permissions
+#[derive(CandidType, Deserialize, Clone, Eq, PartialEq)]
+pub enum CollectionPermissions {
+    Read,
+    Write,
+    None
+}
+
+#[derive(CandidType, Deserialize, Clone)]
+pub struct Collection {
+    pub(crate) permission: CollectionPermissions,
+    pub(crate) map: HashMap<String, CollectionResult>
+}
+
+pub struct AllowedCollection {
+    pub(crate) permission: CollectionPermissions,
+    pub(crate) name: &'static str
+}
 
 #[derive(candid::CandidType, Deserialize, Serialize)]
 pub enum Error {
     DataNotFound { msg: String },
-    CollectionNotFound {msg: String}
+    CollectionNotFound { msg: String },
+    PermissionDenied { msg: String }
 }
