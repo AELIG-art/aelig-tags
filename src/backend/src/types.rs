@@ -1,5 +1,5 @@
 use std::collections::HashMap;
-use candid::{CandidType, Deserialize};
+use candid::{CandidType, Deserialize, Principal};
 use serde::Serialize;
 
 #[derive(CandidType, Deserialize, Clone)]
@@ -9,7 +9,8 @@ pub struct Metadata {
     image: String,
     attributes: Vec<Attribute>,
     author: String,
-    signature: String
+    signature: String,
+    owner: Principal
 }
 
 #[derive(CandidType, Deserialize, Clone)]
@@ -23,7 +24,14 @@ pub struct Tag {
     id: u128,
     short_id: String,
     registered: bool,
-    metadata: Option<String>
+    is_certificate: bool,
+    owner: Principal
+}
+
+#[derive(CandidType, Deserialize)]
+pub struct Certificate {
+    id: u128,
+    metadata: Option<Metadata>
 }
 
 #[derive(CandidType, Clone, Deserialize)]
@@ -34,9 +42,10 @@ pub enum CollectionResult {
 
 #[derive(CandidType, Deserialize, Clone, Eq, PartialEq)]
 pub enum CollectionPermissions {
-    Read,
-    Write,
-    None
+    Read, // everybody can read, canister controllers can write
+    Write, // everybody can write, but only the owner of the record can update or delete it
+    Managed, // only record owner and canister controllers can read and write
+    Controllers, // only canister controllers can read and write
 }
 
 #[derive(CandidType, Deserialize, Clone)]

@@ -5,6 +5,7 @@ type Metadata = record {
     attributes: vec Attribute;
     author: text;
     signature: text;
+    owner: principal;
 };
 
 type Attribute = record {
@@ -16,7 +17,8 @@ type Tag = record {
     id: nat;
     short_id: text;
     registered: bool;
-    metadata: opt text;
+    is_certificate: bool;
+    owner: principal;
 };
 
 type CollectionResult = variant {
