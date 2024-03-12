@@ -2,11 +2,13 @@ import React, { useEffect, useState } from 'react';
 import { ThirdwebProvider } from "@thirdweb-dev/react";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import Home from "./pages/Home/Home";
-import Layout from "./Layout";
+import DefaultLayout from "./layouts/DefaultLayout/DefaultLayout";
 import { initJuno } from "@junobuild/core";
 import Tag from "./pages/Tag/Tag";
 import { satelliteId, thirdWebClientIt } from "./utils/constants";
 import Admin from "./pages/Admin/Admin";
+import Verification from "./pages/Verification/Verification";
+import VerificationLayout from "./layouts/VerificationLayout/VerificationLayout";
 
 function App() {
     const [junoLoaded, setJunoLoaded] = useState(false);
@@ -20,7 +22,7 @@ function App() {
     const router = createBrowserRouter([
         {
             path: "/",
-            element: <Layout />,
+            element: <DefaultLayout />,
             children: [
                 {
                     path: '/',
@@ -33,6 +35,16 @@ function App() {
                 {
                     path: "tag/:id",
                     element: <Tag />
+                }
+            ]
+        },
+        {
+            path: "/",
+            element: <VerificationLayout />,
+            children: [
+                {
+                    path: "/verification/:msg",
+                    element:  <Verification />
                 }
             ]
         }
