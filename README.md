@@ -12,6 +12,7 @@
 - `npm run local-canister` Run ICP instance locally;
 - `npm run start`: Run frontend;
 - `npm run local-deploy`: Deploy canister in local ICP instance.
+- Set TAG_KEY env variable with the tag key.
 
 
 

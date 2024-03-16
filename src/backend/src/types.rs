@@ -3,14 +3,19 @@ use candid::{CandidType, Deserialize, Principal};
 use serde::Serialize;
 
 #[derive(CandidType, Deserialize, Clone)]
-pub struct Metadata {
+pub struct TagMetadata {
+    author: String,
+    signature: String,
+    owner: Principal,
+    nft: NFTMetadata
+}
+
+#[derive(CandidType, Deserialize, Clone)]
+pub struct NFTMetadata {
     name: String,
     description: String,
     image: String,
-    attributes: Vec<Attribute>,
-    author: String,
-    signature: String,
-    owner: Principal
+    attributes: Vec<Attribute>
 }
 
 #[derive(CandidType, Deserialize, Clone)]
@@ -31,13 +36,26 @@ pub struct Tag {
 #[derive(CandidType, Deserialize)]
 pub struct Certificate {
     id: u128,
-    metadata: Option<Metadata>
+    metadata: NFTMetadata
 }
 
 #[derive(CandidType, Clone, Deserialize)]
 pub enum CollectionResult {
-    Metadata(Metadata),
+    TagMetadata(TagMetadata),
     Tag(Tag),
+}
+
+#[derive(CandidType, Deserialize)]
+struct Frame {
+    id: u128,
+    smart_contract: String,
+    chain: String,
+    nft: NFTMetadata
+}
+
+pub enum VerificationResult {
+    Certificate(Certificate),
+    Frame(Frame),
 }
 
 #[derive(CandidType, Deserialize, Clone, Eq, PartialEq)]
@@ -63,5 +81,6 @@ pub struct AllowedCollection {
 pub enum Error {
     DataNotFound { msg: String },
     CollectionNotFound { msg: String },
-    PermissionDenied { msg: String }
+    PermissionDenied { msg: String },
+    InvalidTag { msg: String }
 }

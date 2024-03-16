@@ -1,11 +1,15 @@
-type Metadata = record {
+type TagMetadata = record {
+    author: text;
+    signature: text;
+    owner: principal;
+    nft: NFTMetadata;
+};
+
+type NFTMetadata = record {
     name: text;
     description: text;
     image: text;
     attributes: vec Attribute;
-    author: text;
-    signature: text;
-    owner: principal;
 };
 
 type Attribute = record {
@@ -22,7 +26,7 @@ type Tag = record {
 };
 
 type CollectionResult = variant {
-  Metadata : Metadata;
+  TagMetadata : TagMetadata;
   Tag : Tag;
 };
 
@@ -30,15 +34,17 @@ type Error = variant {
   DataNotFound: ErrorValue;
   CollectionNotFound: ErrorValue;
   PermissionDenied: ErrorValue;
+  InvalidTag: ErrorValue;
 };
 
 type ErrorValue = record {
-    msg : text
+    msg : text;
 };
 
 type GetCollectionResult = variant { Ok : CollectionResult; Err : Error };
+type VerifyResult = variant { Ok: text; Err: Error };
 
 service : {
-    "greet": (text) -> (text) query;
     "get_collection": (text, text) -> (GetCollectionResult) query;
+    "verify_tag": (text) -> (VerifyResult) query;
 }
