@@ -1,10 +1,3 @@
-type TagMetadata = record {
-    author: text;
-    signature: text;
-    owner: principal;
-    nft: NFTMetadata;
-};
-
 type NFTMetadata = record {
     name: text;
     description: text;
@@ -17,34 +10,45 @@ type Attribute = record {
     value: text;
 };
 
-type Tag = record {
+type Certificate = record {
     id: nat;
-    short_id: text;
     registered: bool;
-    is_certificate: bool;
-    owner: principal;
-};
-
-type CollectionResult = variant {
-  TagMetadata : TagMetadata;
-  Tag : Tag;
+    metadata: NFTMetadata;
+    owner: text;
 };
 
 type Error = variant {
-  DataNotFound: ErrorValue;
-  CollectionNotFound: ErrorValue;
-  PermissionDenied: ErrorValue;
-  InvalidTag: ErrorValue;
+  InvalidTag: ErrorReason;
+  TagNotFound: ErrorReason;
+  CertificateNotFound: ErrorReason;
+  FrameNotFound: ErrorReason;
 };
 
-type ErrorValue = record {
-    msg : text;
+type ErrorReason = record {
+    msg: text;
 };
 
-type GetCollectionResult = variant { Ok : CollectionResult; Err : Error };
-type VerifyResult = variant { Ok: text; Err: Error };
+type Frame = record {
+    id: nat;
+    owner: text;
+    nft_metadata: NFTMetadata;
+    nft: NFT
+};
+
+type NFT = record {
+   id: text;
+   contract_address: text;
+   chain: text;
+};
+
+type VerifyResult = variant {
+    Ok: variant {
+        Certificate: Certificate;
+        Frame: Frame;
+    };
+    Err: Error;
+};
 
 service : {
-    "get_collection": (text, text) -> (GetCollectionResult) query;
     "verify_tag": (text) -> (VerifyResult) query;
 }

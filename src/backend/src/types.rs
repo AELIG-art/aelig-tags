@@ -35,7 +35,8 @@ pub struct Tag {
 pub struct Certificate {
     id: u128,
     pub(crate) registered: bool,
-    metadata: NFTMetadata
+    metadata: NFTMetadata,
+    owner: String,
 }
 
 #[derive(CandidType, Clone, Deserialize)]
@@ -53,6 +54,7 @@ struct NFT {
 
 #[derive(CandidType, Deserialize, Clone)]
 pub struct Frame {
+    id: u128,
     owner: String,
     nft_metadata: NFTMetadata,
     nft: NFT
@@ -64,10 +66,11 @@ pub enum VerificationResult {
     Frame(Frame),
 }
 
+
 #[derive(candid::CandidType, Deserialize, Serialize)]
 pub enum Error {
-    InvalidTag,
-    TagNotFound,
-    CertificateNotFound,
-    FrameNotFound
+    InvalidTag { msg: String },
+    TagNotFound { msg: String },
+    CertificateNotFound { msg: String },
+    FrameNotFound { msg: String }
 }

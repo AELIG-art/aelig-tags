@@ -13,7 +13,9 @@ pub fn get_tag(id: String) -> Result<Tag, Error>  {
     TAGS.with(|map| {
         match map.borrow().get(&id) {
             Some(tag) => Ok(tag.clone()),
-            None => Err(Error::TagNotFound)
+            None => Err(Error::TagNotFound {
+                msg: "Tag does not exist".to_string()
+            })
         }
     })
 }

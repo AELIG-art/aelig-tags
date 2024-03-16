@@ -16,10 +16,14 @@ pub fn get_certificate(tag_id: String) -> Result<Certificate, Error> {
                 return if certificate.registered {
                     Ok(certificate.clone())
                 } else {
-                    Err(Error::CertificateNotFound)
+                    Err(Error::CertificateNotFound {
+                        msg: format!("Certificate with id {} does not exist", tag_id)
+                    })
                 }
             },
-            None => Err(Error::CertificateNotFound)
+            None => Err(Error::CertificateNotFound {
+                msg: format!("Certificate with id {} does not exist", tag_id)
+            })
         }
     })
 }
