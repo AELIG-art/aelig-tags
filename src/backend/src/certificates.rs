@@ -14,7 +14,7 @@ pub fn get_certificate(tag_id: String) -> Result<Certificate, Error> {
         match map.borrow().get(&tag_id) {
             Some(certificate) => {
                 return if certificate.registered {
-                    Ok(certificate.cloned())
+                    Ok(certificate.clone())
                 } else {
                     Err(Error::CertificateNotFound)
                 }

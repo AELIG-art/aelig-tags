@@ -31,7 +31,7 @@ pub struct Tag {
     pub(crate) owner: String,
 }
 
-#[derive(CandidType, Deserialize)]
+#[derive(CandidType, Deserialize, Clone)]
 pub struct Certificate {
     id: u128,
     pub(crate) registered: bool,
@@ -44,20 +44,21 @@ pub enum CollectionResult {
     Tag(Tag),
 }
 
-#[derive(CandidType, Deserialize)]
+#[derive(CandidType, Deserialize, Clone)]
 struct NFT {
     id: String,
     contract_address: String,
     chain: String,
 }
 
-#[derive(CandidType, Deserialize)]
+#[derive(CandidType, Deserialize, Clone)]
 pub struct Frame {
     owner: String,
     nft_metadata: NFTMetadata,
     nft: NFT
 }
 
+#[derive(CandidType)]
 pub enum VerificationResult {
     Certificate(Certificate),
     Frame(Frame),
