@@ -1,4 +1,3 @@
-use std::collections::HashMap;
 use candid::{CandidType, Deserialize, Principal};
 use serde::Serialize;
 
@@ -28,14 +27,14 @@ struct Attribute {
 pub struct Tag {
     id: u128,
     short_id: String,
-    registered: bool,
-    is_certificate: bool,
-    owner: Principal
+    pub(crate) is_certificate: bool,
+    pub(crate) owner: String,
 }
 
 #[derive(CandidType, Deserialize)]
 pub struct Certificate {
     id: u128,
+    pub(crate) registered: bool,
     metadata: NFTMetadata
 }
 
@@ -46,11 +45,17 @@ pub enum CollectionResult {
 }
 
 #[derive(CandidType, Deserialize)]
-struct Frame {
-    id: u128,
-    smart_contract: String,
+struct NFT {
+    id: String,
+    contract_address: String,
     chain: String,
-    nft: NFTMetadata
+}
+
+#[derive(CandidType, Deserialize)]
+pub struct Frame {
+    owner: String,
+    nft_metadata: NFTMetadata,
+    nft: NFT
 }
 
 pub enum VerificationResult {
@@ -58,29 +63,10 @@ pub enum VerificationResult {
     Frame(Frame),
 }
 
-#[derive(CandidType, Deserialize, Clone, Eq, PartialEq)]
-pub enum CollectionPermissions {
-    Read, // everybody can read, canister controllers can write
-    Write, // everybody can write, but only the owner of the record can update or delete it
-    Managed, // only record owner and canister controllers can read and write
-    Controllers, // only canister controllers can read and write
-}
-
-#[derive(CandidType, Deserialize, Clone)]
-pub struct Collection {
-    pub(crate) permission: CollectionPermissions,
-    pub(crate) map: HashMap<String, CollectionResult>
-}
-
-pub struct AllowedCollection {
-    pub(crate) permission: CollectionPermissions,
-    pub(crate) name: &'static str
-}
-
 #[derive(candid::CandidType, Deserialize, Serialize)]
 pub enum Error {
-    DataNotFound { msg: String },
-    CollectionNotFound { msg: String },
-    PermissionDenied { msg: String },
-    InvalidTag { msg: String }
+    InvalidTag,
+    TagNotFound,
+    CertificateNotFound,
+    FrameNotFound
 }
