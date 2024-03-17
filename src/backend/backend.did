@@ -22,6 +22,7 @@ type Error = variant {
   TagNotFound: ErrorReason;
   CertificateNotFound: ErrorReason;
   FrameNotFound: ErrorReason;
+  KeyNotFound: ErrorReason;
   PermissionDenied: ErrorReason;
 };
 
@@ -34,6 +35,13 @@ type Frame = record {
     owner: text;
     nft_metadata: NFTMetadata;
     nft: NFT
+};
+
+type Tag = record {
+    id: nat;
+    short_id: text;
+    is_certificate: bool;
+    owner: text;
 };
 
 type NFT = record {
@@ -55,8 +63,15 @@ type SetKeyResult = variant {
     Err: Error;
 };
 
+type GetTagResult = variant {
+    Ok: Tag;
+    Err: Error;
+};
+
 service : {
     "verify_tag": (text) -> (VerifyResult) query;
     "set_key": (text, text) -> (SetKeyResult);
     "get_admin": () -> (principal) query;
+    "get_tags_owned_by": (text) -> (vec Tag) query;
+    "get_tag": (text) -> (GetTagResult) query;
 }
