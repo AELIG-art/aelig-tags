@@ -1,0 +1,77 @@
+type NFTMetadata = record {
+    name: text;
+    description: text;
+    image: text;
+    attributes: vec Attribute;
+};
+
+type Attribute = record {
+    trait_type: text;
+    value: text;
+};
+
+type Certificate = record {
+    id: nat;
+    registered: bool;
+    metadata: NFTMetadata;
+    owner: text;
+};
+
+type Error = variant {
+  InvalidTag: ErrorReason;
+  TagNotFound: ErrorReason;
+  CertificateNotFound: ErrorReason;
+  FrameNotFound: ErrorReason;
+  KeyNotFound: ErrorReason;
+  PermissionDenied: ErrorReason;
+};
+
+type ErrorReason = record {
+    msg: text;
+};
+
+type Frame = record {
+    id: nat;
+    owner: text;
+    nft_metadata: NFTMetadata;
+    nft: NFT
+};
+
+type Tag = record {
+    id: nat;
+    short_id: text;
+    is_certificate: bool;
+    owner: text;
+};
+
+type NFT = record {
+   id: text;
+   contract_address: text;
+   chain: text;
+};
+
+type VerifyResult = variant {
+    Ok: variant {
+        Certificate: Certificate;
+        Frame: Frame;
+    };
+    Err: Error;
+};
+
+type SetKeyResult = variant {
+    Ok: text;
+    Err: Error;
+};
+
+type GetTagResult = variant {
+    Ok: Tag;
+    Err: Error;
+};
+
+service : {
+    "verify_tag": (text) -> (VerifyResult) query;
+    "set_key": (text, text) -> (SetKeyResult);
+    "get_admin": () -> (principal) query;
+    "get_tags_owned_by": (text) -> (vec Tag) query;
+    "get_tag": (text) -> (GetTagResult) query;
+}
