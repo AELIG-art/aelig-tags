@@ -11,7 +11,7 @@ thread_local! {
 pub fn get_key(key: String) -> Result<String, Error> {
     KEYS.with(|map| {
         match map.borrow().get(&key) {
-            Some(key) => Ok(key.copy()),
+            Some(key) => Ok(key.clone()),
             None => Err(Error::KeyNotFound {
                 msg: format!("Key {} not found", key)
             })
@@ -23,7 +23,7 @@ pub fn get_key(key: String) -> Result<String, Error> {
 fn set_key(key: String, value: String) -> Result<(), Error> {
     return if true {
         KEYS.with(|map| {
-            map.borrow().insert(key, value);
+            map.borrow_mut().insert(key, value);
             Ok(())
         })
     } else {

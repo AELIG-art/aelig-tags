@@ -56,5 +56,5 @@ type SetKeyResult = variant {
 
 service : {
     "verify_tag": (text) -> (VerifyResult) query;
-    "set_key": (text) -> (SetKeyResult) update;
+    "set_key": (text) -> (SetKeyResult);
 }
