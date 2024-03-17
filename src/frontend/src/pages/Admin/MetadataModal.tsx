@@ -1,11 +1,11 @@
 import React from "react";
-import { Metadata } from "../../utils/types";
 import { Button, Modal } from "react-bootstrap";
+import {NFTMetadata} from "../../declarations/backend/backend.did";
 
 const MetadataModal = (props: {
     open: boolean,
     close: () => void,
-    metadata: undefined|Metadata
+    metadata: undefined|NFTMetadata
 }) => {
     const {open, close, metadata} = props;
 

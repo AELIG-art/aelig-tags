@@ -3,11 +3,12 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "start": "npm run start --workspaces --if-present",
+    "start": "dfx generate backend && npm run start --workspaces --if-present",
     "build": "npm run build --workspaces --if-present",
     "test": "npm run test --workspaces --if-present",
     "local-canister": "dfx start",
-    "local-deploy": "dfx deploy"
+    "local-deploy": "dfx deploy",
+    "generate": "dfx generate backend"
   },
   "type": "module",
   "workspaces": [

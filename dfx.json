@@ -4,7 +4,10 @@
       "candid": "src/backend/backend.did",
       "package": "backend",
       "type": "rust",
-      "optimize": "cycles"
+      "optimize": "cycles",
+      "declarations": {
+        "output": "src/frontend/src/declarations/backend"
+      }
     },
     "frontend": {
       "dependencies": [

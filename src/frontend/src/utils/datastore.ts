@@ -1,15 +1,15 @@
-import { getDoc } from "@junobuild/core";
-import { Metadata, Tag, TagExpanded } from "./types";
+import { TagExpanded } from "./types";
+import {GetCertificateResult, Tag} from "../declarations/backend/backend.did";
+import {backend} from "../declarations/backend";
 
 export const expandTag = async (tag: Tag) => {
-    const metadataRes = await getDoc({
-        collection: 'metadata',
-        key: tag.id.toString()
-    });
-    if (metadataRes) {
+    const certificate: GetCertificateResult = await backend.get_certificate(tag.id.toString(16));
+
+    if ('Ok' in certificate) {
         return {
             ...tag,
-            metadata: metadataRes.data as Metadata
+            metadata: certificate.Ok.metadata,
+            registered: certificate.Ok.registered
         };
     } else {
         return tag as TagExpanded;

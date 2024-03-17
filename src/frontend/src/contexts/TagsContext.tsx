@@ -1,9 +1,9 @@
 import React, { useContext, useEffect, useState } from "react";
 import { createContext, ReactNode } from "react";
-import { Tag, TagExpanded } from "../utils/types";
-import { getDoc } from "@junobuild/core";
+import { TagExpanded } from "../utils/types";
 import { expandTag } from "../utils/datastore";
 import { useAddress } from "@thirdweb-dev/react";
+import {backend} from "../declarations/backend";
 
 const Context = createContext({} as TagsContextInterface);
 
@@ -15,22 +15,17 @@ export const TagsContext = (props: {
     const {children} = props;
 
     const getTagsExpanded = async (address: string) => {
-        const tagsRes = await getDoc({
-            collection: 'tags',
-            key: address
-        });
-        if (tagsRes === undefined) {
-            return [];
-        } else {
-            const tags: TagExpanded[] = [];
+        const tagsRes = await backend.get_tags_owned_by(address);
+        const tags: TagExpanded[] = [];
 
-            for (const tag of (tagsRes.data as Tag[])) {
+        for (const tag of tagsRes) {
+            if (tag.is_certificate) {
                 const tagExpanded = await expandTag(tag);
                 tags.push(tagExpanded);
             }
-
-            return tags;
         }
+
+        return tags;
     }
 
     useEffect(() => {

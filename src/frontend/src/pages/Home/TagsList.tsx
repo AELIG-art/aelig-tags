@@ -22,8 +22,8 @@ const TagsList = () => {
             {
                 tags.map((tag) => {
                     return <tr>
-                        <td>{tag.shortId}</td>
-                        <td>{tag.id}</td>
+                        <td>{tag.short_id}</td>
+                        <td>{tag.id.toString()}</td>
                         <td>{tag.metadata ? 'YES' : 'NO'}</td>
                         <td>{tag.registered ? 'YES' : 'NO'}</td>
                         <td>{

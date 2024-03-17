@@ -4,8 +4,8 @@ import { Link, useParams } from "react-router-dom";
 import { Button, Form } from "react-bootstrap";
 import { useAddress, useSigner, useStorageUpload } from "@thirdweb-dev/react";
 import { smartContractAddress } from "../../utils/constants";
-import { Metadata } from "../../utils/types";
 import { getDoc, setDoc } from "@junobuild/core";
+import {NFTMetadata} from "../../declarations/backend/backend.did";
 
 const Tag = () => {
     const { tags } = useTags();
@@ -23,7 +23,7 @@ const Tag = () => {
     const address = useAddress();
 
     return <div>
-        <h1>{tag?.shortId || tag?.id}</h1>
+        <h1>{tag?.short_id || tag?.id.toString(16)}</h1>
         <Link to={"/"}>Back</Link>
         <Form>
             <Form.Group className="mb-3" controlId="formBasicEmail">
@@ -93,7 +93,7 @@ const Tag = () => {
                                 attributes: [],
                                 author: address,
                                 signature
-                            } as Metadata;
+                            } as NFTMetadata;
                             getDoc({
                                 collection: 'metadata',
                                 key: tag?.id.toString()

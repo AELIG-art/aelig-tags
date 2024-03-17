@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { Button, Table } from "react-bootstrap";
-import { Metadata, TagExpanded } from "../../utils/types";
+import { TagExpanded } from "../../utils/types";
 import { listDocs } from "@junobuild/core";
 import MetadataModal from "./MetadataModal";
+import {NFTMetadata} from "../../declarations/backend/backend.did";
 
 const Content = (props: {
     isAdmin: boolean
@@ -13,7 +14,7 @@ const Content = (props: {
     const [
         metadata,
         setMetadata
-    ] = useState(undefined as undefined|Metadata);
+    ] = useState(undefined as undefined|NFTMetadata);
 
     useEffect(() => {
         listDocs({
@@ -27,16 +28,16 @@ const Content = (props: {
             listDocs({
                 collection: 'metadata'
             }).then((res) => {
-                const items = res.items as unknown as {key: string, data: Metadata}[];
-                const metadataDict: { [key: string]: Metadata } = items.reduce((
-                    acc: { [key: string]: Metadata },
+                const items = res.items as unknown as {key: string, data: NFTMetadata}[];
+                const metadataDict: { [key: string]: NFTMetadata } = items.reduce((
+                    acc: { [key: string]: NFTMetadata },
                     { key, data }
                 ) => {
                     acc[key] = data;
                     return acc;
                 }, {});
                 tags.forEach((tag) => {
-                   tag.metadata = metadataDict[tag.id];
+                   tag.metadata = metadataDict[tag.id.toString(16)];
                 });
                 setTagsExpanded(tags);
                 console.log(tags);
@@ -61,9 +62,9 @@ const Content = (props: {
                 {
                     tagsExpanded.map((tag) => {
                         return <tr key={tag.id}>
-                            <td>{tag.shortId}</td>
-                            <td>{tag.id}</td>
-                            <td>{tag.metadata?.author || 'not assigned'}</td>
+                            <td>{tag.short_id}</td>
+                            <td>{tag.id.toString(16)}</td>
+                            <td>{tag.owner || 'not assigned'}</td>
                             <td>{tag.registered ? "Yes" : 'NO'}</td>
                             <td>
                                 {

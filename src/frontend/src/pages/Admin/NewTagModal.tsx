@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Button, Form, Modal } from "react-bootstrap";
 import { getDoc, setDoc } from "@junobuild/core";
-import { Tag } from "../../utils/types";
+import {Tag} from "../../declarations/backend/backend.did";
 
 const NewTagModal = (props: {
     open: boolean,
@@ -59,8 +59,10 @@ const NewTagModal = (props: {
                         }).then((res) => {
                             let tagsFormatted = tags.map((tag: string) => {
                                 return {
-                                    id: Number(tag),
-                                    registered: false
+                                    id: BigInt(`0x${tag}`),
+                                    owner: owner,
+                                    is_certificate: true,
+                                    short_id: '',
                                 }
                             }) as Tag[];
                             if (res) {
