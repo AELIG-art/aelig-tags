@@ -22,6 +22,7 @@ type Error = variant {
   TagNotFound: ErrorReason;
   CertificateNotFound: ErrorReason;
   FrameNotFound: ErrorReason;
+  PermissionDenied: ErrorReason;
 };
 
 type ErrorReason = record {
