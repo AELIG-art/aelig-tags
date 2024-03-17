@@ -1,5 +1,11 @@
-use candid::{CandidType, Deserialize, Principal};
+use std::borrow::Cow;
+use candid::{CandidType, Decode, Deserialize, Encode, Principal};
+use ic_stable_structures::{DefaultMemoryImpl, Storable};
+use ic_stable_structures::memory_manager::VirtualMemory;
+use ic_stable_structures::storable::Bound;
 use serde::Serialize;
+
+const MAX_VALUE_SIZE: u32 = 1000;
 
 #[derive(CandidType, Deserialize, Clone)]
 pub struct TagMetadata {
@@ -31,12 +37,42 @@ pub struct Tag {
     pub(crate) owner: String,
 }
 
+impl Storable for Tag {
+    fn to_bytes(&self) -> std::borrow::Cow<[u8]> {
+        Cow::Owned(Encode!(self).unwrap())
+    }
+
+    fn from_bytes(bytes: std::borrow::Cow<[u8]>) -> Self {
+        Decode!(bytes.as_ref(), Self).unwrap()
+    }
+
+    const BOUND: Bound = Bound::Bounded {
+        max_size: MAX_VALUE_SIZE,
+        is_fixed_size: false,
+    };
+}
+
 #[derive(CandidType, Deserialize, Clone)]
 pub struct Certificate {
     id: u128,
     pub(crate) registered: bool,
     metadata: NFTMetadata,
     owner: String,
+}
+
+impl Storable for Certificate {
+    fn to_bytes(&self) -> std::borrow::Cow<[u8]> {
+        Cow::Owned(Encode!(self).unwrap())
+    }
+
+    fn from_bytes(bytes: std::borrow::Cow<[u8]>) -> Self {
+        Decode!(bytes.as_ref(), Self).unwrap()
+    }
+
+    const BOUND: Bound = Bound::Bounded {
+        max_size: MAX_VALUE_SIZE,
+        is_fixed_size: false,
+    };
 }
 
 #[derive(CandidType, Clone, Deserialize)]
@@ -60,6 +96,21 @@ pub struct Frame {
     nft: NFT
 }
 
+impl Storable for Frame {
+    fn to_bytes(&self) -> std::borrow::Cow<[u8]> {
+        Cow::Owned(Encode!(self).unwrap())
+    }
+
+    fn from_bytes(bytes: std::borrow::Cow<[u8]>) -> Self {
+        Decode!(bytes.as_ref(), Self).unwrap()
+    }
+
+    const BOUND: Bound = Bound::Bounded {
+        max_size: MAX_VALUE_SIZE,
+        is_fixed_size: false,
+    };
+}
+
 #[derive(CandidType)]
 pub enum VerificationResult {
     Certificate(Certificate),
@@ -76,3 +127,5 @@ pub enum Error {
     KeyNotFound { msg: String },
     PermissionDenied { msg: String }
 }
+
+pub type Memory = VirtualMemory<DefaultMemoryImpl>;

@@ -1,12 +1,21 @@
 use std::cell::RefCell;
-use std::collections::HashMap;
 use ic_cdk::api;
+use ic_stable_structures::{DefaultMemoryImpl, StableBTreeMap};
+use ic_stable_structures::memory_manager::{MemoryId, MemoryManager};
 use crate::admin::get_admin;
-use crate::types::Error;
+use crate::memory_ids::MemoryKeys;
+use crate::types::{Error, Memory};
 
 thread_local! {
-    static KEYS: RefCell<HashMap<String, String>> = RefCell::new(
-        HashMap::new()
+    static MEMORY_MANAGER: RefCell<MemoryManager<DefaultMemoryImpl>> =
+        RefCell::new(MemoryManager::init(DefaultMemoryImpl::default()));
+
+    static KEYS: RefCell<StableBTreeMap<String, String, Memory>> = RefCell::new(
+        StableBTreeMap::init(
+            MEMORY_MANAGER.with(|m| m.borrow().get(
+                MemoryId::new(MemoryKeys::Keys as u8))
+            ),
+        )
     );
 }
 

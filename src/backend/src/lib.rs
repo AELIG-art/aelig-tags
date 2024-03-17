@@ -5,3 +5,4 @@ mod certificates;
 mod frames;
 mod keys;
 mod admin;
+mod memory_ids;

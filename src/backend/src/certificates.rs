@@ -1,10 +1,19 @@
 use std::cell::RefCell;
-use std::collections::HashMap;
-use crate::types::{Certificate, Error};
+use ic_stable_structures::{DefaultMemoryImpl, StableBTreeMap};
+use ic_stable_structures::memory_manager::{MemoryId, MemoryManager};
+use crate::memory_ids::MemoryKeys;
+use crate::types::{Certificate, Error, Memory};
 
 thread_local! {
-    static CERTIFICATES: RefCell<HashMap<String, Certificate>> = RefCell::new(
-        HashMap::new()
+    static MEMORY_MANAGER: RefCell<MemoryManager<DefaultMemoryImpl>> =
+        RefCell::new(MemoryManager::init(DefaultMemoryImpl::default()));
+
+    static CERTIFICATES: RefCell<StableBTreeMap<String, Certificate, Memory>> = RefCell::new(
+        StableBTreeMap::init(
+            MEMORY_MANAGER.with(|m| m.borrow().get(
+                MemoryId::new(MemoryKeys::Collections as u8))
+            ),
+        )
     );
 }
 

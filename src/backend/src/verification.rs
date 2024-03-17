@@ -1,22 +1,32 @@
 use std::cell::RefCell;
-use std::collections::HashMap;
 use aes::Aes128;
 use aes::cipher::{
     BlockDecrypt, KeyInit,
     generic_array::GenericArray,
 };
 use hex::{decode, encode};
+use ic_stable_structures::{DefaultMemoryImpl, StableBTreeMap};
+use ic_stable_structures::memory_manager::{MemoryId, MemoryManager};
 use crate::certificates::get_certificate;
 use crate::frames::get_frame;
 use crate::keys::get_key;
+use crate::memory_ids::MemoryKeys;
 use crate::tags::get_tag;
-use crate::types::{Error, VerificationResult};
+use crate::types::{Error, Memory, VerificationResult};
 
 
 thread_local! {
-    static TAG_COUNTERS: RefCell<HashMap<String, u128>> = RefCell::new(
-        HashMap::new()
+    static MEMORY_MANAGER: RefCell<MemoryManager<DefaultMemoryImpl>> =
+        RefCell::new(MemoryManager::init(DefaultMemoryImpl::default()));
+
+    static TAG_COUNTERS: RefCell<StableBTreeMap<String, u128, Memory>> = RefCell::new(
+        StableBTreeMap::init(
+            MEMORY_MANAGER.with(|m| m.borrow().get(
+                MemoryId::new(MemoryKeys::TagCounters as u8))
+            ),
+        )
     );
+
 }
 
 #[ic_cdk::query]
