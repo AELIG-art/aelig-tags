@@ -31,14 +31,14 @@ pub fn get_key(key: String) -> Result<String, Error> {
 }
 
 #[ic_cdk::update]
-fn set_key(key: String, value: String) -> Result<(), Error> {
+fn set_key(key: String, value: String) -> Result<String, Error> {
     let caller = api::caller();
     let admin = get_admin();
 
     return if caller == admin {
         KEYS.with(|map| {
             map.borrow_mut().insert(key, value);
-            Ok(())
+            Ok("Success".to_string())
         })
     } else {
         Err(Error::PermissionDenied {

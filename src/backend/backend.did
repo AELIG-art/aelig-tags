@@ -59,7 +59,7 @@ type VerifyResult = variant {
 };
 
 type SetKeyResult = variant {
-    Ok: empty;
+    Ok: text;
     Err: Error;
 };
 
