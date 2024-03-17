@@ -3,7 +3,8 @@
     "backend": {
       "candid": "src/backend/backend.did",
       "package": "backend",
-      "type": "rust"
+      "type": "rust",
+      "optimize": "cycles"
     },
     "frontend": {
       "dependencies": [
@@ -13,7 +14,8 @@
         "src/frontend/build"
       ],
       "type": "assets",
-      "workspace": "src/frontend"
+      "workspace": "src/frontend",
+      "optimize": "size"
     }
   },
   "defaults": {
