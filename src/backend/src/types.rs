@@ -72,5 +72,7 @@ pub enum Error {
     InvalidTag { msg: String },
     TagNotFound { msg: String },
     CertificateNotFound { msg: String },
-    FrameNotFound { msg: String }
+    FrameNotFound { msg: String },
+    KeyNotFound { msg: String },
+    PermissionDenied { msg: String }
 }

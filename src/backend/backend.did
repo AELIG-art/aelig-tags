@@ -49,6 +49,12 @@ type VerifyResult = variant {
     Err: Error;
 };
 
+type SetKeyResult = variant {
+    Ok: empty;
+    Err: Error;
+};
+
 service : {
     "verify_tag": (text) -> (VerifyResult) query;
+    "set_key": (text) -> (SetKeyResult) update;
 }
