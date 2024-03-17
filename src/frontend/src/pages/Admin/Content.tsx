@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { Button, Table } from "react-bootstrap";
 import { TagExpanded } from "../../utils/types";
-import { listDocs } from "@junobuild/core";
 import MetadataModal from "./MetadataModal";
-import {NFTMetadata} from "../../declarations/backend/backend.did";
+import {NFTMetadata, Tag} from "../../declarations/backend/backend.did";
+import {backend} from "../../declarations/backend";
 
 const Content = (props: {
     isAdmin: boolean
@@ -17,30 +17,23 @@ const Content = (props: {
     ] = useState(undefined as undefined|NFTMetadata);
 
     useEffect(() => {
-        listDocs({
-            collection: 'tags'
-        }).then((res) => {
-            const tagsPerUser = res.items as unknown as [{data: TagExpanded[]}];
-            let tags = [] as TagExpanded[];
-            tagsPerUser.forEach((tag) => {
-                tags = tags.concat(tag.data);
-            });
-            listDocs({
-                collection: 'metadata'
-            }).then((res) => {
-                const items = res.items as unknown as {key: string, data: NFTMetadata}[];
-                const metadataDict: { [key: string]: NFTMetadata } = items.reduce((
-                    acc: { [key: string]: NFTMetadata },
-                    { key, data }
-                ) => {
-                    acc[key] = data;
-                    return acc;
-                }, {});
-                tags.forEach((tag) => {
-                   tag.metadata = metadataDict[tag.id.toString(16)];
-                });
-                setTagsExpanded(tags);
-                console.log(tags);
+        backend.get_tags().then((tags: Tag[]) => {
+            const tagsExpanded: Promise<TagExpanded[]> = Promise.all(
+                tags.filter((tag: Tag) => tag.is_certificate)
+                    .map(async (tag: Tag) => {
+                        const certificate = await backend.get_certificate(tag.id.toString(16));
+                        if ("Ok" in certificate) {
+                            const expanded: TagExpanded = tag;
+                            expanded.metadata = certificate.Ok.metadata;
+                            expanded.registered = certificate.Ok.registered;
+                            return expanded;
+                        } else {
+                            return tag as TagExpanded;
+                        }
+                    })
+            );
+            tagsExpanded.then((res) => {
+                setTagsExpanded(res);
             });
         });
     }, []);

@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { Button, Form, Modal } from "react-bootstrap";
-import { getDoc, setDoc } from "@junobuild/core";
-import {Tag} from "../../declarations/backend/backend.did";
+import {backend} from "../../declarations/backend";
 
 const NewTagModal = (props: {
     open: boolean,
@@ -10,6 +9,7 @@ const NewTagModal = (props: {
     const { open, close } = props;
     const [owner, setOwner] = useState(undefined as string|undefined);
     const [tags, setTags] = useState([] as string[]);
+    const [shortIds, setShortIds] = useState<string[]>([]);
 
     return <Modal show={open} onHide={close}>
         <Modal.Header closeButton>
@@ -32,12 +32,24 @@ const NewTagModal = (props: {
                     <Form.Label>Tag ids</Form.Label>
                     <Form.Control
                         type="text"
-                        placeholder="Tag id"
+                        placeholder="Tag ids"
                         onChange={(event) => {
                             setTags(event.target.value.split(","));
                         }}
                     />
                     <Form.Floating>Enter tag ids separated by a comma.</Form.Floating>
+                </Form.Group>
+
+                <Form.Group className="mb-3" controlId="formBasicPassword">
+                    <Form.Label>Tag short ids</Form.Label>
+                    <Form.Control
+                        type="text"
+                        placeholder="Tag short ids"
+                        onChange={(event) => {
+                            setShortIds(event.target.value.split(","));
+                        }}
+                    />
+                    <Form.Floating>Enter tag short ids separated by a comma.</Form.Floating>
                 </Form.Group>
             </Form>
         </Modal.Body>
@@ -52,30 +64,17 @@ const NewTagModal = (props: {
             <Button
                 variant="primary"
                 onClick={() => {
-                    if (owner) {
-                        getDoc({
-                            collection: 'tags',
-                            key: owner
-                        }).then((res) => {
-                            let tagsFormatted = tags.map((tag: string) => {
-                                return {
-                                    id: BigInt(`0x${tag}`),
+                    if (owner && tags.length == shortIds.length) {
+                        tags.forEach((tag, index) => {
+                            backend.add_tag(
+                                tag,
+                                {
                                     owner: owner,
                                     is_certificate: true,
-                                    short_id: '',
+                                    short_id: shortIds[index],
+                                    id: BigInt(`0x${tag}`)
                                 }
-                            }) as Tag[];
-                            if (res) {
-                                const oldTags = res.data as Tag[];
-                                tagsFormatted = tagsFormatted.concat(oldTags);
-                            }
-                            setDoc({
-                                collection: "tags",
-                                doc: {
-                                    key: owner,
-                                    data: tagsFormatted
-                                }
-                            }).then();
+                            ).then((res) => console.log(res));
                         });
                     }
                 }}

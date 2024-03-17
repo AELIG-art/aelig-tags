@@ -10,27 +10,33 @@ const TopBar = (props: {
     const { user, isAdmin, openModal } = props;
 
     if (user !== null) {
-        return <div className={"d-flex"}>
-            <Button
-                onClick={() => signOut().then()}
-            >
-                Disconnect
-            </Button>
-            <div className={"flex-fill"} />
-            {
-                isAdmin ? <Button
-                    onClick={openModal}
+        return <div>
+            <div className={"d-flex"}>
+                {
+                    isAdmin ? <Button
+                        onClick={openModal}
+                    >
+                        Register new tag
+                    </Button> : null
+                }
+                <div className={"flex-fill"}/>
+                <Button
+                    onClick={() => signOut().then()}
                 >
-                    Register new tag
-                </Button> : null
-            }
+                    Disconnect
+                </Button>
+            </div>
+            <p className={"mt-3"}>Your principal: {user.key}</p>
         </div>
     } else {
-        return <Button
-            onClick={() => signIn().then()}
-        >
-            Connect to internet identity
-        </Button>
+        return <div className={"d-flex"}>
+            <div className={"flex-fill"}/>
+            <Button
+                onClick={() => signIn().then()}
+            >
+                Connect to internet identity
+            </Button>
+        </div>
     }
 }
 
