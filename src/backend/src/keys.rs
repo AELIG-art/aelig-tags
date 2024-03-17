@@ -1,5 +1,7 @@
 use std::cell::RefCell;
 use std::collections::HashMap;
+use ic_cdk::api;
+use crate::admin::get_admin;
 use crate::types::Error;
 
 thread_local! {
@@ -21,7 +23,10 @@ pub fn get_key(key: String) -> Result<String, Error> {
 
 #[ic_cdk::update]
 fn set_key(key: String, value: String) -> Result<(), Error> {
-    return if true {
+    let caller = api::caller();
+    let admin = get_admin();
+
+    return if caller == admin {
         KEYS.with(|map| {
             map.borrow_mut().insert(key, value);
             Ok(())

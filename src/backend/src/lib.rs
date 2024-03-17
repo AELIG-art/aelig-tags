@@ -4,3 +4,4 @@ mod tags;
 mod certificates;
 mod frames;
 mod keys;
+mod admin;
