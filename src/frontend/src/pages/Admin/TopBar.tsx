@@ -1,6 +1,7 @@
 import React from "react";
-import { signIn, signOut } from "@junobuild/core";
 import { Button } from "react-bootstrap";
+import {useAuthClient} from "../../contexts/AuthClientContext";
+import {INTERNET_IDENTITY_SESSION_EXPIRATION} from "../../utils/constants";
 
 const TopBar = (props: {
     isLogged:boolean
@@ -9,6 +10,7 @@ const TopBar = (props: {
     principal?: string
 }) => {
     const { isLogged, isAdmin, openModal, principal } = props;
+    const { authClient } = useAuthClient();
 
     if (isLogged) {
         return <div>
@@ -22,7 +24,7 @@ const TopBar = (props: {
                 }
                 <div className={"flex-fill"}/>
                 <Button
-                    onClick={() => signOut().then()}
+                    onClick={() => authClient?.logout()}
                 >
                     Disconnect
                 </Button>
@@ -33,7 +35,11 @@ const TopBar = (props: {
         return <div className={"d-flex"}>
             <div className={"flex-fill"}/>
             <Button
-                onClick={() => signIn().then()}
+                onClick={() => {
+                    authClient?.login({
+                        maxTimeToLive: BigInt(INTERNET_IDENTITY_SESSION_EXPIRATION)
+                    }).then();
+                }}
             >
                 Connect to internet identity
             </Button>

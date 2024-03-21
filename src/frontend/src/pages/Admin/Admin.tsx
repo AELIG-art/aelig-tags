@@ -13,10 +13,14 @@ const Admin = () => {
     const { authClient } = useAuthClient();
     const principal = authClient?.getIdentity().getPrincipal();
 
+
     useEffect(() => {
         if (principal && principal.toString().length > ANONYMOUS_PRINCIPAL_LENGTH) {
             setIsLogged(true);
             setIsAdmin(principal.toString() === ADMIN_PRINCIPAL);
+        } else {
+            setIsLogged(false);
+            setIsAdmin(false);
         }
     }, [principal?.toString()]);
 
@@ -25,6 +29,7 @@ const Admin = () => {
             isLogged={isLogged}
             isAdmin={isAdmin}
             openModal={() => setNewTagModalOpen(true)}
+            principal={principal?.toString()}
         />
         <Content isAdmin={isAdmin} />
         <NewTagModal
