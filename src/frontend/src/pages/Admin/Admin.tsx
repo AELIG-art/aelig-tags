@@ -1,25 +1,28 @@
 import React, { useEffect, useState } from "react";
-import { authSubscribe, User } from "@junobuild/core";
 import TopBar from "./TopBar";
 import {ADMIN_PRINCIPAL, ANONYMOUS_PRINCIPAL_LENGTH} from "../../utils/constants";
 import NewTagModal from "./NewTagModal";
 import Content from "./Content";
+import {useAuthClient} from "../../contexts/AuthClientContext";
 
 const Admin = () => {
-    const [user, setUser] = useState(null as null|User);
     const [isAdmin, setIsAdmin] = useState(false);
     const [newTagModalOpen, setNewTagModalOpen] = useState(false);
+    const [isLogged, setIsLogged] = useState(false);
+
+    const { authClient } = useAuthClient();
+    const principal = authClient?.getIdentity().getPrincipal();
 
     useEffect(() => {
-        authSubscribe((user: User | null) => {
-            setUser(user);
-            setIsAdmin(user?.owner === admin);
-        });
-    }, []);
+        if (principal && principal.toString().length > ANONYMOUS_PRINCIPAL_LENGTH) {
+            setIsLogged(true);
+            setIsAdmin(principal.toString() === ADMIN_PRINCIPAL);
+        }
+    }, [principal?.toString()]);
 
     return <div>
         <TopBar
-            user={user}
+            isLogged={isLogged}
             isAdmin={isAdmin}
             openModal={() => setNewTagModalOpen(true)}
         />

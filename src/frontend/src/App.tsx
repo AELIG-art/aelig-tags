@@ -9,6 +9,7 @@ import { SATELLITE_ID, THIRDWEB_CLIENT_ID } from "./utils/constants";
 import Admin from "./pages/Admin/Admin";
 import Verification from "./pages/Verification/Verification";
 import VerificationLayout from "./layouts/VerificationLayout/VerificationLayout";
+import {AuthClientContext} from "./contexts/AuthClientContext";
 
 function App() {
     const [junoLoaded, setJunoLoaded] = useState(false);

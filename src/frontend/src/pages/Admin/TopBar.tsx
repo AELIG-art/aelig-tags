@@ -1,15 +1,16 @@
 import React from "react";
-import { signIn, signOut, User } from "@junobuild/core";
+import { signIn, signOut } from "@junobuild/core";
 import { Button } from "react-bootstrap";
 
 const TopBar = (props: {
-    user: null|User
+    isLogged:boolean
     isAdmin: boolean
     openModal: () => void
+    principal?: string
 }) => {
-    const { user, isAdmin, openModal } = props;
+    const { isLogged, isAdmin, openModal, principal } = props;
 
-    if (user !== null) {
+    if (isLogged) {
         return <div>
             <div className={"d-flex"}>
                 {
@@ -26,7 +27,7 @@ const TopBar = (props: {
                     Disconnect
                 </Button>
             </div>
-            <p className={"mt-3"}>Your principal: {user.key}</p>
+            <p className={"mt-3"}>Your principal: {principal}</p>
         </div>
     } else {
         return <div className={"d-flex"}>
