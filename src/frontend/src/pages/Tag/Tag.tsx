@@ -3,7 +3,7 @@ import { useTags } from "../../contexts/TagsContext";
 import { Link, useParams } from "react-router-dom";
 import { Button, Form } from "react-bootstrap";
 import { useAddress, useSigner, useStorageUpload } from "@thirdweb-dev/react";
-import { smartContractAddress } from "../../utils/constants";
+import { SMART_CONTRACT_ADDRESS } from "../../utils/constants";
 import { getDoc, setDoc } from "@junobuild/core";
 import {NFTMetadata} from "../../declarations/backend/backend.did";
 
@@ -83,7 +83,7 @@ const Tag = () => {
                             description: description || tag?.metadata?.description || "",
                             image: image || tag?.metadata?.image || "",
                             attributes: [],
-                            identifier: `gnosis:${smartContractAddress}:${tag?.id}`
+                            identifier: `gnosis:${SMART_CONTRACT_ADDRESS}:${tag?.id}`
                         }
                         signer.signMessage(JSON.stringify(messageJson)).then((signature) => {
                             const metadata = {

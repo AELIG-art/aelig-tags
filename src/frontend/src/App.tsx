@@ -5,7 +5,7 @@ import Home from "./pages/Home/Home";
 import DefaultLayout from "./layouts/DefaultLayout/DefaultLayout";
 import { initJuno } from "@junobuild/core";
 import Tag from "./pages/Tag/Tag";
-import { satelliteId, thirdWebClientIt } from "./utils/constants";
+import { SATELLITE_ID, THIRDWEB_CLIENT_ID } from "./utils/constants";
 import Admin from "./pages/Admin/Admin";
 import Verification from "./pages/Verification/Verification";
 import VerificationLayout from "./layouts/VerificationLayout/VerificationLayout";
@@ -14,7 +14,7 @@ function App() {
     const [junoLoaded, setJunoLoaded] = useState(false);
 
     useEffect(() => {
-        initJuno({satelliteId}).then(() => {
+        initJuno({satelliteId: SATELLITE_ID}).then(() => {
             setJunoLoaded(true);
         });
     }, []);
@@ -50,8 +50,10 @@ function App() {
         }
     ]);
 
-    return junoLoaded ? <ThirdwebProvider clientId={thirdWebClientIt}>
-        <RouterProvider router={router} />
+    return junoLoaded ? <ThirdwebProvider clientId={THIRDWEB_CLIENT_ID}>
+        <AuthClientContext>
+            <RouterProvider router={router} />
+        </AuthClientContext>
     </ThirdwebProvider> : null;
 }
 

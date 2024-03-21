@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { authSubscribe, User } from "@junobuild/core";
 import TopBar from "./TopBar";
-import { admin } from "../../utils/constants";
+import {ADMIN_PRINCIPAL, ANONYMOUS_PRINCIPAL_LENGTH} from "../../utils/constants";
 import NewTagModal from "./NewTagModal";
 import Content from "./Content";
 
