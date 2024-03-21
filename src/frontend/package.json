@@ -4,6 +4,10 @@
   "private": true,
   "dependencies": {
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
+    "@dfinity/agent": "^1.1.1",
+    "@dfinity/auth-client": "^1.1.1",
+    "@dfinity/candid": "^1.1.1",
+    "@dfinity/principal": "^1.1.1",
     "@junobuild/config": "^0.0.2",
     "@junobuild/core": "^0.0.46",
     "@testing-library/jest-dom": "^5.17.0",
