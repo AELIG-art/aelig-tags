@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import TopBar from "./TopBar";
-import {ADMIN_PRINCIPAL, ANONYMOUS_PRINCIPAL_LENGTH} from "../../utils/constants";
+import { ADMIN_PRINCIPAL } from "../../utils/constants";
 import NewTagModal from "./NewTagModal";
 import Content from "./Content";
 import {useAuthClient} from "../../contexts/AuthClientContext";
@@ -15,13 +15,16 @@ const Admin = () => {
 
 
     useEffect(() => {
-        if (principal && principal.toString().length > ANONYMOUS_PRINCIPAL_LENGTH) {
-            setIsLogged(true);
-            setIsAdmin(principal.toString() === ADMIN_PRINCIPAL);
-        } else {
-            setIsLogged(false);
-            setIsAdmin(false);
-        }
+        authClient?.isAuthenticated().then((isAuthenticated) => {
+            if (isAuthenticated) {
+                const principal = authClient?.getIdentity().getPrincipal();
+                setIsLogged(true);
+                setIsAdmin(principal.toString() === ADMIN_PRINCIPAL);
+            } else {
+                setIsLogged(false);
+                setIsAdmin(false);
+            }
+        });
     }, [principal?.toString()]);
 
     return <div>
