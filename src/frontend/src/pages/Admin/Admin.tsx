@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import TopBar from "./TopBar";
-import { ADMIN_PRINCIPAL } from "../../utils/constants";
 import NewTagModal from "./NewTagModal";
 import Content from "./Content";
 import {useAuthClient} from "../../contexts/AuthClientContext";
+import {backend} from "../../declarations/backend";
 
 const Admin = () => {
     const [isAdmin, setIsAdmin] = useState(false);
@@ -19,7 +19,9 @@ const Admin = () => {
             if (isAuthenticated) {
                 const principal = authClient?.getIdentity().getPrincipal();
                 setIsLogged(true);
-                setIsAdmin(principal.toString() === ADMIN_PRINCIPAL);
+                backend.is_admin(principal).then(res => {
+                    setIsAdmin(res);
+                });
             } else {
                 setIsLogged(false);
                 setIsAdmin(false);
