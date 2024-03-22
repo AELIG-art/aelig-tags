@@ -14,7 +14,7 @@
         "backend"
       ],
       "source": [
-        "src/frontend/build"
+        "src/frontend/dist"
       ],
       "type": "assets",
       "workspace": "src/frontend",
