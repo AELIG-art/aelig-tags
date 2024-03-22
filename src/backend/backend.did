@@ -81,4 +81,5 @@ service : {
     "get_certificate": (text) -> (GetCertificateResult) query;
     "get_tags": () -> (vec Tag) query;
     "add_tag": (text, Tag) -> (UpdateResult);
+    "is_admin": (principal) -> (bool) query;
 }
