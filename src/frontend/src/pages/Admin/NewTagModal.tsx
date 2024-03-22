@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { Button, Form, Modal } from "react-bootstrap";
-import {backend} from "../../declarations/backend";
+import { canisterId, idlFactory} from "../../declarations/backend";
+import { useAuthClient } from "../../contexts/AuthClientContext";
+import { Actor, HttpAgent } from "@dfinity/agent";
 
 const NewTagModal = (props: {
     open: boolean,
@@ -10,6 +12,9 @@ const NewTagModal = (props: {
     const [owner, setOwner] = useState(undefined as string|undefined);
     const [tags, setTags] = useState([] as string[]);
     const [shortIds, setShortIds] = useState<string[]>([]);
+    const { authClient } = useAuthClient();
+    const identity = authClient?.getIdentity();
+
 
     return <Modal show={open} onHide={close}>
         <Modal.Header closeButton>
@@ -66,15 +71,27 @@ const NewTagModal = (props: {
                 onClick={() => {
                     if (owner && tags.length == shortIds.length) {
                         tags.forEach((tag, index) => {
-                            backend.add_tag(
-                                tag,
-                                {
-                                    owner: owner,
-                                    is_certificate: true,
-                                    short_id: shortIds[index],
-                                    id: BigInt(`0x${tag}`)
-                                }
-                            ).then((res) => console.log(res));
+                            if (identity) {
+                                const agent = new HttpAgent({ identity });
+                                agent.fetchRootKey().then(() => {
+                                    const backendActor = Actor.createActor(
+                                        idlFactory,
+                                        {
+                                            agent,
+                                            canisterId
+                                        }
+                                    );
+                                    backendActor.add_tag(
+                                        tag,
+                                        {
+                                            owner: owner,
+                                            is_certificate: true,
+                                            short_id: shortIds[index],
+                                            id: BigInt(`0x${tag}`)
+                                        }
+                                    ).then((res) => console.log(res));
+                                }).catch(console.log);
+                            }
                         });
                     }
                 }}
