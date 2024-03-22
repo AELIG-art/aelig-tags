@@ -4,7 +4,6 @@ import { Link, useParams } from "react-router-dom";
 import { Button, Form } from "react-bootstrap";
 import { useAddress, useSigner, useStorageUpload } from "@thirdweb-dev/react";
 import { SMART_CONTRACT_ADDRESS } from "../../utils/constants";
-import { getDoc, setDoc } from "@junobuild/core";
 import {NFTMetadata} from "../../declarations/backend/backend.did";
 
 const Tag = () => {
@@ -94,30 +93,7 @@ const Tag = () => {
                                 author: address,
                                 signature
                             } as NFTMetadata;
-                            getDoc({
-                                collection: 'metadata',
-                                key: tag?.id.toString()
-                            }).then((metadataDoc) => {
-                                if (metadataDoc) {
-                                    setDoc({
-                                        collection: 'metadata',
-                                        doc: {
-                                            key: tag?.id.toString(),
-                                            updated_at: metadataDoc.updated_at,
-                                            data: metadata
-                                        }
-                                    }).then((r) => console.log(r));
-                                } else {
-                                    setDoc({
-                                        collection: 'metadata',
-                                        doc: {
-                                            key: tag?.id.toString(),
-                                            data: metadata
-                                        }
-                                    }).then((r) => console.log(r));
-                                }
-                            });
-
+                            // todo: get tag here
                         });
                     }
                 }}

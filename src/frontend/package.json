@@ -8,8 +8,6 @@
     "@dfinity/auth-client": "^1.1.1",
     "@dfinity/candid": "^1.1.1",
     "@dfinity/principal": "^1.1.1",
-    "@junobuild/config": "^0.0.2",
-    "@junobuild/core": "^0.0.46",
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",

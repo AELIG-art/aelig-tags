@@ -12,9 +12,9 @@ const TopBar = (props: {
     const { isLogged, isAdmin, openModal, principal } = props;
     const { authClient } = useAuthClient();
 
-    if (isLogged) {
-        return <div>
-            <div className={"d-flex"}>
+    return <div>
+        {
+            isLogged ? <div className={"d-flex"}>
                 {
                     isAdmin ? <Button
                         onClick={openModal}
@@ -28,23 +28,21 @@ const TopBar = (props: {
                 >
                     Disconnect
                 </Button>
+            </div> : <div className={"d-flex"}>
+                <div className={"flex-fill"}/>
+                <Button
+                    onClick={() => {
+                        authClient?.login({
+                            maxTimeToLive: BigInt(INTERNET_IDENTITY_SESSION_EXPIRATION)
+                        }).then();
+                    }}
+                >
+                    Connect to internet identity
+                </Button>
             </div>
-            <p className={"mt-3"}>Your principal: {principal}</p>
-        </div>
-    } else {
-        return <div className={"d-flex"}>
-            <div className={"flex-fill"}/>
-            <Button
-                onClick={() => {
-                    authClient?.login({
-                        maxTimeToLive: BigInt(INTERNET_IDENTITY_SESSION_EXPIRATION)
-                    }).then();
-                }}
-            >
-                Connect to internet identity
-            </Button>
-        </div>
-    }
+        }
+        <p className={"mt-3"}>Your principal: {principal}</p>
+    </div>;
 }
 
 export default TopBar;
