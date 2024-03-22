@@ -1,5 +1,5 @@
 use std::cell::RefCell;
-use ic_cdk::{api, caller};
+use ic_cdk::{caller};
 use ic_cdk::api::is_controller;
 use ic_stable_structures::{DefaultMemoryImpl, StableBTreeMap};
 use ic_stable_structures::memory_manager::{MemoryId, MemoryManager};
