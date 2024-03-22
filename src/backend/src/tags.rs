@@ -1,8 +1,8 @@
 use std::cell::RefCell;
+use ic_cdk::api::is_controller;
 use ic_cdk::caller;
 use ic_stable_structures::{DefaultMemoryImpl, StableBTreeMap};
 use ic_stable_structures::memory_manager::{MemoryId, MemoryManager};
-use crate::admin::get_admin;
 use crate::memory_ids::MemoryKeys;
 use crate::types::{Error, Memory, Tag};
 
@@ -59,7 +59,7 @@ fn get_tags() -> Vec<Tag> {
 
 #[ic_cdk::update]
 fn add_tag(id: String, tag: Tag) -> Result<String, Error> {
-    return if caller() == get_admin() {
+    return if is_controller(&caller()) {
         TAGS.with(|map| {
             map.borrow_mut().insert(id, tag);
         });

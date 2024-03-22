@@ -1,8 +1,8 @@
 use std::cell::RefCell;
-use ic_cdk::api;
+use ic_cdk::{api, caller};
+use ic_cdk::api::is_controller;
 use ic_stable_structures::{DefaultMemoryImpl, StableBTreeMap};
 use ic_stable_structures::memory_manager::{MemoryId, MemoryManager};
-use crate::admin::get_admin;
 use crate::memory_ids::MemoryKeys;
 use crate::types::{Error, Memory};
 
@@ -32,10 +32,7 @@ pub fn get_key(key: String) -> Result<String, Error> {
 
 #[ic_cdk::update]
 fn set_key(key: String, value: String) -> Result<String, Error> {
-    let caller = api::caller();
-    let admin = get_admin();
-
-    return if caller == admin {
+    return if is_controller(&caller()) {
         KEYS.with(|map| {
             map.borrow_mut().insert(key, value);
             Ok("Success".to_string())
