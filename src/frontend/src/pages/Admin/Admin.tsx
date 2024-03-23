@@ -5,14 +5,22 @@ import Certificates from "./Certificates";
 import {useAuthClient} from "../../contexts/AuthClientContext";
 import {backend} from "../../declarations/backend";
 import {SnackbarProvider} from "notistack";
+import { Nav } from "react-bootstrap";
+import {useLocation} from "react-router-dom";
+import Frames from "./Frames";
 
 const Admin = () => {
     const [isAdmin, setIsAdmin] = useState(false);
     const [newTagModalOpen, setNewTagModalOpen] = useState(false);
+    const [isNewTagCertificate, setIsNewTagCertificate] = useState(true);
     const [isLogged, setIsLogged] = useState(false);
-    const [tagsSub, setTagsSub] = useState("");
+    const [certificatesSub, setCertificatesSub] = useState("");
+    const [framesSub, setFramesSub] = useState("");
     const { authClient } = useAuthClient();
     const principal = authClient?.getIdentity().getPrincipal();
+    const location = useLocation();
+    const hash = location.hash;
+    const isCertificatesSection = !hash || hash === '#certificates';
 
 
     useEffect(() => {
@@ -37,13 +45,47 @@ const Admin = () => {
             openModal={() => setNewTagModalOpen(true)}
             principal={principal?.toString()}
         />
-        <Content isAdmin={isAdmin} tagsSub={tagsSub} />
+        {
+            isAdmin ? <div>
+                <Nav variant="underline" defaultActiveKey="admin/#certificates" className={"mt-3"}>
+                    <Nav.Item>
+                        <Nav.Link href="admin/#certificates">Certificates</Nav.Link>
+                    </Nav.Item>
+                    <Nav.Item>
+                        <Nav.Link href="admin/#frames">Frames</Nav.Link>
+                    </Nav.Item>
+                </Nav>
+                {
+                    isCertificatesSection ? <Certificates
+                        tagsSub={certificatesSub}
+                        openModal={() => {
+                            setIsNewTagCertificate(true);
+                            setNewTagModalOpen(true);
+                        }}
+                    /> : <Frames
+                        tagsSub={framesSub}
+                        openModal={() => {
+                            setIsNewTagCertificate(true);
+                            setNewTagModalOpen(true);
+                        }}
+                    />
+                }
+            </div> :
+            <div className={"mt-5 text-center"}>
+                <p>You are not an admin. Please, login with another account.</p>
+            </div>
+        }
         <NewTagModal
             close={() => {
                 setNewTagModalOpen(false);
-                setTagsSub(new Date().toString());
+                if (isCertificatesSection) {
+                    setCertificatesSub(new Date().toString());
+                } else {
+                    setFramesSub(new Date().toString());
+                }
             }}
             open={newTagModalOpen}
+            isNewTagCertificate={isNewTagCertificate}
         />
         <SnackbarProvider />
     </div>;
