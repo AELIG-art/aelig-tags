@@ -41,7 +41,6 @@ const Admin = () => {
     return <div>
         <TopBar
             isLogged={isLogged}
-            isAdmin={isAdmin}
             openModal={() => setNewTagModalOpen(true)}
             principal={principal?.toString()}
         />

@@ -5,24 +5,17 @@ import {INTERNET_IDENTITY_SESSION_EXPIRATION, INTERNET_IDENTITY_URL} from "../..
 
 const TopBar = (props: {
     isLogged:boolean
-    isAdmin: boolean
     openModal: () => void
     principal?: string
 }) => {
-    const { isLogged, isAdmin, openModal, principal } = props;
+    const { isLogged, openModal, principal } = props;
     const { authClient } = useAuthClient();
 
     return <div>
         {
             isLogged ? <div className={"d-flex"}>
-                {
-                    isAdmin ? <Button
-                        onClick={openModal}
-                    >
-                        Register new tag
-                    </Button> : null
-                }
-                <div className={"flex-fill"}/>
+                <span className={"mt-3"}><b>Your principal:</b> {principal}</span>
+                <div className={"flex-fill"}></div>
                 <Button
                     onClick={() => authClient?.logout()}
                 >
@@ -42,7 +35,6 @@ const TopBar = (props: {
                 </Button>
             </div>
         }
-        <p className={"mt-3"}>Your principal: {principal}</p>
     </div>;
 }
 
