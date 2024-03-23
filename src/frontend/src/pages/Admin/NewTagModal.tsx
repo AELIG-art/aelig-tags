@@ -3,6 +3,7 @@ import { Button, Form, Modal } from "react-bootstrap";
 import { canisterId, idlFactory} from "../../declarations/backend";
 import { useAuthClient } from "../../contexts/AuthClientContext";
 import { Actor, HttpAgent } from "@dfinity/agent";
+import {enqueueSnackbar} from "notistack";
 
 const NewTagModal = (props: {
     open: boolean,
@@ -89,8 +90,29 @@ const NewTagModal = (props: {
                                             short_id: shortIds[index],
                                             id: BigInt(`0x${tag}`)
                                         }
-                                    ).then((res) => console.log(res));
-                                }).catch(console.log);
+                                    ).then((res: unknown) => {
+                                        setIsLoading(false);
+                                        const resTyped = res as {
+                                            Ok?: string,
+                                        };
+                                        if (resTyped.Ok) {
+                                            close();
+                                            enqueueSnackbar('Success', {
+                                                variant: 'success',
+                                                persist: false,
+                                                preventDuplicate: true,
+                                                transitionDuration: 3
+                                            });
+                                        } else {
+                                            enqueueSnackbar('Error', {
+                                                variant: 'error',
+                                                persist: false,
+                                                preventDuplicate: true,
+                                                transitionDuration: 3
+                                            });
+                                        }
+                                    });
+                                });
                             }
                         });
                     }
