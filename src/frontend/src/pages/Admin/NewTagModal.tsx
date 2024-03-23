@@ -8,8 +8,9 @@ import {enqueueSnackbar} from "notistack";
 const NewTagModal = (props: {
     open: boolean,
     close: () => void;
+    isNewTagCertificate: boolean;
 }) => {
-    const { open, close } = props;
+    const { open, close, isNewTagCertificate } = props;
     const [owner, setOwner] = useState(undefined as string|undefined);
     const [tags, setTags] = useState([] as string[]);
     const [shortIds, setShortIds] = useState<string[]>([]);
@@ -89,7 +90,7 @@ const NewTagModal = (props: {
                                         tag,
                                         {
                                             owner: owner,
-                                            is_certificate: true,
+                                            is_certificate: isNewTagCertificate,
                                             short_id: shortIds[index],
                                             id: BigInt(`0x${tag}`)
                                         }
