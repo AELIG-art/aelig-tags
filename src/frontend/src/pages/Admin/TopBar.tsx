@@ -1,7 +1,7 @@
 import React from "react";
 import { Button } from "react-bootstrap";
 import {useAuthClient} from "../../contexts/AuthClientContext";
-import {INTERNET_IDENTITY_SESSION_EXPIRATION} from "../../utils/constants";
+import {INTERNET_IDENTITY_SESSION_EXPIRATION, INTERNET_IDENTITY_URL} from "../../utils/constants";
 
 const TopBar = (props: {
     isLogged:boolean
@@ -33,7 +33,8 @@ const TopBar = (props: {
                 <Button
                     onClick={() => {
                         authClient?.login({
-                            maxTimeToLive: BigInt(INTERNET_IDENTITY_SESSION_EXPIRATION)
+                            maxTimeToLive: BigInt(INTERNET_IDENTITY_SESSION_EXPIRATION),
+                            identityProvider: INTERNET_IDENTITY_URL
                         }).then();
                     }}
                 >

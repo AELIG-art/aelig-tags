@@ -3,7 +3,9 @@ import { defineConfig } from 'vite';
 import environment from 'vite-plugin-environment';
 import dotenv from 'dotenv';
 
+
 dotenv.config({ path: '../../.env' });
+
 
 export default defineConfig({
     build: {
@@ -27,7 +29,6 @@ export default defineConfig({
     },
     plugins: [
         react(),
-        environment("all", { prefix: "CANISTER_" }),
-        environment("all", { prefix: "DFX_" }),
+        environment("all"),
     ],
 });
