@@ -4,12 +4,13 @@ import NewTagModal from "./NewTagModal";
 import Content from "./Content";
 import {useAuthClient} from "../../contexts/AuthClientContext";
 import {backend} from "../../declarations/backend";
+import {SnackbarProvider} from "notistack";
 
 const Admin = () => {
     const [isAdmin, setIsAdmin] = useState(false);
     const [newTagModalOpen, setNewTagModalOpen] = useState(false);
     const [isLogged, setIsLogged] = useState(false);
-
+    const [tagsSub, setTagsSub] = useState("");
     const { authClient } = useAuthClient();
     const principal = authClient?.getIdentity().getPrincipal();
 
@@ -36,11 +37,15 @@ const Admin = () => {
             openModal={() => setNewTagModalOpen(true)}
             principal={principal?.toString()}
         />
-        <Content isAdmin={isAdmin} />
+        <Content isAdmin={isAdmin} tagsSub={tagsSub} />
         <NewTagModal
-            close={() => setNewTagModalOpen(false)}
+            close={() => {
+                setNewTagModalOpen(false);
+                setTagsSub(new Date().toString());
+            }}
             open={newTagModalOpen}
         />
+        <SnackbarProvider />
     </div>;
 }
 

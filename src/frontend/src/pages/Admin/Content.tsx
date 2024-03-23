@@ -6,9 +6,10 @@ import {NFTMetadata, Tag} from "../../declarations/backend/backend.did";
 import {backend} from "../../declarations/backend";
 
 const Content = (props: {
-    isAdmin: boolean
+    isAdmin: boolean,
+    tagsSub: string,
 }) => {
-    const { isAdmin } = props;
+    const { isAdmin, tagsSub } = props;
     const [tagsExpanded, setTagsExpanded] = useState([] as TagExpanded[]);
     const [metadataModalOpen, setMetadataModalOpen] = useState(false);
     const [
@@ -36,7 +37,7 @@ const Content = (props: {
                 setTagsExpanded(res);
             });
         });
-    }, []);
+    }, [tagsSub]);
 
     if (isAdmin) {
         return <div className={'mt-3'}>
