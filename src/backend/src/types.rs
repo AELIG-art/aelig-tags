@@ -78,7 +78,6 @@ struct NFT {
 #[derive(CandidType, Deserialize, Clone)]
 pub struct Frame {
     id: u128,
-    owner: String,
     nft: Option<NFT>
 }
 
