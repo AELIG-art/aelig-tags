@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import TopBar from "./TopBar";
 import NewTagModal from "./NewTagModal";
-import Content from "./Content";
+import Certificates from "./Certificates";
 import {useAuthClient} from "../../contexts/AuthClientContext";
 import {backend} from "../../declarations/backend";
 import {SnackbarProvider} from "notistack";
