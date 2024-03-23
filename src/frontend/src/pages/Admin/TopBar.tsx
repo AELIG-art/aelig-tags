@@ -12,6 +12,7 @@ const TopBar = (props: {
     const { authClient } = useAuthClient();
 
     return <div>
+        <h1>Manage tags</h1>
         {
             isLogged ? <div className={"d-flex"}>
                 <span className={"mt-3"}><b>Your principal:</b> {principal}</span>
