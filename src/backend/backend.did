@@ -34,7 +34,6 @@ type ErrorReason = record {
 type Frame = record {
     id: nat;
     owner: text;
-    nft_metadata: NFTMetadata;
     nft: NFT
 };
 

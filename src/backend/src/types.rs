@@ -79,7 +79,6 @@ struct NFT {
 pub struct Frame {
     id: u128,
     owner: String,
-    nft_metadata: NFTMetadata,
     nft: NFT
 }
 
