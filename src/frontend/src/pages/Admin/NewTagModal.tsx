@@ -15,6 +15,7 @@ const NewTagModal = (props: {
     const [shortIds, setShortIds] = useState<string[]>([]);
     const { authClient } = useAuthClient();
     const identity = authClient?.getIdentity();
+    const [isLoading, setIsLoading] = useState(false);
 
 
     return <Modal show={open} onHide={close}>
@@ -69,6 +70,7 @@ const NewTagModal = (props: {
             </Button>
             <Button
                 variant="primary"
+                disabled={isLoading}
                 onClick={() => {
                     if (owner && tags.length == shortIds.length) {
                         tags.forEach((tag, index) => {
@@ -82,6 +84,7 @@ const NewTagModal = (props: {
                                             canisterId
                                         }
                                     );
+                                    setIsLoading(true);
                                     backendActor.add_tag(
                                         tag,
                                         {
