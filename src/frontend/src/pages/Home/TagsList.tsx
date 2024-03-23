@@ -7,7 +7,7 @@ const TagsList = () => {
     const { tags } = useTags();
 
     return <div>
-        <h1>Your tags</h1>
+        <h1>Your certificates</h1>
         <Table striped bordered hover>
             <thead>
             <tr>
