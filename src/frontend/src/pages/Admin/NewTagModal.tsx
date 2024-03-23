@@ -121,7 +121,7 @@ const NewTagModal = (props: {
                     }
                 }}
             >
-                Add new tags
+                {isLoading ? "Updating…" : "Add new tags"}
             </Button>
         </Modal.Footer>
     </Modal>;
