@@ -8,14 +8,6 @@ use serde::Serialize;
 const MAX_VALUE_SIZE: u32 = 1000;
 
 #[derive(CandidType, Deserialize, Clone)]
-pub struct TagMetadata {
-    author: String,
-    signature: String,
-    owner: Principal,
-    nft: NFTMetadata
-}
-
-#[derive(CandidType, Deserialize, Clone)]
 pub struct NFTMetadata {
     name: String,
     description: String,
@@ -57,6 +49,7 @@ pub struct Certificate {
     id: u128,
     pub(crate) registered: bool,
     metadata: NFTMetadata,
+    signature: String,
     owner: String,
 }
 
@@ -73,12 +66,6 @@ impl Storable for Certificate {
         max_size: MAX_VALUE_SIZE,
         is_fixed_size: false,
     };
-}
-
-#[derive(CandidType, Clone, Deserialize)]
-pub enum CollectionResult {
-    TagMetadata(TagMetadata),
-    Tag(Tag),
 }
 
 #[derive(CandidType, Deserialize, Clone)]
