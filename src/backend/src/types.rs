@@ -1,5 +1,5 @@
 use std::borrow::Cow;
-use candid::{CandidType, Decode, Deserialize, Encode, Principal};
+use candid::{CandidType, Decode, Deserialize, Encode};
 use ic_stable_structures::{DefaultMemoryImpl, Storable};
 use ic_stable_structures::memory_manager::VirtualMemory;
 use ic_stable_structures::storable::Bound;
