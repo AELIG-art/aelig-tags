@@ -23,7 +23,7 @@ pub fn get_key(key: String) -> Result<String, Error> {
     KEYS.with(|map| {
         match map.borrow().get(&key) {
             Some(key) => Ok(key.clone()),
-            None => Err(Error::KeyNotFound {
+            None => Err(Error::NotFound {
                 msg: format!("Key {} not found", key)
             })
         }

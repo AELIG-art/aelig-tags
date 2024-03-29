@@ -19,12 +19,9 @@ type Certificate = record {
 };
 
 type Error = variant {
-  InvalidTag: ErrorReason;
-  TagNotFound: ErrorReason;
-  CertificateNotFound: ErrorReason;
-  FrameNotFound: ErrorReason;
-  KeyNotFound: ErrorReason;
+  NotFound: ErrorReason;
   PermissionDenied: ErrorReason;
+  Validation: ErrorReason;
 };
 
 type ErrorReason = record {

@@ -105,12 +105,10 @@ pub enum VerificationResult {
 
 #[derive(candid::CandidType, Deserialize, Serialize)]
 pub enum Error {
-    InvalidTag { msg: String },
-    TagNotFound { msg: String },
-    CertificateNotFound { msg: String },
-    FrameNotFound { msg: String },
-    KeyNotFound { msg: String },
-    PermissionDenied { msg: String }
+    NotFound { msg: String },
+    PermissionDenied { msg: String },
+    Validation { msg: String },
+    ServerError { msg: String },
 }
 
 pub type Memory = VirtualMemory<DefaultMemoryImpl>;

@@ -37,7 +37,7 @@ fn verify_tag(msg: String) -> Result<VerificationResult, Error> {
     };
     let key_bytes = match decode(key) {
         Ok(decoded) => decoded,
-        Err(_) => return Err(Error::InvalidTag {
+        Err(_) => return Err(Error::Validation {
             msg: "Key error".to_string()
         })
     };
@@ -45,7 +45,7 @@ fn verify_tag(msg: String) -> Result<VerificationResult, Error> {
 
     let block_bytes = match decode(msg) {
         Ok(decoded) => decoded,
-        Err(_) => return Err(Error::InvalidTag {
+        Err(_) => return Err(Error::Validation {
             msg: "Error in decoding input message".to_string()
         })
     };
@@ -64,13 +64,13 @@ fn verify_tag(msg: String) -> Result<VerificationResult, Error> {
         16
     ) {
         Ok(num) => num,
-        Err(_) => return Err(Error::InvalidTag {
+        Err(_) => return Err(Error::Validation {
             msg: "Counter not valid".to_string()
         }),
     };
 
     if check != "c7" {
-        return Err(Error::InvalidTag {
+        return Err(Error::Validation {
             msg: "Check value failed".to_string()
         });
     }
@@ -94,7 +94,7 @@ fn verify_tag(msg: String) -> Result<VerificationResult, Error> {
     });
 
     if !is_valid_counter {
-        return Err(Error::InvalidTag {
+        return Err(Error::Validation {
             msg: "Counter expired".to_string()
         });
     }
