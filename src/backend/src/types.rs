@@ -9,14 +9,14 @@ const MAX_VALUE_SIZE: u32 = 1000;
 
 #[derive(CandidType, Deserialize, Clone)]
 pub struct NFTMetadata {
-    name: String,
-    description: String,
-    image: String,
-    attributes: Vec<Attribute>
+    pub(crate) name: String,
+    pub(crate) description: String,
+    pub(crate) image: String,
+    pub(crate) attributes: Vec<Attribute>
 }
 
-#[derive(CandidType, Deserialize, Clone)]
-struct Attribute {
+#[derive(CandidType, Deserialize, Clone, Serialize)]
+pub struct Attribute {
     trait_type: String,
     value: String
 }
@@ -46,11 +46,11 @@ impl Storable for Tag {
 
 #[derive(CandidType, Deserialize, Clone)]
 pub struct Certificate {
-    id: u128,
+    pub(crate) id: u128,
     pub(crate) registered: bool,
-    metadata: NFTMetadata,
-    signature: String,
-    owner: String,
+    pub(crate) metadata: NFTMetadata,
+    pub(crate) signature: String,
+    pub(crate) owner: String,
 }
 
 impl Storable for Certificate {
@@ -112,3 +112,12 @@ pub enum Error {
 }
 
 pub type Memory = VirtualMemory<DefaultMemoryImpl>;
+
+#[derive(Serialize)]
+pub struct SignMessage {
+    pub(crate) name: String,
+    pub(crate) description: String,
+    pub(crate) image: String,
+    pub(crate) attributes: Vec<Attribute>,
+    pub(crate) identifier: String
+}

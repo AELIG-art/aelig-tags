@@ -78,4 +78,5 @@ service : {
     "get_tags": () -> (vec Tag) query;
     "add_tag": (text, Tag) -> (UpdateResult);
     "is_admin": (principal) -> (bool) query;
+    "save_certificate": (text, NFTMetadata, text, text) -> (UpdateResult);
 }
