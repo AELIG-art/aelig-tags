@@ -92,8 +92,8 @@ pub fn save_certificate(
                                 map.borrow_mut().insert(tag_id, Certificate {
                                     id: tag_id_int,
                                     registered: false,
-                                    metadata,
-                                    signature,
+                                    metadata: Some(metadata),
+                                    signature: Some(signature),
                                     owner
                                 });
                                 Ok("Certificate saved".to_string())
