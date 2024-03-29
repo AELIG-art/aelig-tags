@@ -13,9 +13,9 @@ type Attribute = record {
 type Certificate = record {
     id: nat;
     registered: bool;
-    metadata: NFTMetadata;
+    metadata: opt NFTMetadata;
     owner: text;
-    signature: text;
+    signature: opt text;
 };
 
 type Error = variant {
