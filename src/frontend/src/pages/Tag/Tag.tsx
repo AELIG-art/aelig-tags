@@ -1,25 +1,22 @@
-import React, { useRef, useState } from "react";
-import { useTags } from "../../contexts/TagsContext";
-import { Link, useParams } from "react-router-dom";
+import React, {useEffect, useRef, useState} from "react";
+import {Link, useNavigate, useParams} from "react-router-dom";
 import { Button, Form } from "react-bootstrap";
-import { useAddress, useSigner, useStorageUpload } from "@thirdweb-dev/react";
+import {MediaRenderer, useAddress, useSigner, useStorageUpload} from "@thirdweb-dev/react";
 import { SMART_CONTRACT_ADDRESS } from "../../utils/constants";
 import {NFTMetadata} from "../../declarations/backend/backend.did";
 import {backend} from "../../declarations/backend";
 import {TagExpanded} from "../../utils/types";
 
 const Tag = () => {
-    const { tags } = useTags();
     let { id } = useParams();
-    const tag = tags.find((tag) => tag.id.toString() === id);
-    const [name, setName] = useState(undefined as undefined|string);
-    const [
-        description,
-        setDescription
-    ] = useState(undefined as undefined|string);
+    const [tag, setTag] = useState<undefined|TagExpanded>();
+
+    const [name, setName] = useState<undefined|string>();
+    const [description, setDescription] = useState<undefined|string>();
     const { mutateAsync: upload} = useStorageUpload();
     const inputRef = useRef<HTMLInputElement>(null);
-    const [image, setImage] = useState(undefined as undefined|string);
+    const [image, setImage] = useState<undefined|string>();
+
     const signer = useSigner();
     const address = useAddress();
     const navigate = useNavigate();
@@ -59,55 +56,68 @@ const Tag = () => {
     return <div>
         <h1>{tag?.short_id || tag?.id.toString(16)}</h1>
         <Link to={"/"}>Back</Link>
-        <Form>
-            <Form.Group className="mb-3" controlId="formBasicEmail">
-                <Form.Label>Name</Form.Label>
-                <Form.Control
-                    type="text"
-                    placeholder="Name"
-                    value={name || tag?.metadata?.name || ""}
-                    onChange={(event) => setName(event.target.value)}
-                />
-                <Form.Text className="text-muted">
-                    The name of the certificate.
-                </Form.Text>
-            </Form.Group>
+        <div className={"row mt-3"}>
+            <div className={"col-6"}>
+                <div className={"d-flex w-100 h-100 border rounded"}>
+                    {
+                        image ? <MediaRenderer src={image} alt="Certificate" className={"w-100 h-100"} /> : null
+                    }
+                </div>
+            </div>
+            <div className={"col-6"}>
+                <Form>
+                    <Form.Group className="mb-3" controlId="formBasicEmail">
+                        <Form.Label>Name</Form.Label>
+                        <Form.Control
+                            type="text"
+                            placeholder="Name"
+                            value={name || tag?.metadata?.name || ""}
+                            onChange={(event) => setName(event.target.value)}
+                        />
+                        <Form.Text className="text-muted">
+                            The name of the certificate.
+                        </Form.Text>
+                    </Form.Group>
 
-            <Form.Group className="mb-3" controlId="formBasicPassword">
-                <Form.Label>Description</Form.Label>
-                <Form.Control
-                    type="text"
-                    as="textarea"
-                    rows={10}
-                    placeholder="Description"
-                    value={description || tag?.metadata?.description || ""}
-                    onChange={(event) => setDescription(event.target.value)}
-                />
-                <Form.Text className="text-muted">
-                    The description of the certificate.
-                </Form.Text>
-            </Form.Group>
+                    <Form.Group className="mb-3" controlId="formBasicPassword">
+                        <Form.Label>Description</Form.Label>
+                        <Form.Control
+                            type="text"
+                            as="textarea"
+                            rows={10}
+                            placeholder="Description"
+                            value={description || tag?.metadata?.description || ""}
+                            onChange={(event) => setDescription(event.target.value)}
+                        />
+                        <Form.Text className="text-muted">
+                            The description of the certificate.
+                        </Form.Text>
+                    </Form.Group>
 
-            <Form.Group controlId="formFile" className="mb-3">
-                <Form.Label>Image</Form.Label>
-                <Form.Control
-                    type="file"
-                    ref={inputRef}
-                    accept="image/*,video/*"
-                    onChange={() => {
-                        if (inputRef.current?.files) {
-                            const file = inputRef.current.files[0];
-                            upload({data: [file]}).then((res) => {
-                                setImage(res[0]);
-                            });
-                        }
-                    }}
-                />
-                <Form.Text className="text-muted">
-                    The image of the certificate.
-                </Form.Text>
-            </Form.Group>
+                    <Form.Group controlId="formFile" className="mb-3">
+                        <Form.Label>Image</Form.Label>
+                        <Form.Control
+                            type="file"
+                            ref={inputRef}
+                            accept="image/*,video/*"
+                            onChange={() => {
+                                if (inputRef.current?.files) {
+                                    const file = inputRef.current.files[0];
+                                    upload({data: [file]}).then((res) => {
+                                        setImage(res[0]);
+                                    });
+                                }
+                            }}
+                        />
+                        <Form.Text className="text-muted">
+                            The image of the certificate.
+                        </Form.Text>
+                    </Form.Group>
 
+                </Form>
+            </div>
+        </div>
+        <div className={"d-flex flex-row-reverse"}>
             <Button
                 variant="primary"
                 onClick={() => {
@@ -135,7 +145,13 @@ const Tag = () => {
             >
                 Save
             </Button>
-        </Form>
+
+            <Button
+                className={"me-3"}
+            >
+                Register
+            </Button>
+        </div>
     </div>;
 }
 
