@@ -49,7 +49,7 @@ export const TagsContext = (props: {
 
 }
 
-export function useTags() {
+export const useTags = () => {
     return useContext(Context);
 }
 
