@@ -27,13 +27,7 @@ pub fn get_certificate(tag_id: String) -> Result<Certificate, Error> {
     CERTIFICATES.with(|map| {
         match map.borrow().get(&tag_id) {
             Some(certificate) => {
-                return if certificate.registered {
-                    Ok(certificate.clone())
-                } else {
-                    Err(Error::NotFound {
-                        msg: format!("Certificate with id {} does not exist", tag_id)
-                    })
-                }
+                Ok(certificate)
             },
             None => Err(Error::NotFound {
                 msg: format!("Certificate with id {} does not exist", tag_id)
