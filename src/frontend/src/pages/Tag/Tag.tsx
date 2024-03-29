@@ -5,6 +5,8 @@ import { Button, Form } from "react-bootstrap";
 import { useAddress, useSigner, useStorageUpload } from "@thirdweb-dev/react";
 import { SMART_CONTRACT_ADDRESS } from "../../utils/constants";
 import {NFTMetadata} from "../../declarations/backend/backend.did";
+import {backend} from "../../declarations/backend";
+import {TagExpanded} from "../../utils/types";
 
 const Tag = () => {
     const { tags } = useTags();
@@ -20,6 +22,39 @@ const Tag = () => {
     const [image, setImage] = useState(undefined as undefined|string);
     const signer = useSigner();
     const address = useAddress();
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        if (id && address) {
+            backend.get_tag(id).then((tagRes) => {
+                if ('Ok' in tagRes) {
+                    if (tagRes.Ok.owner === address) {
+                        backend.get_certificate(id!).then((certificateRes) => {
+                            if ('Ok' in certificateRes) {
+                                setTag({
+                                    ...tagRes.Ok,
+                                    registered: certificateRes.Ok.registered,
+                                    metadata: certificateRes.Ok.metadata
+                                });
+                                if (certificateRes.Ok.metadata) {
+                                    setName(certificateRes.Ok.metadata.name);
+                                    setDescription(certificateRes.Ok.metadata.description);
+                                }
+                            } else {
+                                setTag({
+                                    ...tagRes.Ok
+                                });
+                            }
+                        });
+                    } else {
+                        navigate("/");
+                    }
+                } else {
+                    navigate("/");
+                }
+            });
+        }
+    }, [id, address]);
 
     return <div>
         <h1>{tag?.short_id || tag?.id.toString(16)}</h1>
