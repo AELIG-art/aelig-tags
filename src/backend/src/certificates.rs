@@ -16,7 +16,7 @@ thread_local! {
     static CERTIFICATES: RefCell<StableBTreeMap<String, Certificate, Memory>> = RefCell::new(
         StableBTreeMap::init(
             MEMORY_MANAGER.with(|m| m.borrow().get(
-                MemoryId::new(MemoryKeys::Collections as u8))
+                MemoryId::new(MemoryKeys::Certificates as u8))
             ),
         )
     );
