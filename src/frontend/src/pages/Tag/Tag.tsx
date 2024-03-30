@@ -116,44 +116,48 @@ const Tag = () => {
                             The image of the certificate.
                         </Form.Text>
                     </Form.Group>
-
                 </Form>
-            </div>
-        </div>
-        <div className={"d-flex flex-row-reverse"}>
-            <Button
-                variant="primary"
-                onClick={() => {
-                    if (signer && tag) {
-                        const messageJson = {
-                            name: name || tag?.metadata?.name || "",
-                            description: description || tag?.metadata?.description || "",
-                            image: image || tag?.metadata?.image || "",
-                            attributes: [],
-                            identifier: `gnosis:${SMART_CONTRACT_ADDRESS}:${tag?.id}`
-                        }
-                        signer.signMessage(JSON.stringify(messageJson)).then((signature) => {
-                            const metadata = {
-                                name: name || tag?.metadata?.name || "",
-                                description: description || tag?.metadata?.description || "",
-                                image: image || tag?.metadata?.image || "",
-                                attributes: [],
-                                author: address,
-                                signature
-                            } as NFTMetadata;
-                            // todo: get tag here
-                        });
-                    }
-                }}
-            >
-                Save
-            </Button>
+                <div className={"d-flex flex-row-reverse"}>
+                    <Button
+                        variant="primary"
+                        onClick={() => {
+                            if (signer && tag && id && address) {
+                                const messageJson = {
+                                    name: name || tag?.metadata?.name || "",
+                                    description: description || tag?.metadata?.description || "",
+                                    image: image || tag?.metadata?.image || "",
+                                    attributes: [],
+                                    identifier: `gnosis:${SMART_CONTRACT_ADDRESS}:${tag?.id}`
+                                }
+                                signer.signMessage(JSON.stringify(messageJson)).then((signature) => {
+                                    const metadata = {
+                                        name: name || tag?.metadata?.name || "",
+                                        description: description || tag?.metadata?.description || "",
+                                        image: image || tag?.metadata?.image || "",
+                                        attributes: []
+                                    } as NFTMetadata;
+                                    backend.save_certificate(
+                                        id!,
+                                        metadata,
+                                        address,
+                                        signature
+                                    ).then((res) => {
+                                        console.log(res);
+                                    }).catch(console.log);
+                                });
+                            }
+                        }}
+                    >
+                        Save
+                    </Button>
 
-            <Button
-                className={"me-3"}
-            >
-                Register
-            </Button>
+                    <Button
+                        className={"me-3"}
+                    >
+                        Register
+                    </Button>
+                </div>
+            </div>
         </div>
     </div>;
 }
