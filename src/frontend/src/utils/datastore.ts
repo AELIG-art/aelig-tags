@@ -8,7 +8,7 @@ export const expandTag = async (tag: Tag) => {
     if ('Ok' in certificate) {
         return {
             ...tag,
-            metadata: certificate.Ok.metadata,
+            metadata: certificate.Ok.metadata[0],
             registered: certificate.Ok.registered
         };
     } else {
