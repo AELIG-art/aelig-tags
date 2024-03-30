@@ -87,7 +87,10 @@ pub fn save_certificate(
     match u128::from_str_radix(&tag_id, 16) {
         Ok(tag_id_int) => {
             CERTIFICATES.with(|map| {
-                match map.borrow().get(&tag_id) {
+                let certificate_option = CERTIFICATES.with(|map| {
+                    map.borrow().get(&tag_id)
+                });
+                match certificate_option {
                     Some(certificate) => {
                         if certificate.owner == owner && !certificate.registered {
                             if is_valid_signature(
