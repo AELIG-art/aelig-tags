@@ -3,7 +3,7 @@ import { Table } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import { useTags } from "../../contexts/TagsContext";
 
-const TagsList = () => {
+const CertificatesList = () => {
     const { tags } = useTags();
 
     return <div>
@@ -45,4 +45,4 @@ const TagsList = () => {
     </div>;
 }
 
-export default TagsList;
+export default CertificatesList;
