@@ -134,3 +134,54 @@ pub fn save_certificate(
         },
     }
 }
+
+#[ic_cdk::update]
+pub fn register_certificate(id: String, signature: String) -> Result<String, Error> {
+    CERTIFICATES.with(|map| {
+        let certificate = map.borrow().get(&id);
+        match certificate {
+            Some(certificate) => {
+                if certificate.registered {
+                    Err(Error::Validation {
+                        msg: "Certificate is already registered".to_string()
+                    })
+                } else {
+                    let metadata = certificate.clone().metadata;
+                    match metadata {
+                        Some(metadata) => {
+                            if is_valid_signature(
+                                id.clone(),
+                                metadata,
+                                certificate.clone().author,
+                                signature.clone()
+                            ) {
+                                map.borrow_mut().insert(
+                                    id,
+                                    Certificate {
+                                        id: certificate.id,
+                                        metadata: certificate.metadata,
+                                        author: certificate.author,
+                                        registered: true,
+                                        owner: certificate.owner,
+                                        signature: Some(signature)
+                                    }
+                                );
+                                Ok("Tag registered".to_string())
+                            } else {
+                                Err(Error::Validation {
+                                    msg: "Signature is not valid".to_string()
+                                })
+                            }
+                        },
+                        None => Err(Error::Validation {
+                            msg: "Metadata are not set".to_string()
+                        })
+                    }
+                }
+            },
+            None => Err(Error::NotFound {
+                msg: format!("Cannot find the certificate with id: {}", id)
+            })
+        }
+    })
+}
