@@ -36,6 +36,19 @@ pub fn get_certificate(tag_id: String) -> Result<Certificate, Error> {
     })
 }
 
+pub fn add_certificate(tag_id: String, owner: String) {
+    CERTIFICATES.with(|map| {
+        let id_int = u128::from_str_radix(&tag_id, 16).expect("Id conversion error");
+        map.borrow_mut().insert(tag_id, Certificate {
+            id: id_int,
+            registered: false,
+            metadata: None,
+            signature: None,
+            owner
+        });
+    });
+}
+
 fn is_valid_signature(
     tag_id_int: u128,
     metadata: NFTMetadata,
