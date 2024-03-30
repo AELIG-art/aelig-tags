@@ -3,6 +3,7 @@ use ic_cdk::api::is_controller;
 use ic_cdk::caller;
 use ic_stable_structures::{DefaultMemoryImpl, StableBTreeMap};
 use ic_stable_structures::memory_manager::{MemoryId, MemoryManager};
+use crate::certificates::add_certificate;
 use crate::memory_ids::MemoryKeys;
 use crate::types::{Error, Memory, Tag};
 
@@ -61,9 +62,12 @@ fn get_tags() -> Vec<Tag> {
 fn add_tag(id: String, tag: Tag) -> Result<String, Error> {
     return if is_controller(&caller()) {
         TAGS.with(|map| {
-            map.borrow_mut().insert(id, tag);
-        });
-        Ok("Tag inserted".to_string())
+            map.borrow_mut().insert(id.clone(), tag.clone());
+            if tag.is_certificate {
+                add_certificate(id, tag.owner);
+            }
+            Ok("Tag inserted".to_string())
+        })
     } else {
         Err(Error::PermissionDenied {
             msg: "You are not allowed".to_string()
