@@ -8,7 +8,7 @@ const TagsList = () => {
 
     return <div>
         <h1>Your certificates</h1>
-        <Table striped bordered hover>
+        <Table striped bordered hover className={"mt-3"}>
             <thead>
             <tr>
                 <th>#</th>
