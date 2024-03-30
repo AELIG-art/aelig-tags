@@ -51,6 +51,7 @@ pub struct Certificate {
     pub(crate) metadata: Option<NFTMetadata>,
     pub(crate) signature: Option<String>,
     pub(crate) owner: String,
+    pub(crate) author: String,
 }
 
 impl Storable for Certificate {
@@ -119,5 +120,5 @@ pub struct SignMessage {
     pub(crate) description: String,
     pub(crate) image: String,
     pub(crate) attributes: Vec<Attribute>,
-    pub(crate) identifier: String
+    pub(crate) id: String
 }

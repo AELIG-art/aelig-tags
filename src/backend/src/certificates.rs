@@ -36,7 +36,7 @@ pub fn get_certificate(tag_id: String) -> Result<Certificate, Error> {
     })
 }
 
-pub fn add_certificate(tag_id: String, owner: String) {
+pub fn add_certificate(tag_id: String, author: String) {
     CERTIFICATES.with(|map| {
         let id_int = u128::from_str_radix(&tag_id, 16).expect("Id conversion error");
         map.borrow_mut().insert(tag_id, Certificate {
@@ -44,15 +44,16 @@ pub fn add_certificate(tag_id: String, owner: String) {
             registered: false,
             metadata: None,
             signature: None,
-            owner
+            owner: author.clone(),
+            author
         });
     });
 }
 
 fn is_valid_signature(
-    tag_id_int: u128,
+    id: String,
     metadata: NFTMetadata,
-    owner: String,
+    author: String,
     user_signature: String
 ) -> bool {
     let signature_message = SignMessage {
@@ -69,7 +70,7 @@ fn is_valid_signature(
                 .unwrap()
                 .verify(
                     RecoveryMessage::Data(message.into_bytes()),
-                    Address::from_str(&owner).unwrap(),
+                    Address::from_str(&author).unwrap(),
                 )
                 .is_ok()
         },
@@ -81,7 +82,6 @@ fn is_valid_signature(
 pub fn save_certificate(
     tag_id: String,
     metadata: NFTMetadata,
-    owner: String,
     signature: String
 ) -> Result<String, Error> {
     match u128::from_str_radix(&tag_id, 16) {
@@ -92,19 +92,20 @@ pub fn save_certificate(
                 });
                 match certificate_option {
                     Some(certificate) => {
-                        if certificate.owner == owner && !certificate.registered {
+                        if !certificate.registered {
                             if is_valid_signature(
-                                tag_id_int,
+                                tag_id.clone(),
                                 metadata.clone(),
-                                owner.clone(),
+                                certificate.author.clone(),
                                 signature.clone()
                             ) {
                                 map.borrow_mut().insert(tag_id, Certificate {
                                     id: tag_id_int,
                                     registered: false,
                                     metadata: Some(metadata),
-                                    signature: Some(signature),
-                                    owner
+                                    signature: None,
+                                    owner: certificate.author.clone(),
+                                    author: certificate.author
                                 });
                                 Ok("Certificate saved".to_string())
                             } else {

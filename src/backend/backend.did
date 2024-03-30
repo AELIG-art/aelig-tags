@@ -15,6 +15,7 @@ type Certificate = record {
     registered: bool;
     metadata: opt NFTMetadata;
     owner: text;
+    author: text;
     signature: opt text;
 };
 
@@ -67,7 +68,7 @@ type GetTagResult = variant {
 type GetCertificateResult = variant {
     Ok: Certificate;
     Err: Error;
-}
+};
 
 service : {
     "verify_tag": (text) -> (VerifyResult) query;
@@ -78,5 +79,6 @@ service : {
     "get_tags": () -> (vec Tag) query;
     "add_tag": (text, Tag) -> (UpdateResult);
     "is_admin": (principal) -> (bool) query;
-    "save_certificate": (text, NFTMetadata, text, text) -> (UpdateResult);
-}
+    "save_certificate": (text, NFTMetadata, text) -> (UpdateResult);
+    "register_certificate": (text, text) -> (UpdateResult);
+};
