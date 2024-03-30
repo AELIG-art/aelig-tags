@@ -32,11 +32,11 @@ function App() {
             ]
         },
         {
-            path: "/verification",
+            path: "/verify",
             element: <VerificationLayout />,
             children: [
                 {
-                    path: "/verification/:msg",
+                    path: "/verify/:msg",
                     element:  <Verification />
                 }
             ]
