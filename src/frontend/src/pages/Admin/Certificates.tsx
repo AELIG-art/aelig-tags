@@ -25,7 +25,7 @@ const Certificates = (props: {
                         const certificate = await backend.get_certificate(tag.id.toString(16));
                         if ("Ok" in certificate) {
                             const expanded: TagExpanded = tag;
-                            expanded.metadata = certificate.Ok.metadata;
+                            expanded.metadata = certificate.Ok.metadata[0];
                             expanded.registered = certificate.Ok.registered;
                             return expanded;
                         } else {
