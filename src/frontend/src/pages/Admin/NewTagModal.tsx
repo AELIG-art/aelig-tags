@@ -98,22 +98,29 @@ const NewTagModal = (props: {
                                         setIsLoading(false);
                                         const resTyped = res as {
                                             Ok?: string,
+                                            Err?: string
                                         };
                                         if (resTyped.Ok) {
                                             close();
-                                            enqueueSnackbar('Success', {
-                                                variant: 'success',
-                                                persist: false,
-                                                preventDuplicate: true,
-                                                transitionDuration: 3
-                                            });
+                                            enqueueSnackbar(
+                                                'Success',
+                                                {
+                                                    variant: 'success',
+                                                    persist: false,
+                                                    preventDuplicate: true,
+                                                    transitionDuration: 3
+                                                }
+                                            );
                                         } else {
-                                            enqueueSnackbar('Error', {
-                                                variant: 'error',
-                                                persist: false,
-                                                preventDuplicate: true,
-                                                transitionDuration: 3
-                                            });
+                                            enqueueSnackbar(
+                                                resTyped.Err,
+                                                {
+                                                    variant: 'error',
+                                                    persist: false,
+                                                    preventDuplicate: true,
+                                                    transitionDuration: 3
+                                                }
+                                            );
                                         }
                                     });
                                 });

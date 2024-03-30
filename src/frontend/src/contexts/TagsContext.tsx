@@ -11,6 +11,7 @@ export const TagsContext = (props: {
     children: ReactNode;
 }) => {
     const [tags, setTags] = useState([] as TagExpanded[]);
+    const [sub, setSub] = useState("");
     const address = useAddress();
     const {children} = props;
 
@@ -34,10 +35,11 @@ export const TagsContext = (props: {
                 setTags(tags);
             });
         }
-    }, [address]);
+    }, [address, sub]);
 
     const context = {
         tags: tags,
+        setSub: setSub
     }
 
 
@@ -54,5 +56,6 @@ export const useTags = () => {
 }
 
 export interface TagsContextInterface {
-    tags: TagExpanded[]
+    tags: TagExpanded[],
+    setSub: (sub: string) => void
 }

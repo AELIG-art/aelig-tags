@@ -2,25 +2,44 @@ import React, {useEffect, useRef, useState} from "react";
 import {Link, useNavigate, useParams} from "react-router-dom";
 import { Button, Form } from "react-bootstrap";
 import {MediaRenderer, useAddress, useConnectionStatus, useSigner, useStorageUpload} from "@thirdweb-dev/react";
-import { SMART_CONTRACT_ADDRESS } from "../../utils/constants";
 import {NFTMetadata} from "../../declarations/backend/backend.did";
 import {backend} from "../../declarations/backend";
 import {TagExpanded} from "../../utils/types";
+import {enqueueSnackbar, SnackbarProvider} from "notistack";
+import {useTags} from "../../contexts/TagsContext";
 
 const Tag = () => {
     let { id } = useParams();
     const [tag, setTag] = useState<undefined|TagExpanded>();
+    const { setSub } = useTags();
 
     const [name, setName] = useState<undefined|string>();
     const [description, setDescription] = useState<undefined|string>();
     const { mutateAsync: upload} = useStorageUpload();
     const inputRef = useRef<HTMLInputElement>(null);
     const [image, setImage] = useState<undefined|string>();
+    const [isLoading, setIsLoading] = useState(true);
+    const [dataUpdated, setDataUpdated] = useState(false);
+    const [isLoadingButton, setIsLoadingButton] = useState(false);
+    const [isDataMissing, setIsDataMissing] = useState(true);
+    const [buttonText, setButtonText] = useState("");
+    const [
+        certificateRegistered,
+        setCertificateRegistered
+    ] = useState(true);
+    const [
+        buttonAction,
+        setButtonAction
+    ] = useState("save" as "save"|"register");
 
     const signer = useSigner();
     const address = useAddress();
     const navigate = useNavigate();
     const connectionStatus = useConnectionStatus();
+
+    useEffect(() => {
+        setIsDataMissing(!image || image === "" || !name || name === "" || !description || description === "");
+    }, [image, name, description]);
 
     useEffect(() => {
         if (connectionStatus === "disconnected") {
@@ -41,7 +60,9 @@ const Tag = () => {
                                 if (certificateRes.Ok.metadata.length > 0) {
                                     setName(certificateRes.Ok.metadata[0]!.name);
                                     setDescription(certificateRes.Ok.metadata[0]!.description);
+                                    setImage(certificateRes.Ok.metadata[0]!.image);
                                 }
+                                setIsLoading(false);
                             } else {
                                 navigate("/");
                             }
@@ -56,109 +77,198 @@ const Tag = () => {
         }
     }, [id, address, connectionStatus]);
 
+    useEffect(() => {
+        if (tag) {
+            if (!tag.registered) {
+                setCertificateRegistered(false);
+                if (isLoadingButton) {
+                    setButtonText("Updating…");
+                } else {
+                    if (dataUpdated || isDataMissing) {
+                        setButtonText("Save");
+                        setButtonAction("save");
+                    } else {
+                        setButtonText("Register");
+                        setButtonAction("register");
+                    }
+                }
+            } else {
+                setCertificateRegistered(true);
+            }
+        }
+    }, [tag, dataUpdated, isLoadingButton]);
+
     return <div>
         <h1>{tag?.short_id || tag?.id.toString(16)}</h1>
         <Link to={"/"}>Back</Link>
-        <div className={"row mt-3"}>
-            <div className={"col-6"}>
-                <div className={"d-flex w-100 h-100 border rounded"}>
-                    {
-                        image ? <MediaRenderer src={image} alt="Certificate" className={"w-100 h-100"} /> : null
-                    }
+        {
+            !isLoading ? <div className={"row mt-3"}>
+                <div className={"col-6"}>
+                    <div className={"d-flex w-100 h-100 border rounded"}>
+                        {
+                            image ? <MediaRenderer src={image} alt="Certificate" className={"w-100 h-100"}/> : null
+                        }
+                    </div>
                 </div>
-            </div>
-            <div className={"col-6"}>
-                <Form>
-                    <Form.Group className="mb-3" controlId="formBasicEmail">
-                        <Form.Label>Name</Form.Label>
-                        <Form.Control
-                            type="text"
-                            placeholder="Name"
-                            value={name || tag?.metadata?.name || ""}
-                            onChange={(event) => setName(event.target.value)}
-                        />
-                        <Form.Text className="text-muted">
-                            The name of the certificate.
-                        </Form.Text>
-                    </Form.Group>
+                <div className={"col-6"}>
+                    <Form>
+                        <Form.Group className="mb-3">
+                            <Form.Label>Name</Form.Label>
+                            <Form.Control
+                                type="text"
+                                placeholder="Name"
+                                value={name || tag?.metadata?.name || ""}
+                                onChange={(event) => {
+                                    setName(event.target.value);
+                                    setDataUpdated(true);
+                                }}
+                                disabled={certificateRegistered}
+                            />
+                            <Form.Text className="text-muted">
+                                The name of the certificate.
+                            </Form.Text>
+                        </Form.Group>
 
-                    <Form.Group className="mb-3" controlId="formBasicPassword">
-                        <Form.Label>Description</Form.Label>
-                        <Form.Control
-                            type="text"
-                            as="textarea"
-                            rows={10}
-                            placeholder="Description"
-                            value={description || tag?.metadata?.description || ""}
-                            onChange={(event) => setDescription(event.target.value)}
-                        />
-                        <Form.Text className="text-muted">
-                            The description of the certificate.
-                        </Form.Text>
-                    </Form.Group>
+                        <Form.Group className="mb-3" controlId="formBasicPassword">
+                            <Form.Label>Description</Form.Label>
+                            <Form.Control
+                                type="text"
+                                as="textarea"
+                                rows={10}
+                                placeholder="Description"
+                                value={description || tag?.metadata?.description || ""}
+                                onChange={(event) => {
+                                    setDescription(event.target.value);
+                                    setDataUpdated(true);
+                                }}
+                                disabled={certificateRegistered}
+                            />
+                            <Form.Text className="text-muted">
+                                The description of the certificate.
+                            </Form.Text>
+                        </Form.Group>
 
-                    <Form.Group controlId="formFile" className="mb-3">
-                        <Form.Label>Image</Form.Label>
-                        <Form.Control
-                            type="file"
-                            ref={inputRef}
-                            accept="image/*,video/*"
-                            onChange={() => {
-                                if (inputRef.current?.files) {
-                                    const file = inputRef.current.files[0];
-                                    upload({data: [file]}).then((res) => {
-                                        setImage(res[0]);
-                                    });
-                                }
-                            }}
-                        />
-                        <Form.Text className="text-muted">
-                            The image of the certificate.
-                        </Form.Text>
-                    </Form.Group>
-                </Form>
-                <div className={"d-flex flex-row-reverse"}>
-                    <Button
-                        variant="primary"
-                        onClick={() => {
-                            if (signer && tag && id && address) {
-                                const messageJson = {
-                                    name: name || tag?.metadata?.name || "",
-                                    description: description || tag?.metadata?.description || "",
-                                    image: image || tag?.metadata?.image || "",
-                                    attributes: [],
-                                    identifier: `gnosis:${SMART_CONTRACT_ADDRESS}:${tag?.id}`
-                                }
-                                signer.signMessage(JSON.stringify(messageJson)).then((signature) => {
-                                    const metadata = {
-                                        name: name || tag?.metadata?.name || "",
-                                        description: description || tag?.metadata?.description || "",
-                                        image: image || tag?.metadata?.image || "",
-                                        attributes: []
-                                    } as NFTMetadata;
-                                    backend.save_certificate(
-                                        id!,
-                                        metadata,
-                                        address,
-                                        signature
-                                    ).then((res) => {
-                                        console.log(res);
-                                    }).catch(console.log);
-                                });
-                            }
-                        }}
-                    >
-                        Save
-                    </Button>
-
-                    <Button
-                        className={"me-3"}
-                    >
-                        Register
-                    </Button>
+                        <Form.Group controlId="formFile" className="mb-3">
+                            <Form.Label>Image</Form.Label>
+                            <Form.Control
+                                type="file"
+                                ref={inputRef}
+                                accept="image/*,video/*"
+                                onChange={() => {
+                                    if (inputRef.current?.files) {
+                                        const file = inputRef.current.files[0];
+                                        upload({data: [file]}).then((res) => {
+                                            setImage(res[0]);
+                                            setDataUpdated(true);
+                                        });
+                                    }
+                                }}
+                                disabled={certificateRegistered}
+                            />
+                            <Form.Text className="text-muted">
+                                The image of the certificate.
+                            </Form.Text>
+                        </Form.Group>
+                    </Form>
+                    <div className={"d-flex flex-row-reverse"}>
+                        {
+                            !certificateRegistered && signer && tag && id && address ? <Button
+                                variant="primary"
+                                disabled={isLoadingButton || isDataMissing}
+                                onClick={() => {
+                                    setIsLoadingButton(true);
+                                    if (signer && tag && id && address) {
+                                        const messageJson = {
+                                            name: name || tag?.metadata?.name || "",
+                                            description: description || tag?.metadata?.description || "",
+                                            image: image || tag?.metadata?.image || "",
+                                            attributes: [],
+                                            id: id
+                                        }
+                                        signer.signMessage(JSON.stringify(messageJson))
+                                            .then((signature) => {
+                                                if (buttonAction === 'save') {
+                                                    const metadata = {
+                                                        name: name || tag?.metadata?.name || "",
+                                                        description: description || tag?.metadata?.description || "",
+                                                        image: image || tag?.metadata?.image || "",
+                                                        attributes: []
+                                                    } as NFTMetadata;
+                                                    backend.save_certificate(
+                                                        id!,
+                                                        metadata,
+                                                        signature
+                                                    ).then((res) => {
+                                                        setDataUpdated(false);
+                                                        if ("Ok" in res) {
+                                                            enqueueSnackbar(
+                                                                'Success',
+                                                                {
+                                                                    variant: 'success',
+                                                                    persist: false,
+                                                                    preventDuplicate: true,
+                                                                    transitionDuration: 3
+                                                                }
+                                                            );
+                                                        } else {
+                                                            enqueueSnackbar(
+                                                                res.Err.toString(),
+                                                                {
+                                                                    variant: 'error',
+                                                                    persist: false,
+                                                                    preventDuplicate: true,
+                                                                    transitionDuration: 3
+                                                                }
+                                                            );
+                                                        }
+                                                        setIsLoadingButton(false);
+                                                    });
+                                            } else {
+                                                signer.signMessage(JSON.stringify(messageJson))
+                                                    .then((signature) => {
+                                                        backend.register_certificate(
+                                                            id!,
+                                                            signature
+                                                        ).then((res) => {
+                                                            if ("Ok" in res) {
+                                                                enqueueSnackbar(
+                                                                    'Success',
+                                                                    {
+                                                                        variant: 'success',
+                                                                        persist: false,
+                                                                        preventDuplicate: true,
+                                                                        transitionDuration: 3
+                                                                    }
+                                                                );
+                                                                setCertificateRegistered(true);
+                                                                setSub(new Date().toISOString());
+                                                            } else {
+                                                                enqueueSnackbar(
+                                                                    res.Err.toString(),
+                                                                    {
+                                                                        variant: 'error',
+                                                                        persist: false,
+                                                                        preventDuplicate: true,
+                                                                        transitionDuration: 3
+                                                                    }
+                                                                );
+                                                            }
+                                                            setIsLoadingButton(false);
+                                                        });
+                                                });
+                                            }
+                                        });
+                                    }
+                                }}
+                            >
+                                {buttonText}
+                            </Button> : null
+                        }
+                    </div>
                 </div>
-            </div>
-        </div>
+            </div> : <p>Loading…</p>
+        }
+        <SnackbarProvider />
     </div>;
 }
 
