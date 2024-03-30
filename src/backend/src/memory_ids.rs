@@ -1,5 +1,5 @@
 pub enum MemoryKeys {
-    Collections = 0,
+    Certificates = 0,
     Tags = 1,
     Frames = 2,
     Keys = 3,
