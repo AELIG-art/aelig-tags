@@ -7,7 +7,6 @@ use crate::memory_ids::MemoryKeys;
 use crate::types::{Certificate, Error, Memory, NFTMetadata, SignMessage};
 use ethers_core::{types::{Address, RecoveryMessage, Signature}};
 
-const SMART_CONTRACT: &str = "0x74D02a1ff93eaB3E4320D9ef77BB81747464f2E0";
 
 thread_local! {
     static MEMORY_MANAGER: RefCell<MemoryManager<DefaultMemoryImpl>> =
@@ -61,7 +60,7 @@ fn is_valid_signature(
         description: metadata.description,
         image: metadata.image,
         attributes: metadata.attributes,
-        identifier: format!("gnosis:{}:{}", SMART_CONTRACT, tag_id_int),
+        id
     };
 
     match serde_json::to_string(&signature_message) {
