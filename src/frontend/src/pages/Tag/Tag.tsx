@@ -1,7 +1,7 @@
 import React, {useEffect, useRef, useState} from "react";
 import {Link, useNavigate, useParams} from "react-router-dom";
 import { Button, Form } from "react-bootstrap";
-import {MediaRenderer, useAddress, useSigner, useStorageUpload} from "@thirdweb-dev/react";
+import {MediaRenderer, useAddress, useConnectionStatus, useSigner, useStorageUpload} from "@thirdweb-dev/react";
 import { SMART_CONTRACT_ADDRESS } from "../../utils/constants";
 import {NFTMetadata} from "../../declarations/backend/backend.did";
 import {backend} from "../../declarations/backend";
@@ -20,8 +20,12 @@ const Tag = () => {
     const signer = useSigner();
     const address = useAddress();
     const navigate = useNavigate();
+    const connectionStatus = useConnectionStatus();
 
     useEffect(() => {
+        if (connectionStatus === "disconnected") {
+            navigate("/");
+        }
         if (id && address) {
             backend.get_tag(id).then((tagRes) => {
                 if ('Ok' in tagRes) {
@@ -38,9 +42,7 @@ const Tag = () => {
                                     setDescription(certificateRes.Ok.metadata.description);
                                 }
                             } else {
-                                setTag({
-                                    ...tagRes.Ok
-                                });
+                                navigate("/");
                             }
                         });
                     } else {
@@ -51,7 +53,7 @@ const Tag = () => {
                 }
             });
         }
-    }, [id, address]);
+    }, [id, address, connectionStatus]);
 
     return <div>
         <h1>{tag?.short_id || tag?.id.toString(16)}</h1>
