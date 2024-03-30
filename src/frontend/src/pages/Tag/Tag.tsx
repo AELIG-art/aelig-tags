@@ -35,11 +35,12 @@ const Tag = () => {
                                 setTag({
                                     ...tagRes.Ok,
                                     registered: certificateRes.Ok.registered,
-                                    metadata: certificateRes.Ok.metadata
+                                    metadata: certificateRes.Ok.metadata.length > 0 ? certificateRes.Ok.metadata[0]
+                                        : undefined
                                 });
-                                if (certificateRes.Ok.metadata) {
-                                    setName(certificateRes.Ok.metadata.name);
-                                    setDescription(certificateRes.Ok.metadata.description);
+                                if (certificateRes.Ok.metadata.length > 0) {
+                                    setName(certificateRes.Ok.metadata[0]!.name);
+                                    setDescription(certificateRes.Ok.metadata[0]!.description);
                                 }
                             } else {
                                 navigate("/");
