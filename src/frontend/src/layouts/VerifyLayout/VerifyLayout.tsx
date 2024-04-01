@@ -1,17 +1,20 @@
-import React from "react";
+import React, {useEffect} from "react";
 import { Outlet } from "react-router-dom";
 import { Container } from "react-bootstrap";
-import { TagsContext } from "../../contexts/TagsContext";
 import NavBar from "./NavBar";
 import Footer from "./Footer";
+import "./styles.VerifyLayout.css";
 
 const DefaultLayout = () => {
-    return <div>
+
+    useEffect(() => {
+        document.getElementsByTagName("html")[0].style.backgroundColor = '#eae3d2';
+    }, []);
+
+    return <div className="content">
         <NavBar />
         <Container className="mt-3">
-            <TagsContext>
-                <Outlet/>
-            </TagsContext>
+            <Outlet/>
         </Container>
         <Footer />
     </div>
