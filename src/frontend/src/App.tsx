@@ -6,7 +6,7 @@ import DefaultLayout from "./layouts/DefaultLayout/DefaultLayout";
 import Tag from "./pages/Tag/Tag";
 import { THIRDWEB_CLIENT_ID } from "./utils/constants";
 import Admin from "./pages/Admin/Admin";
-import Verification from "./pages/Verification/Verification";
+import Verify from "./pages/Verify/Verify";
 import VerificationLayout from "./layouts/VerificationLayout/VerificationLayout";
 import {AuthClientContext} from "./contexts/AuthClientContext";
 
@@ -37,7 +37,7 @@ function App() {
             children: [
                 {
                     path: "/verify/:msg",
-                    element:  <Verification />
+                    element:  <Verify />
                 }
             ]
         }
