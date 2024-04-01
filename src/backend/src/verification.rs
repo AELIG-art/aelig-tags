@@ -29,7 +29,7 @@ thread_local! {
 
 }
 
-#[ic_cdk::query]
+#[ic_cdk::update]
 fn verify_tag(msg: String) -> Result<VerificationResult, Error> {
     let key = match get_key("TAG_KEY".to_string()) {
         Ok(key) => key,
