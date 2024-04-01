@@ -7,7 +7,7 @@ import Tag from "./pages/Tag/Tag";
 import { THIRDWEB_CLIENT_ID } from "./utils/constants";
 import Admin from "./pages/Admin/Admin";
 import Verify from "./pages/Verify/Verify";
-import VerificationLayout from "./layouts/VerificationLayout/VerificationLayout";
+import VerificationLayout from "./layouts/VerifyLayout/VerifyLayout";
 import {AuthClientContext} from "./contexts/AuthClientContext";
 
 function App() {
