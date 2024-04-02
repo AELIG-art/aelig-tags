@@ -3,25 +3,35 @@ import {useParams} from "react-router-dom";
 import {backend} from "../../declarations/backend";
 import Success from "./Success";
 import Error from "./Error";
+import {Certificate, Frame } from "../../declarations/backend/backend.did";
 
 const Verify = () => {
     const { msg } = useParams();
     const [isValid, setIsValid] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
+    const [
+        tagContent,
+        setTagContent
+    ] = useState<undefined|{ Frame: Frame }|{ Certificate: Certificate }>(undefined);
 
     useEffect(() => {
-        if (msg) {
+        if (msg && setIsValid && setIsLoading && setTagContent) {
             backend.verify_tag(msg).then((res) => {
-                setIsValid("OK" in res);
+                setIsValid("Ok" in res);
                 setIsLoading(false);
+                if ("Ok" in res) {
+                    setTagContent(res.Ok);
+                } else {
+                    setTagContent(undefined);
+                }
             });
         }
-    }, [msg, setIsValid, setIsLoading]);
+    }, [msg, setIsValid, setIsLoading, setTagContent]);
 
     if (isLoading) {
-        return null;
+        return <p>Loading…</p>;
     } else {
-        return isValid ? <Success /> : <Error />
+        return isValid ? <Success tagContent={tagContent} /> : <Error />
     }
 }
 
