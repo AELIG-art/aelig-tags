@@ -2,6 +2,7 @@ import React from "react";
 import { Table } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import { useTags } from "../../contexts/TagsContext";
+import {intToHexId} from "../../utils/conversions";
 
 const CertificatesList = () => {
     const { tags } = useTags();
@@ -23,20 +24,12 @@ const CertificatesList = () => {
                 tags.map((tag) => {
                     return <tr>
                         <td>{tag.short_id}</td>
-                        <td>{tag.id.toString()}</td>
+                        <td>{intToHexId(Number(tag.id))}</td>
                         <td>{tag.metadata ? 'YES' : 'NO'}</td>
                         <td>{tag.registered ? 'YES' : 'NO'}</td>
-                        <td>{
-                            (() => {
-                                if (tag.registered) {
-                                    return <Link to={`/tag/${tag.id}`}>SHOW</Link>
-                                }
-                                if (tag.metadata) {
-                                    return <Link to={`/tag/${tag.id}`}>CONFIRM</Link>
-                                }
-                                return <Link to={`/tag/${tag.id}`}>ADD METADATA</Link>
-                            })()
-                        }</td>
+                        <td>
+                            <Link to={`/tag/${intToHexId(Number(tag.id))}`}>OPEN</Link>
+                        </td>
                     </tr>
                 })
             }
