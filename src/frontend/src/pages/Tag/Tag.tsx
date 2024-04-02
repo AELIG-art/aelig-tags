@@ -36,6 +36,7 @@ const Tag = () => {
     const address = useAddress();
     const navigate = useNavigate();
     const connectionStatus = useConnectionStatus();
+    const [subscription, setSubscription] = useState("");
 
     useEffect(() => {
         setIsDataMissing(!image || image === "" || !name || name === "" || !description || description === "");
@@ -75,7 +76,7 @@ const Tag = () => {
                 }
             });
         }
-    }, [id, address, connectionStatus]);
+    }, [id, address, connectionStatus, subscription]);
 
     useEffect(() => {
         if (tag) {
@@ -210,6 +211,8 @@ const Tag = () => {
                                                                     transitionDuration: 3
                                                                 }
                                                             );
+                                                            setSub(new Date().toISOString());
+                                                            setSubscription(new Date().toISOString());
                                                         } else {
                                                             enqueueSnackbar(
                                                                 res.Err.toString(),
@@ -241,6 +244,7 @@ const Tag = () => {
                                                                     }
                                                                 );
                                                                 setCertificateRegistered(true);
+                                                                setSubscription(new Date().toISOString());
                                                                 setSub(new Date().toISOString());
                                                             } else {
                                                                 enqueueSnackbar(
