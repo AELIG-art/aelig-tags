@@ -5,3 +5,4 @@ export const NETWORK = process.env.DFX_NETWORK || (process.env.NODE_ENV === "pro
 export const INTERNET_IDENTITY_URL = NETWORK === "local" ?
     `http://localhost:4943/?canisterId=${process.env.INTERNET_IDENTITY_CANISTER_ID}` :
     `https://identity.ic0.app`;
+export const ID_LENGTH = 14;
