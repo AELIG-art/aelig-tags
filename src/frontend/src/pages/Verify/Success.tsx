@@ -14,11 +14,9 @@ const Success = (props: {
 
     useEffect(() => {
         if (tagContent) {
-            console.log(tagContent);
             setIsCertificate("Certificate" in tagContent);
             if ("Certificate" in tagContent) {
                 setContent(tagContent.Certificate);
-                console.log(tagContent.Certificate);
             } else {
                 setContent(tagContent.Frame);
             }
