@@ -1,9 +1,10 @@
 import { TagExpanded } from "./types";
 import {GetCertificateResult, Tag} from "../declarations/backend/backend.did";
 import {backend} from "../declarations/backend";
+import {intToHexId} from "./conversions";
 
 export const expandTag = async (tag: Tag) => {
-    const certificate: GetCertificateResult = await backend.get_certificate(tag.id.toString(16));
+    const certificate: GetCertificateResult = await backend.get_certificate(intToHexId(Number(tag.id)));
 
     if ('Ok' in certificate) {
         return {
