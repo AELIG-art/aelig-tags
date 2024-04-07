@@ -12,9 +12,19 @@ const Navbar = () => {
                 <RBNavbar.Toggle />
                 <RBNavbar.Collapse className="justify-content-end">
                     <ConnectWallet
-                        modalSize="compact"
                         theme="light"
                         auth={{loginOptional: false}}
+                        welcomeScreen={{
+                            title: "AELIG | Tags",
+                            subtitle: "Connect your wallet to list and manage your certificates.",
+                            img: {
+                                src: "logo-full.png",
+                                width: 300,
+                                height: 226,
+                            },
+                        }}
+                        btnTitle="Connect"
+                        className="connectButton"
                     />
                 </RBNavbar.Collapse>
             </Container>
