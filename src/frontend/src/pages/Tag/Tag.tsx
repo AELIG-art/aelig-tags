@@ -22,7 +22,7 @@ const Tag = () => {
     const [
         certificateRegistered,
         setCertificateRegistered
-    ] = useState(true);
+    ] = useState(false);
 
     const connectionStatus = useConnectionStatus();
     const navigate = useNavigate();
@@ -71,9 +71,13 @@ const Tag = () => {
         {
             !isLoading ? <div className={"row mt-4"}>
                 <div className={"col-6"}>
-                    <div className={"d-flex w-100 h-100"}>
+                    <div className={`d-flex w-100 h-100 ${!image ? "border" : ""}`}>
                         {
-                            image ? <MediaRenderer src={image} alt="Certificate" className={"w-100 h-100"}/> : null
+                            image ? <MediaRenderer
+                                src={image}
+                                alt="Certificate"
+                                className={"w-100 h-100"}
+                            /> : null
                         }
                     </div>
                 </div>
