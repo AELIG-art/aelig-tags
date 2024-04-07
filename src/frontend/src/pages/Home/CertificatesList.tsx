@@ -33,7 +33,17 @@ const CertificatesList = () => {
                                 to={`/tag/${intToHexId(Number(tag.id))}`}
                                 className="link"
                             >
-                                OPEN
+                                {
+                                    (() => {
+                                       if (tag.registered) {
+                                           return "OPEN";
+                                       } else if (tag.metadata) {
+                                           return "REGISTER";
+                                       } else {
+                                           return "ADD METADATA";
+                                       }
+                                    })()
+                                }
                             </Link>
                         </td>
                     </tr>
