@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { Button, Table } from "react-bootstrap";
+import { Table } from "react-bootstrap";
 import { TagExpanded } from "../../utils/types";
 import MetadataModal from "./MetadataModal";
 import {NFTMetadata, Tag} from "../../declarations/backend/backend.did";
 import {backend} from "../../declarations/backend";
+import Button from "../../components/Button/Button";
 
 const Certificates = (props: {
     tagsSub: string,
@@ -40,9 +41,7 @@ const Certificates = (props: {
     }, [tagsSub]);
 
     return <div className={'mt-3'}>
-        <Button
-            onClick={openModal}
-        >
+        <Button onClick={openModal}>
             Register new tag
         </Button>
         <Table striped bordered hover className={"mt-3"}>
@@ -51,8 +50,6 @@ const Certificates = (props: {
                 <th>#</th>
                 <th>Id</th>
                 <th>Owner</th>
-                <th>Registered</th>
-                <th>Metadata</th>
             </tr>
             </thead>
             <tbody>
@@ -62,21 +59,6 @@ const Certificates = (props: {
                         <td>{tag.short_id}</td>
                         <td>{tag.id.toString(16)}</td>
                         <td>{tag.owner || 'not assigned'}</td>
-                        <td>{tag.registered ? "Yes" : 'NO'}</td>
-                        <td>
-                            {
-                                tag.metadata ? <Button
-                                    size={'sm'}
-                                    variant={'link'}
-                                    onClick={() => {
-                                        setMetadata(tag.metadata);
-                                        setMetadataModalOpen(true);
-                                    }}
-                                >
-                                    View
-                                </Button> : 'No'
-                            }
-                        </td>
                     </tr>
                 })
             }
