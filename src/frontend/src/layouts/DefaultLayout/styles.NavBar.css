@@ -1,11 +1,11 @@
 .styled-navbar {
-    background-color: #eae3d2;
+    background-color: var(--secondary-color);
 }
 
 .brand {
-    color: #8c380d !important;
+    color: var(--primary-color) !important;
 }
 
 .connectButton {
-    background-color: #8c380d !important;
+    background-color: var(--primary-color) !important;
 }
