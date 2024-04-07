@@ -1,13 +1,14 @@
 import React from "react";
 import { Container, Navbar as RBNavbar } from "react-bootstrap";
 import { ConnectWallet } from "@thirdweb-dev/react";
+import "./styles.NavBar.css";
 
 const Navbar = () => {
 
     return (
-        <RBNavbar className="bg-body-tertiary">
+        <RBNavbar className="styled-navbar">
             <Container>
-                <RBNavbar.Brand href="/">AELIG | tags</RBNavbar.Brand>
+                <RBNavbar.Brand href="/" className="brand">AELIG | tags</RBNavbar.Brand>
                 <RBNavbar.Toggle />
                 <RBNavbar.Collapse className="justify-content-end">
                     <ConnectWallet
