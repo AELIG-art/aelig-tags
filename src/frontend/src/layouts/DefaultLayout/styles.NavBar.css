@@ -1,5 +1,6 @@
 .styled-navbar {
-    background-color: var(--secondary-color);
+    background-color: transparent !important;
+    z-index: 1;
 }
 
 .brand {
