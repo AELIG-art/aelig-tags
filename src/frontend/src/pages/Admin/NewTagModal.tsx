@@ -1,9 +1,10 @@
 import React, { useState } from "react";
-import { Button, Form, Modal } from "react-bootstrap";
+import { Form, Modal } from "react-bootstrap";
 import { canisterId, idlFactory} from "../../declarations/backend";
 import { useAuthClient } from "../../contexts/AuthClientContext";
 import { Actor, HttpAgent } from "@dfinity/agent";
 import {enqueueSnackbar} from "notistack";
+import Button from "../../components/Button/Button";
 
 const NewTagModal = (props: {
     open: boolean,
@@ -66,6 +67,7 @@ const NewTagModal = (props: {
             <Button
                 variant="secondary"
                 onClick={close}
+                secondary
             >
                 Close
             </Button>
