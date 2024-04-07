@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Table } from "react-bootstrap";
 import { TagExpanded } from "../../utils/types";
-import MetadataModal from "./MetadataModal";
-import {NFTMetadata, Tag} from "../../declarations/backend/backend.did";
+import {Tag} from "../../declarations/backend/backend.did";
 import {backend} from "../../declarations/backend";
 import Button from "../../components/Button/Button";
 
@@ -12,11 +11,6 @@ const Certificates = (props: {
 }) => {
     const {  tagsSub, openModal } = props;
     const [tagsExpanded, setTagsExpanded] = useState([] as TagExpanded[]);
-    const [metadataModalOpen, setMetadataModalOpen] = useState(false);
-    const [
-        metadata,
-        setMetadata
-    ] = useState(undefined as undefined|NFTMetadata);
 
     useEffect(() => {
         backend.get_tags().then((tags: Tag[]) => {
@@ -64,11 +58,6 @@ const Certificates = (props: {
             }
             </tbody>
         </Table>
-        <MetadataModal
-            open={metadataModalOpen}
-            close={() => setMetadataModalOpen(false)}
-            metadata={metadata}
-        />
     </div>;
 }
 

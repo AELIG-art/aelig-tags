@@ -5,10 +5,9 @@ import Button from "../../components/Button/Button";
 
 const TopBar = (props: {
     isLogged:boolean
-    openModal: () => void
     principal?: string
 }) => {
-    const { isLogged, openModal, principal } = props;
+    const { isLogged, principal } = props;
     const { authClient } = useAuthClient();
 
     return <div>
