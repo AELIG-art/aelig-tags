@@ -106,7 +106,7 @@ const Tag = () => {
         {
             !isLoading ? <div className={"row mt-4"}>
                 <div className={"col-6"}>
-                    <div className={"d-flex w-100 h-100 border rounded"}>
+                    <div className={"d-flex w-100 h-100"}>
                         {
                             image ? <MediaRenderer src={image} alt="Certificate" className={"w-100 h-100"}/> : null
                         }
