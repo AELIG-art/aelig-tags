@@ -4,7 +4,7 @@ import {MediaRenderer, useAddress, useConnectionStatus} from "@thirdweb-dev/reac
 import {backend} from "../../declarations/backend";
 import {TagExpanded} from "../../utils/types";
 import {SnackbarProvider} from "notistack";
-import "./styles.tag.css";
+import "./styles.Tag.css";
 import MetadataForm from "./MetadataForm";
 import MetadataInfo from "./MetadataInfo";
 
