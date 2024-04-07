@@ -1,9 +1,12 @@
 import React from "react";
-import { Container, Navbar as RBNavbar } from "react-bootstrap";
-import { ConnectWallet } from "@thirdweb-dev/react";
+import {Container, Navbar as RBNavbar} from "react-bootstrap";
+import {ConnectWallet, useAddress, useENS} from "@thirdweb-dev/react";
 import "./styles.NavBar.css";
+import {reduceWalletAddress} from "../../utils/transformations";
 
 const Navbar = () => {
+    const address = useAddress();
+    const ens = useENS();
 
     return (
         <div className="navbar-background">
@@ -26,6 +29,12 @@ const Navbar = () => {
                             }}
                             btnTitle="Connect"
                             className="connectButton"
+                            detailsBtn={() => {
+                                return <div>
+                                    <span className="me-3">{ens.data?.ens || reduceWalletAddress(address!)}</span>
+                                    {ens.data?.avatarUrl ? <img src={ens.data?.avatarUrl} /> : null}
+                                </div>;
+                            }}
                         />
                     </RBNavbar.Collapse>
                 </Container>
