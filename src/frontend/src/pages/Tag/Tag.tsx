@@ -100,10 +100,10 @@ const Tag = () => {
     }, [tag, dataUpdated, isLoadingButton]);
 
     return <div>
-        <h1>{tag?.short_id || tag?.id.toString(16)}</h1>
+        <h1 className="mt-5">{tag?.short_id || tag?.id.toString(16)}</h1>
         <Link to={"/"}>Back</Link>
         {
-            !isLoading ? <div className={"row mt-3"}>
+            !isLoading ? <div className={"row mt-4"}>
                 <div className={"col-6"}>
                     <div className={"d-flex w-100 h-100 border rounded"}>
                         {
@@ -270,7 +270,7 @@ const Tag = () => {
                         }
                     </div>
                 </div>
-            </div> : <p>Loading…</p>
+            </div> : <p className="mt-4">Loading…</p>
         }
         <SnackbarProvider />
     </div>;
