@@ -13,17 +13,16 @@ type Attribute = record {
 type Certificate = record {
     id: nat;
     registered: bool;
-    metadata: NFTMetadata;
+    metadata: opt NFTMetadata;
     owner: text;
+    author: text;
+    signature: opt text;
 };
 
 type Error = variant {
-  InvalidTag: ErrorReason;
-  TagNotFound: ErrorReason;
-  CertificateNotFound: ErrorReason;
-  FrameNotFound: ErrorReason;
-  KeyNotFound: ErrorReason;
+  NotFound: ErrorReason;
   PermissionDenied: ErrorReason;
+  Validation: ErrorReason;
 };
 
 type ErrorReason = record {
@@ -32,9 +31,7 @@ type ErrorReason = record {
 
 type Frame = record {
     id: nat;
-    owner: text;
-    nft_metadata: NFTMetadata;
-    nft: NFT
+    nft: opt NFT
 };
 
 type Tag = record {
@@ -58,7 +55,7 @@ type VerifyResult = variant {
     Err: Error;
 };
 
-type SetKeyResult = variant {
+type UpdateResult = variant {
     Ok: text;
     Err: Error;
 };
@@ -68,10 +65,20 @@ type GetTagResult = variant {
     Err: Error;
 };
 
+type GetCertificateResult = variant {
+    Ok: Certificate;
+    Err: Error;
+};
+
 service : {
-    "verify_tag": (text) -> (VerifyResult) query;
-    "set_key": (text, text) -> (SetKeyResult);
-    "get_admin": () -> (principal) query;
+    "verify_tag": (text) -> (VerifyResult);
+    "set_key": (text, text) -> (UpdateResult);
     "get_tags_owned_by": (text) -> (vec Tag) query;
     "get_tag": (text) -> (GetTagResult) query;
-}
+    "get_certificate": (text) -> (GetCertificateResult) query;
+    "get_tags": () -> (vec Tag) query;
+    "add_tag": (text, Tag) -> (UpdateResult);
+    "is_admin": (principal) -> (bool) query;
+    "save_certificate": (text, NFTMetadata, text) -> (UpdateResult);
+    "register_certificate": (text, text) -> (UpdateResult);
+};

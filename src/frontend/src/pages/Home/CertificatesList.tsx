@@ -2,13 +2,14 @@ import React from "react";
 import { Table } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import { useTags } from "../../contexts/TagsContext";
+import {intToHexId} from "../../utils/conversions";
 
-const TagsList = () => {
+const CertificatesList = () => {
     const { tags } = useTags();
 
     return <div>
-        <h1>Your tags</h1>
-        <Table striped bordered hover>
+        <h1>Your certificates</h1>
+        <Table striped bordered hover className={"mt-3"}>
             <thead>
             <tr>
                 <th>#</th>
@@ -22,21 +23,13 @@ const TagsList = () => {
             {
                 tags.map((tag) => {
                     return <tr>
-                        <td>{tag.shortId}</td>
-                        <td>{tag.id}</td>
+                        <td>{tag.short_id}</td>
+                        <td>{intToHexId(Number(tag.id))}</td>
                         <td>{tag.metadata ? 'YES' : 'NO'}</td>
                         <td>{tag.registered ? 'YES' : 'NO'}</td>
-                        <td>{
-                            (() => {
-                                if (tag.registered) {
-                                    return <Link to={`/tag/${tag.id}`}>SHOW</Link>
-                                }
-                                if (tag.metadata) {
-                                    return <Link to={`/tag/${tag.id}`}>CONFIRM</Link>
-                                }
-                                return <Link to={`/tag/${tag.id}`}>ADD METADATA</Link>
-                            })()
-                        }</td>
+                        <td>
+                            <Link to={`/tag/${intToHexId(Number(tag.id))}`}>OPEN</Link>
+                        </td>
                     </tr>
                 })
             }
@@ -45,4 +38,4 @@ const TagsList = () => {
     </div>;
 }
 
-export default TagsList;
+export default CertificatesList;

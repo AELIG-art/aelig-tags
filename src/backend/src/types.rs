@@ -1,5 +1,5 @@
 use std::borrow::Cow;
-use candid::{CandidType, Decode, Deserialize, Encode, Principal};
+use candid::{CandidType, Decode, Deserialize, Encode};
 use ic_stable_structures::{DefaultMemoryImpl, Storable};
 use ic_stable_structures::memory_manager::VirtualMemory;
 use ic_stable_structures::storable::Bound;
@@ -8,23 +8,15 @@ use serde::Serialize;
 const MAX_VALUE_SIZE: u32 = 1000;
 
 #[derive(CandidType, Deserialize, Clone)]
-pub struct TagMetadata {
-    author: String,
-    signature: String,
-    owner: Principal,
-    nft: NFTMetadata
-}
-
-#[derive(CandidType, Deserialize, Clone)]
 pub struct NFTMetadata {
-    name: String,
-    description: String,
-    image: String,
-    attributes: Vec<Attribute>
+    pub(crate) name: String,
+    pub(crate) description: String,
+    pub(crate) image: String,
+    pub(crate) attributes: Vec<Attribute>
 }
 
-#[derive(CandidType, Deserialize, Clone)]
-struct Attribute {
+#[derive(CandidType, Deserialize, Clone, Serialize)]
+pub struct Attribute {
     trait_type: String,
     value: String
 }
@@ -54,10 +46,12 @@ impl Storable for Tag {
 
 #[derive(CandidType, Deserialize, Clone)]
 pub struct Certificate {
-    id: u128,
+    pub(crate) id: u128,
     pub(crate) registered: bool,
-    metadata: NFTMetadata,
-    owner: String,
+    pub(crate) metadata: Option<NFTMetadata>,
+    pub(crate) signature: Option<String>,
+    pub(crate) owner: String,
+    pub(crate) author: String,
 }
 
 impl Storable for Certificate {
@@ -75,12 +69,6 @@ impl Storable for Certificate {
     };
 }
 
-#[derive(CandidType, Clone, Deserialize)]
-pub enum CollectionResult {
-    TagMetadata(TagMetadata),
-    Tag(Tag),
-}
-
 #[derive(CandidType, Deserialize, Clone)]
 struct NFT {
     id: String,
@@ -91,9 +79,7 @@ struct NFT {
 #[derive(CandidType, Deserialize, Clone)]
 pub struct Frame {
     id: u128,
-    owner: String,
-    nft_metadata: NFTMetadata,
-    nft: NFT
+    nft: Option<NFT>
 }
 
 impl Storable for Frame {
@@ -120,12 +106,19 @@ pub enum VerificationResult {
 
 #[derive(candid::CandidType, Deserialize, Serialize)]
 pub enum Error {
-    InvalidTag { msg: String },
-    TagNotFound { msg: String },
-    CertificateNotFound { msg: String },
-    FrameNotFound { msg: String },
-    KeyNotFound { msg: String },
-    PermissionDenied { msg: String }
+    NotFound { msg: String },
+    PermissionDenied { msg: String },
+    Validation { msg: String },
+    ServerError { msg: String },
 }
 
 pub type Memory = VirtualMemory<DefaultMemoryImpl>;
+
+#[derive(Serialize)]
+pub struct SignMessage {
+    pub(crate) name: String,
+    pub(crate) description: String,
+    pub(crate) image: String,
+    pub(crate) attributes: Vec<Attribute>,
+    pub(crate) id: String
+}

@@ -1,23 +1,16 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { ThirdwebProvider } from "@thirdweb-dev/react";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import Home from "./pages/Home/Home";
 import DefaultLayout from "./layouts/DefaultLayout/DefaultLayout";
-import { initJuno } from "@junobuild/core";
 import Tag from "./pages/Tag/Tag";
-import { satelliteId, thirdWebClientIt } from "./utils/constants";
+import { THIRDWEB_CLIENT_ID } from "./utils/constants";
 import Admin from "./pages/Admin/Admin";
-import Verification from "./pages/Verification/Verification";
-import VerificationLayout from "./layouts/VerificationLayout/VerificationLayout";
+import Verify from "./pages/Verify/Verify";
+import VerificationLayout from "./layouts/VerifyLayout/VerifyLayout";
+import {AuthClientContext} from "./contexts/AuthClientContext";
 
 function App() {
-    const [junoLoaded, setJunoLoaded] = useState(false);
-
-    useEffect(() => {
-        initJuno({satelliteId}).then(() => {
-            setJunoLoaded(true);
-        });
-    }, []);
 
     const router = createBrowserRouter([
         {
@@ -26,7 +19,7 @@ function App() {
             children: [
                 {
                     path: '/',
-                    element: <Home/>
+                    element: <Home />
                 },
                 {
                     path: "admin",
@@ -39,20 +32,22 @@ function App() {
             ]
         },
         {
-            path: "/",
+            path: "/verify",
             element: <VerificationLayout />,
             children: [
                 {
-                    path: "/verification/:msg",
-                    element:  <Verification />
+                    path: "/verify/:msg",
+                    element:  <Verify />
                 }
             ]
         }
     ]);
 
-    return junoLoaded ? <ThirdwebProvider clientId={thirdWebClientIt}>
-        <RouterProvider router={router} />
-    </ThirdwebProvider> : null;
+    return <ThirdwebProvider clientId={THIRDWEB_CLIENT_ID}>
+        <AuthClientContext>
+            <RouterProvider router={router} />
+        </AuthClientContext>
+    </ThirdwebProvider>;
 }
 
 export default App;

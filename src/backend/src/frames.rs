@@ -22,7 +22,7 @@ pub fn get_frame(tag_id: String) -> Result<Frame, Error> {
     FRAMES.with(|map| {
         match map.borrow().get(&tag_id) {
             Some(frame) => Ok(frame.clone()),
-            None => Err(Error::FrameNotFound {
+            None => Err(Error::NotFound {
                 msg: format!("Frame with id {} does not exist", tag_id)
             }),
         }

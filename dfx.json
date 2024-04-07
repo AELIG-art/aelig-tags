@@ -1,17 +1,31 @@
 {
   "canisters": {
+    "internet_identity": {
+      "candid": "https://github.com/dfinity/internet-identity/releases/latest/download/internet_identity.did",
+      "frontend": {},
+      "remote": {
+        "id": {
+          "ic": "rdmx6-jaaaa-aaaaa-aaadq-cai"
+        }
+      },
+      "type": "custom",
+      "wasm": "https://github.com/dfinity/internet-identity/releases/latest/download/internet_identity_dev.wasm.gz"
+    },
     "backend": {
       "candid": "src/backend/backend.did",
       "package": "backend",
       "type": "rust",
-      "optimize": "cycles"
+      "optimize": "cycles",
+      "declarations": {
+        "output": "src/frontend/src/declarations/backend"
+      }
     },
     "frontend": {
       "dependencies": [
         "backend"
       ],
       "source": [
-        "src/frontend/build"
+        "src/frontend/dist"
       ],
       "type": "assets",
       "workspace": "src/frontend",

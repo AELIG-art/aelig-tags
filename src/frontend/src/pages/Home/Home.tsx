@@ -1,6 +1,6 @@
 import React from "react";
 import { useConnectionStatus } from "@thirdweb-dev/react";
-import TagsList from "./TagsList";
+import CertificatesList from "./CertificatesList";
 import Disconnected from "./Disconnected";
 import Loading from "./Loading";
 
@@ -9,7 +9,7 @@ const Home = () => {
 
     switch (connectionStatus) {
         case "connected":
-            return <TagsList />;
+            return <CertificatesList />;
         case "disconnected":
             return <Disconnected />;
         default:

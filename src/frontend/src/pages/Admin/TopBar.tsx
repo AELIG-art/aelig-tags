@@ -1,37 +1,42 @@
 import React from "react";
-import { signIn, signOut, User } from "@junobuild/core";
 import { Button } from "react-bootstrap";
+import {useAuthClient} from "../../contexts/AuthClientContext";
+import {INTERNET_IDENTITY_SESSION_EXPIRATION, INTERNET_IDENTITY_URL} from "../../utils/constants";
 
 const TopBar = (props: {
-    user: null|User
-    isAdmin: boolean
+    isLogged:boolean
     openModal: () => void
+    principal?: string
 }) => {
-    const { user, isAdmin, openModal } = props;
+    const { isLogged, openModal, principal } = props;
+    const { authClient } = useAuthClient();
 
-    if (user !== null) {
-        return <div className={"d-flex"}>
-            <Button
-                onClick={() => signOut().then()}
-            >
-                Disconnect
-            </Button>
-            <div className={"flex-fill"} />
-            {
-                isAdmin ? <Button
-                    onClick={openModal}
+    return <div>
+        <h1>Manage tags</h1>
+        {
+            isLogged ? <div className={"d-flex"}>
+                <span className={"mt-3"}><b>Your principal:</b> {principal}</span>
+                <div className={"flex-fill"}></div>
+                <Button
+                    onClick={() => authClient?.logout()}
                 >
-                    Register new tag
-                </Button> : null
-            }
-        </div>
-    } else {
-        return <Button
-            onClick={() => signIn().then()}
-        >
-            Connect to internet identity
-        </Button>
-    }
+                    Disconnect
+                </Button>
+            </div> : <div className={"d-flex"}>
+                <div className={"flex-fill"}/>
+                <Button
+                    onClick={() => {
+                        authClient?.login({
+                            maxTimeToLive: BigInt(INTERNET_IDENTITY_SESSION_EXPIRATION),
+                            identityProvider: INTERNET_IDENTITY_URL
+                        }).then();
+                    }}
+                >
+                    Connect to internet identity
+                </Button>
+            </div>
+        }
+    </div>;
 }
 
 export default TopBar;

@@ -1,9 +1,9 @@
 import React, { useContext, useEffect, useState } from "react";
 import { createContext, ReactNode } from "react";
-import { Tag, TagExpanded } from "../utils/types";
-import { getDoc } from "@junobuild/core";
+import { TagExpanded } from "../utils/types";
 import { expandTag } from "../utils/datastore";
 import { useAddress } from "@thirdweb-dev/react";
+import {backend} from "../declarations/backend";
 
 const Context = createContext({} as TagsContextInterface);
 
@@ -11,26 +11,22 @@ export const TagsContext = (props: {
     children: ReactNode;
 }) => {
     const [tags, setTags] = useState([] as TagExpanded[]);
+    const [sub, setSub] = useState("");
     const address = useAddress();
     const {children} = props;
 
     const getTagsExpanded = async (address: string) => {
-        const tagsRes = await getDoc({
-            collection: 'tags',
-            key: address
-        });
-        if (tagsRes === undefined) {
-            return [];
-        } else {
-            const tags: TagExpanded[] = [];
+        const tagsRes = await backend.get_tags_owned_by(address);
+        const tags: TagExpanded[] = [];
 
-            for (const tag of (tagsRes.data as Tag[])) {
+        for (const tag of tagsRes) {
+            if (tag.is_certificate) {
                 const tagExpanded = await expandTag(tag);
                 tags.push(tagExpanded);
             }
-
-            return tags;
         }
+
+        return tags;
     }
 
     useEffect(() => {
@@ -39,10 +35,11 @@ export const TagsContext = (props: {
                 setTags(tags);
             });
         }
-    }, [address]);
+    }, [address, sub]);
 
     const context = {
         tags: tags,
+        setSub: setSub
     }
 
 
@@ -54,10 +51,11 @@ export const TagsContext = (props: {
 
 }
 
-export function useTags() {
+export const useTags = () => {
     return useContext(Context);
 }
 
 export interface TagsContextInterface {
-    tags: TagExpanded[]
+    tags: TagExpanded[],
+    setSub: (sub: string) => void
 }
