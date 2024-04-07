@@ -1,0 +1,8 @@
+.header {
+    background-color: var(--primary-color) !important;
+    color: #ffffff !important;
+}
+
+.link {
+    color: #000000;
+}
