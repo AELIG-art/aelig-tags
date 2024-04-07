@@ -7,6 +7,7 @@ import {backend} from "../../declarations/backend";
 import {TagExpanded} from "../../utils/types";
 import {enqueueSnackbar, SnackbarProvider} from "notistack";
 import {useTags} from "../../contexts/TagsContext";
+import "./styles.tag.css";
 
 const Tag = () => {
     let { id } = useParams();
@@ -101,7 +102,7 @@ const Tag = () => {
 
     return <div>
         <h1 className="mt-5">{tag?.short_id || tag?.id.toString(16)}</h1>
-        <Link to={"/"}>Back</Link>
+        <Link to={"/"} className="back">Back</Link>
         {
             !isLoading ? <div className={"row mt-4"}>
                 <div className={"col-6"}>
