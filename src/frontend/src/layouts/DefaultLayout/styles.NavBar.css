@@ -11,3 +11,7 @@
 .brand {
     color: var(--primary-color) !important;
 }
+
+.connectButton {
+    border-radius: 0 !important;
+}

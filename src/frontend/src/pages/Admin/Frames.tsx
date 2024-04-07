@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { Button, Table } from "react-bootstrap";
 import { TagExpanded } from "../../utils/types";
-import MetadataModal from "./MetadataModal";
-import {NFTMetadata, Tag} from "../../declarations/backend/backend.did";
+import {Tag} from "../../declarations/backend/backend.did";
 import {backend} from "../../declarations/backend";
+import Button from "../../components/Button/Button";
+import Table from "../../components/Table/Table";
 
 const Frames = (props: {
     tagsSub: string,
@@ -11,11 +11,6 @@ const Frames = (props: {
 }) => {
     const {  tagsSub, openModal } = props;
     const [tagsExpanded, setTagsExpanded] = useState([] as TagExpanded[]);
-    const [metadataModalOpen, setMetadataModalOpen] = useState(false);
-    const [
-        metadata,
-        setMetadata
-    ] = useState(undefined as undefined|NFTMetadata);
 
     useEffect(() => {
         backend.get_tags().then((tags: Tag[]) => {
@@ -47,34 +42,16 @@ const Frames = (props: {
         >
             Register new tag
         </Button>
-        <Table striped bordered hover className={"mt-3"}>
-            <thead>
-                <tr>
-                    <th>#</th>
-                    <th>Id</th>
-                    <th>Owner</th>
-                    <th>NFT</th>
-                </tr>
-            </thead>
-            <tbody>
+        <Table headers={["#", "Id"]}>
             {
                 tagsExpanded.map((tag) => {
                     return <tr key={tag.id}>
                         <td>{tag.short_id}</td>
                         <td>{tag.id.toString(16)}</td>
-                        <td>{tag.owner || 'not assigned'}</td>
-                        {/* todo: compose opensea link or add text if NFT is not connected */}
-                        <td><a target="_blank" href={`https://opensea.io`}>Opensea ↗</a></td>
                     </tr>
                 })
             }
-            </tbody>
         </Table>
-        <MetadataModal
-            open={metadataModalOpen}
-            close={() => setMetadataModalOpen(false)}
-            metadata={metadata}
-        />
     </div>;
 }
 

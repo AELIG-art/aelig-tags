@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { Table } from "react-bootstrap";
 import { TagExpanded } from "../../utils/types";
 import {Tag} from "../../declarations/backend/backend.did";
 import {backend} from "../../declarations/backend";
 import Button from "../../components/Button/Button";
+import Table from "../../components/Table/Table";
 
 const Certificates = (props: {
     tagsSub: string,
@@ -38,15 +38,7 @@ const Certificates = (props: {
         <Button onClick={openModal}>
             Register new tag
         </Button>
-        <Table striped bordered hover className={"mt-3"}>
-            <thead>
-            <tr>
-                <th>#</th>
-                <th>Id</th>
-                <th>Owner</th>
-            </tr>
-            </thead>
-            <tbody>
+        <Table headers={["#", "Id", "Owner"]}>
             {
                 tagsExpanded.map((tag) => {
                     return <tr key={tag.id}>
@@ -56,7 +48,6 @@ const Certificates = (props: {
                     </tr>
                 })
             }
-            </tbody>
         </Table>
     </div>;
 }

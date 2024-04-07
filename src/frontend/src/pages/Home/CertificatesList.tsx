@@ -1,26 +1,18 @@
 import React from "react";
-import { Table } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import { useTags } from "../../contexts/TagsContext";
 import {intToHexId} from "../../utils/transformations";
 import "./styles.CertificatesList.css";
+import Table from "../../components/Table/Table";
 
 const CertificatesList = () => {
     const { tags } = useTags();
 
     return <div>
         <h1 className={"mt-5"}>Your certificates</h1>
-        <Table className={"mt-4"}>
-            <thead>
-            <tr>
-                <th className="header">#</th>
-                <th className="header">Id</th>
-                <th className="header">Metadata created</th>
-                <th className="header">Registered</th>
-                <th className="header">Action</th>
-            </tr>
-            </thead>
-            <tbody>
+        <Table
+            headers={["#", "Id", "Metadata created", "Registered", "Action"]}
+        >
             {
                 tags.map((tag) => {
                     return <tr>
@@ -49,7 +41,6 @@ const CertificatesList = () => {
                     </tr>
                 })
             }
-            </tbody>
         </Table>
     </div>;
 }
