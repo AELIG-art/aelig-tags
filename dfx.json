@@ -23,7 +23,7 @@
     "frontend": {
       "dependencies": [
         "backend",
-        "storage"
+        "assets"
       ],
       "source": [
         "src/frontend/dist"
