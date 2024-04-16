@@ -77,7 +77,6 @@ fn is_valid_signature(
     }
 }
 
-#[ic_cdk::update]
 pub fn save_certificate(
     tag_id: String,
     metadata: NFTMetadata,
