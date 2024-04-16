@@ -32,7 +32,7 @@
       "workspace": "src/frontend",
       "optimize": "size"
     },
-    "storage": {
+    "assets": {
       "candid": "src/assets/assets.did",
       "package": "assets",
       "type": "rust",
