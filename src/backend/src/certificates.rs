@@ -52,58 +52,37 @@ pub fn save_certificate(
     tag_id: String,
     tag_id_int: u128,
     metadata: NFTMetadata,
-    signature: String
 ) -> Result<String, Error> {
-    match u128::from_str_radix(&tag_id, 16) {
-        Ok(tag_id_int) => {
-            CERTIFICATES.with(|map| {
-                let certificate_option = CERTIFICATES.with(|map| {
-                    map.borrow().get(&tag_id)
-                });
-                match certificate_option {
-                    Some(certificate) => {
-                        if !certificate.registered {
-                            if is_valid_signature(
-                                tag_id.clone(),
-                                metadata.clone(),
-                                certificate.author.clone(),
-                                signature.clone()
-                            ) {
-                                map.borrow_mut().insert(tag_id, Certificate {
-                                    id: tag_id_int,
-                                    registered: false,
-                                    metadata: Some(metadata),
-                                    signature: None,
-                                    owner: certificate.author.clone(),
-                                    author: certificate.author
-                                });
-                                Ok("Certificate saved".to_string())
-                            } else {
-                                Err(Error::Validation {
-                                    msg: "Invalid signature".to_string()
-                                })
-                            }
-                        } else {
-                            Err(Error::PermissionDenied {
-                                msg: "Owner does not coincide or certificate already registered"
-                                    .to_string()
-                            })
-                        }
-                    },
-                    None => {
-                        Err(Error::NotFound {
-                            msg: "Certificate does not exist".to_string()
-                        })
-                    }
+    CERTIFICATES.with(|map| {
+        let certificate_option = CERTIFICATES.with(|map| {
+            map.borrow().get(&tag_id)
+        });
+        match certificate_option {
+            Some(certificate) => {
+                if !certificate.registered {
+                    map.borrow_mut().insert(tag_id, Certificate {
+                        id: tag_id_int,
+                        registered: false,
+                        metadata: Some(metadata),
+                        signature: None,
+                        owner: certificate.author.clone(),
+                        author: certificate.author
+                    });
+                    Ok("Certificate saved".to_string())
+                } else {
+                    Err(Error::PermissionDenied {
+                        msg: "Owner does not coincide or certificate already registered"
+                            .to_string()
+                    })
                 }
-            })
-        },
-        Err(_) => {
-            Err(Error::ServerError {
-                msg: "Cannot convert tag id into u128".to_string()
-            })
-        },
-    }
+            },
+            None => {
+                Err(Error::NotFound {
+                    msg: "Certificate does not exist".to_string()
+                })
+            }
+        }
+    })
 }
 
 #[ic_cdk::update]

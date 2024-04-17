@@ -70,14 +70,23 @@ type GetCertificateResult = variant {
     Err: Error;
 };
 
+type StoreArg = record {
+    key: Key;
+    content_type: text;
+    content_encoding: text;
+    content: blob;
+    sha256: opt blob
+};
+
 service : {
-    "verify_tag": (text) -> (VerifyResult);
-    "set_key": (text, text) -> (UpdateResult);
-    "get_tags_owned_by": (text) -> (vec Tag) query;
-    "get_tag": (text) -> (GetTagResult) query;
-    "get_certificate": (text) -> (GetCertificateResult) query;
-    "get_tags": () -> (vec Tag) query;
     "add_tag": (text, Tag) -> (UpdateResult);
+    "get_certificate": (text) -> (GetCertificateResult) query;
+    "get_tag": (text) -> (GetTagResult) query;
+    "get_tags": () -> (vec Tag) query;
+    "get_tags_owned_by": (text) -> (vec Tag) query;
     "is_admin": (principal) -> (bool) query;
+    "save_certificate_with_media": (text, NFTMetadata, text, StoreArg) -> ();
+    "set_key": (text, text) -> (UpdateResult);
     "register_certificate": (text, text) -> (UpdateResult);
+    "verify_tag": (text) -> (VerifyResult);
 };
