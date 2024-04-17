@@ -1,11 +1,10 @@
 use std::cell::RefCell;
-use std::str::FromStr;
 use std::string::ToString;
 use ic_stable_structures::{DefaultMemoryImpl, StableBTreeMap};
 use ic_stable_structures::memory_manager::{MemoryId, MemoryManager};
 use crate::memory_ids::MemoryKeys;
-use crate::types::{Certificate, Error, Memory, NFTMetadata, SignMessage};
-use ethers_core::{types::{Address, RecoveryMessage, Signature}};
+use crate::types::{Certificate, Error, Memory, NFTMetadata};
+use crate::utils::is_valid_signature;
 
 
 thread_local! {
@@ -49,36 +48,9 @@ pub fn add_certificate(tag_id: String, author: String) {
     });
 }
 
-fn is_valid_signature(
-    id: String,
-    metadata: NFTMetadata,
-    author: String,
-    user_signature: String
-) -> bool {
-    let signature_message = SignMessage {
-        name: metadata.name,
-        description: metadata.description,
-        image: metadata.image,
-        attributes: metadata.attributes,
-        id
-    };
-
-    match serde_json::to_string(&signature_message) {
-        Ok(message) => {
-            Signature::from_str(&user_signature)
-                .unwrap()
-                .verify(
-                    RecoveryMessage::Data(message.into_bytes()),
-                    Address::from_str(&author).unwrap(),
-                )
-                .is_ok()
-        },
-        Err(_) => false,
-    }
-}
-
 pub fn save_certificate(
     tag_id: String,
+    tag_id_int: u128,
     metadata: NFTMetadata,
     signature: String
 ) -> Result<String, Error> {
