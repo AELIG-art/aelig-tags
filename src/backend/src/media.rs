@@ -11,7 +11,7 @@ thread_local! {
     static MEMORY_MANAGER_VEC: RefCell<MemoryManager<DefaultMemoryImpl>> =
         RefCell::new(MemoryManager::init(DefaultMemoryImpl::default()));
 
-    static ASSET_CANISTERS: RefCell<StableBTreeMap<u128, Principal, Memory>> = RefCell::new(
+    static ASSET_CANISTERS: RefCell<StableBTreeMap<u64, Principal, Memory>> = RefCell::new(
         StableBTreeMap::init(
             MEMORY_MANAGER_VEC.with(|m| m.borrow().get(
                 MemoryId::new(MemoryKeys::MediaCanisters as u8))
