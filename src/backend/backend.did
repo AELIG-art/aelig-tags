@@ -78,15 +78,53 @@ type StoreArg = record {
     sha256: opt blob
 };
 
+type HeaderField = record { text; text; };
+
+type HttpRequest = record {
+  method: text;
+  url: text;
+  headers: vec HeaderField;
+  body: blob;
+  certificate_version: opt nat16;
+};
+
+type HttpResponse = record {
+  status_code: nat16;
+  headers: vec HeaderField;
+  body: blob;
+  streaming_strategy: opt StreamingStrategy;
+};
+
+type StreamingCallbackToken = record {
+  key: text;
+  content_encoding: text;
+  index: nat;
+  sha256: opt blob;
+};
+
+type StreamingStrategy = variant {
+  Callback: record {
+    callback: func (StreamingCallbackToken) -> (opt StreamingCallbackHttpResponse) query;
+    token: StreamingCallbackToken;
+  };
+};
+
+type StreamingCallbackHttpResponse = record {
+  body: blob;
+  token: opt StreamingCallbackToken;
+};
+
 service : {
-    "add_tag": (text, Tag) -> (UpdateResult);
-    "get_certificate": (text) -> (GetCertificateResult) query;
-    "get_tag": (text) -> (GetTagResult) query;
+    "add_tag": (id: text, tag: Tag) -> (UpdateResult);
+    "get_certificate": (tag_id: text) -> (GetCertificateResult) query;
+    "get_tag": (tag_id: text) -> (GetTagResult) query;
     "get_tags": () -> (vec Tag) query;
-    "get_tags_owned_by": (text) -> (vec Tag) query;
-    "is_admin": (principal) -> (bool) query;
-    "save_certificate_with_media": (text, NFTMetadata, text, StoreArg) -> (UpdateResult);
-    "set_key": (text, text) -> (UpdateResult);
-    "register_certificate": (text, text) -> (UpdateResult);
-    "verify_tag": (text) -> (VerifyResult);
+    "get_tags_owned_by": (owner: text) -> (vec Tag) query;
+    "http_request": (req: HttpRequest) -> (HttpResponse) query;
+    "is_admin": (user: principal) -> (bool) query;
+    "save_certificate": (tag_id: text, metadata: NFTMetadata) -> (UpdateResult);
+    "set_key": (key: text, value: text) -> (UpdateResult);
+    "register_certificate": (id: text, signature: text) -> (UpdateResult);
+    "upload_media": (tag_id: text, metadata: NFTMetadata, signature: text, media: StoreArg) -> (UpdateResult);
+    "verify_tag": (msg: text) -> (VerifyResult);
 };
