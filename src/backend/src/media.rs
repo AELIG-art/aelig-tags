@@ -1,7 +1,8 @@
 use std::cell::RefCell;
 use candid::Principal;
 use ic_cdk::api::is_controller;
-use ic_cdk::caller;
+use ic_cdk::{call, caller};
+use ic_cdk::api::call::RejectionCode;
 use ic_certified_assets::types::StoreArg;
 use ic_stable_structures::memory_manager::{MemoryId, MemoryManager};
 use ic_stable_structures::{DefaultMemoryImpl, StableBTreeMap};
@@ -35,49 +36,43 @@ thread_local! {
 }
 
 #[ic_cdk::update]
-pub fn upload_media(
+pub async fn upload_media(
     tag_id: String,
     media: StoreArg
 ) -> Result<String, Error> {
-    match get_certificate(tag_id.clone()) {
-        Ok(_) => {
-            ASSET_CANISTERS.with(|map| {
-                let n_asset_canisters = map.borrow().len();
-                if n_asset_canisters > 0 {
-                    match map.borrow().get(&(n_asset_canisters - 1)) {
-                        Some(principal) => {
-                            match ic_cdk::notify(principal, "store", (media,)) {
-                                Ok(_) => {
-                                    MEDIA_TO_ASSET_CANISTERS
-                                        .with(|map| {
-                                            map.borrow_mut()
-                                                .insert(tag_id, principal);
-                                            Ok("Media uploaded".to_string())
-                                        })
-                                },
-                                Err(_) => {
-                                    Err(Error::ServerError {
-                                        msg: "Media not stored".to_string()
-                                    })
-                                }
-                            }
-                        },
-                        None => {
-                            Err(Error::ServerError {
-                                msg: "Media canister not found".to_string()
-                            })
-                        }
-                    }
-                } else {
-                    Err(Error::NotFound {
-                        msg: "No asset canister registered".to_string()
+    if get_certificate(tag_id.clone()).is_err() {
+        return Err(Error::NotFound {
+            msg: "Certificate does not exist".to_string()
+        });
+    }
+    let principal = ASSET_CANISTERS.with(|map| {
+        let n = map.borrow().len() - 1;
+        println!("N={}", n);
+        map.borrow().get(&n)
+    });
+    match principal {
+        Some(principal) => {
+            let response: Result<(), (RejectionCode, String)> = call(
+                principal,
+                "store",
+                (media,)
+            ).await;
+            if response.is_ok() {
+                MEDIA_TO_ASSET_CANISTERS
+                    .with(|map| {
+                        map.borrow_mut()
+                            .insert(tag_id, principal);
+                        Ok("Media uploaded".to_string())
                     })
-                }
-            })
+            } else {
+                Err(Error::ServerError {
+                    msg: "Media not stored".to_string()
+                })
+            }
         },
-        Err(_) => {
-            Err(Error::NotFound {
-                msg: "Certificate does not exist".to_string()
+        None => {
+            Err(Error::ServerError {
+                msg: "Media canister not found".to_string()
             })
         }
     }
