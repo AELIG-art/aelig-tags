@@ -17,7 +17,6 @@ const Tag = () => {
     const [description, setDescription] = useState<undefined|string>();
     const inputRef = useRef<HTMLInputElement>(null);
     const [image, setImage] = useState<undefined|string>();
-    const [imageFile, setImageFile] = useState<undefined|File>();
     const [isLoading, setIsLoading] = useState(true);
     const [dataUpdated, setDataUpdated] = useState(false);
     const [isLoadingButton, setIsLoadingButton] = useState(false);
