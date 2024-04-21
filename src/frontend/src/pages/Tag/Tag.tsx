@@ -157,7 +157,71 @@ const Tag = () => {
                                 onChange={() => {
                                     if (inputRef.current?.files) {
                                         const file = inputRef.current.files[0];
-                                        setImageFile(file);
+                                        file.arrayBuffer().then((buffer) => {
+                                            const bytes = new Uint8Array(buffer);
+                                            if (id) {
+                                                backend.upload_media(
+                                                    id,
+                                                    {
+                                                        content: bytes,
+                                                        content_encoding: "",
+                                                        content_type: file.type,
+                                                        key: id!,
+                                                        sha256: []
+                                                    }
+                                                ).then(res => {
+                                                    if ("Ok" in res) {
+                                                        backend.get_storage_principal(id!)
+                                                            .then((res) => {
+                                                                if ("Ok" in res) {
+                                                                    setImage(
+                                                                        `${res.Ok.toString()}.ic0.app/${id!}`
+                                                                    );
+                                                                    enqueueSnackbar(
+                                                                        'File updated',
+                                                                        {
+                                                                            variant: 'success',
+                                                                            persist: false,
+                                                                            preventDuplicate: true,
+                                                                            transitionDuration: 3
+                                                                        }
+                                                                    );
+                                                                } else {
+                                                                    enqueueSnackbar(
+                                                                        res.Err.toString(),
+                                                                        {
+                                                                            variant: 'error',
+                                                                            persist: false,
+                                                                            preventDuplicate: true,
+                                                                            transitionDuration: 3
+                                                                        }
+                                                                    );
+                                                                }
+                                                            });
+                                                    } else {
+                                                        enqueueSnackbar(
+                                                            res.Err.toString(),
+                                                            {
+                                                                variant: 'error',
+                                                                persist: false,
+                                                                preventDuplicate: true,
+                                                                transitionDuration: 3
+                                                            }
+                                                        );
+                                                    }
+                                                });
+                                            } else {
+                                                enqueueSnackbar(
+                                                    "Id not found",
+                                                    {
+                                                        variant: 'error',
+                                                        persist: false,
+                                                        preventDuplicate: true,
+                                                        transitionDuration: 3
+                                                    }
+                                                );
+                                            }
+                                        });
                                     }
                                 }}
                                 disabled={certificateRegistered}
