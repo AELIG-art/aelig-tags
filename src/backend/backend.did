@@ -16,7 +16,6 @@ type Certificate = record {
     metadata: opt NFTMetadata;
     owner: text;
     author: text;
-    signature: opt text;
 };
 
 type Error = variant {
