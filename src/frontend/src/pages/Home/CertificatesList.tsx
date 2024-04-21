@@ -3,6 +3,7 @@ import { Table } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import { useTags } from "../../contexts/TagsContext";
 import {intToHexId} from "../../utils/conversions";
+import {TagExpanded} from "../../utils/types";
 
 const CertificatesList = () => {
     const { tags } = useTags();
@@ -21,8 +22,8 @@ const CertificatesList = () => {
             </thead>
             <tbody>
             {
-                tags.map((tag) => {
-                    return <tr>
+                tags.map((tag: TagExpanded, index: number) => {
+                    return <tr key={index}>
                         <td>{tag.short_id}</td>
                         <td>{intToHexId(Number(tag.id))}</td>
                         <td>{tag.metadata ? 'YES' : 'NO'}</td>
