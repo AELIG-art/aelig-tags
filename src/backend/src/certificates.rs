@@ -102,7 +102,7 @@ pub fn register_certificate(id: String) -> Result<String, Error> {
                         msg: "Certificate is already registered".to_string()
                     })
                 } else {
-                    let metadata = certificate.clone().metadata;
+                    let metadata = certificate.metadata;
                     match metadata {
                         Some(metadata) => {
                             if is_valid_signature(
