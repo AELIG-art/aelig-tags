@@ -35,8 +35,6 @@ thread_local! {
 #[ic_cdk::update]
 pub fn upload_media(
     tag_id: String,
-    metadata: NFTMetadata,
-    signature: String,
     media: StoreArg
 ) -> Result<String, Error> {
     match get_certificate(tag_id.clone()) {
