@@ -40,7 +40,6 @@ pub fn add_certificate(tag_id: String, author: String) {
             id: id_int,
             registered: false,
             metadata: None,
-            signature: None,
             owner: author.clone(),
             author
         });
@@ -65,7 +64,6 @@ pub fn save_certificate(
                                 id: tag_id_int,
                                 registered: false,
                                 metadata: Some(metadata),
-                                signature: None,
                                 owner: certificate.author.clone(),
                                 author: certificate.author
                             });
@@ -94,7 +92,7 @@ pub fn save_certificate(
 }
 
 #[ic_cdk::update]
-pub fn register_certificate(id: String, signature: String) -> Result<String, Error> {
+pub fn register_certificate(id: String) -> Result<String, Error> {
     CERTIFICATES.with(|map| {
         let certificate = map.borrow().get(&id);
         match certificate {
