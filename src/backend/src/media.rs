@@ -38,52 +38,40 @@ pub fn upload_media(
     media: StoreArg
 ) -> Result<String, Error> {
     match get_certificate(tag_id.clone()) {
-        Ok(certificate) => {
-            if is_valid_signature(
-                tag_id.clone(),
-                metadata.clone(),
-                certificate.author.clone(),
-                signature.clone()
-            ) {
-                ASSET_CANISTERS.with(|map| {
-                    let n_asset_canisters = 1;
-                    if n_asset_canisters > 0 {
-                        match map.borrow().get(&(n_asset_canisters - 1)) {
-                            Some(principal) => {
-                                match ic_cdk::notify(principal, "store", (media,)) {
-                                    Ok(_) => {
-                                        MEDIA_TO_ASSET_CANISTERS
-                                            .with(|map| {
-                                                map.borrow_mut()
-                                                    .insert(tag_id, principal);
-                                                Ok("Media uploaded".to_string())
-                                            })
-                                    },
-                                    Err(_) => {
-                                        Err(Error::ServerError {
-                                            msg: "Media not stored".to_string()
+        Ok(_) => {
+            ASSET_CANISTERS.with(|map| {
+                let n_asset_canisters = 1;
+                if n_asset_canisters > 0 {
+                    match map.borrow().get(&(n_asset_canisters - 1)) {
+                        Some(principal) => {
+                            match ic_cdk::notify(principal, "store", (media,)) {
+                                Ok(_) => {
+                                    MEDIA_TO_ASSET_CANISTERS
+                                        .with(|map| {
+                                            map.borrow_mut()
+                                                .insert(tag_id, principal);
+                                            Ok("Media uploaded".to_string())
                                         })
-                                    }
+                                },
+                                Err(_) => {
+                                    Err(Error::ServerError {
+                                        msg: "Media not stored".to_string()
+                                    })
                                 }
-                            },
-                            None => {
-                                Err(Error::ServerError {
-                                    msg: "Media canister not found".to_string()
-                                })
                             }
+                        },
+                        None => {
+                            Err(Error::ServerError {
+                                msg: "Media canister not found".to_string()
+                            })
                         }
-                    } else {
-                        Err(Error::NotFound {
-                            msg: "No asset canister registered".to_string()
-                        })
                     }
-                })
-
-            } else {
-                Err(Error::Validation {
-                    msg: "Invalid signature".to_string()
-                })
-            }
+                } else {
+                    Err(Error::NotFound {
+                        msg: "No asset canister registered".to_string()
+                    })
+                }
+            })
         },
         Err(_) => {
             Err(Error::NotFound {
