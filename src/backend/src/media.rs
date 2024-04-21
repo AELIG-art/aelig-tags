@@ -36,7 +36,7 @@ thread_local! {
 }
 
 #[ic_cdk::update]
-pub fn save_certificate_with_media(
+pub fn upload_media(
     tag_id: String,
     metadata: NFTMetadata,
     signature: String,
