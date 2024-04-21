@@ -108,3 +108,27 @@ pub fn save_certificate_with_media(
         }
     }
 }
+
+#[ic_cdk::query]
+fn http_request(req: HttpRequest) -> HttpResponse {
+    if req.method.to_uppercase() == "GET" {
+        let path = req.url.split("/");
+        match path.last() { 
+            Some(key) => {
+                MEDIA_TO_ASSET_CANISTERS.with(|map| {
+                    match map.borrow().get(&key.to_string()) {
+                        Some(principal) => {
+                            ic_cdk::notify(principal, "store", (req,))
+                        },
+                        None => trap("Asset canister not found")
+                    }
+                })
+            },
+            None => {
+                trap("Key not found");
+            }
+        }
+    } else {
+        trap("Method is not supported");
+    }
+}
