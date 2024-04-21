@@ -84,6 +84,7 @@ type StoreArg = record {
 
 
 service : {
+    "add_storage_canister": (principal: principal) -> (UpdateResult);
     "add_tag": (id: text, tag: Tag) -> (UpdateResult);
     "get_certificate": (tag_id: text) -> (GetCertificateResult) query;
     "get_storage_principal": (tag: text) -> (GetStorageResult) query;
