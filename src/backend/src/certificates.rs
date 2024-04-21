@@ -1,4 +1,5 @@
 use std::cell::RefCell;
+use std::num::ParseIntError;
 use std::string::ToString;
 use ic_stable_structures::{DefaultMemoryImpl, StableBTreeMap};
 use ic_stable_structures::memory_manager::{MemoryId, MemoryManager};
@@ -48,9 +49,9 @@ pub fn add_certificate(tag_id: String, author: String) {
     });
 }
 
+#[ic_cdk::update]
 pub fn save_certificate(
     tag_id: String,
-    tag_id_int: u128,
     metadata: NFTMetadata,
 ) -> Result<String, Error> {
     CERTIFICATES.with(|map| {
@@ -60,15 +61,24 @@ pub fn save_certificate(
         match certificate_option {
             Some(certificate) => {
                 if !certificate.registered {
-                    map.borrow_mut().insert(tag_id, Certificate {
-                        id: tag_id_int,
-                        registered: false,
-                        metadata: Some(metadata),
-                        signature: None,
-                        owner: certificate.author.clone(),
-                        author: certificate.author
-                    });
-                    Ok("Certificate saved".to_string())
+                    match u128::from_str_radix(&tag_id, 16) {
+                        Ok(tag_id_int) => {
+                            map.borrow_mut().insert(tag_id, Certificate {
+                                id: tag_id_int,
+                                registered: false,
+                                metadata: Some(metadata),
+                                signature: None,
+                                owner: certificate.author.clone(),
+                                author: certificate.author
+                            });
+                            Ok("Certificate saved".to_string())
+                        }
+                        Err(_) => {
+                            Err(Error::ServerError {
+                                msg: "Cannot convert string to int".to_string()
+                            })
+                        }
+                    }
                 } else {
                     Err(Error::PermissionDenied {
                         msg: "Owner does not coincide or certificate already registered"
