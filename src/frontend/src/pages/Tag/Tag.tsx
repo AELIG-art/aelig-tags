@@ -1,7 +1,7 @@
 import React, {useEffect, useRef, useState} from "react";
 import {Link, useNavigate, useParams} from "react-router-dom";
 import { Button, Form } from "react-bootstrap";
-import {MediaRenderer, useAddress, useConnectionStatus, useSigner, useStorageUpload} from "@thirdweb-dev/react";
+import {MediaRenderer, useAddress, useConnectionStatus, useSigner} from "@thirdweb-dev/react";
 import {NFTMetadata} from "../../declarations/backend/backend.did";
 import {backend} from "../../declarations/backend";
 import {TagExpanded} from "../../utils/types";
@@ -15,9 +15,9 @@ const Tag = () => {
 
     const [name, setName] = useState<undefined|string>();
     const [description, setDescription] = useState<undefined|string>();
-    const { mutateAsync: upload} = useStorageUpload();
     const inputRef = useRef<HTMLInputElement>(null);
     const [image, setImage] = useState<undefined|string>();
+    const [imageFile, setImageFile] = useState<undefined|File>();
     const [isLoading, setIsLoading] = useState(true);
     const [dataUpdated, setDataUpdated] = useState(false);
     const [isLoadingButton, setIsLoadingButton] = useState(false);
@@ -158,10 +158,7 @@ const Tag = () => {
                                 onChange={() => {
                                     if (inputRef.current?.files) {
                                         const file = inputRef.current.files[0];
-                                        upload({data: [file]}).then((res) => {
-                                            setImage(res[0]);
-                                            setDataUpdated(true);
-                                        });
+                                        setImageFile(file);
                                     }
                                 }}
                                 disabled={certificateRegistered}
@@ -196,17 +193,9 @@ const Tag = () => {
                                                         image: image || tag?.metadata?.image || "",
                                                         attributes: []
                                                     } as NFTMetadata;
-                                                    backend.save_certificate_with_media(
+                                                    backend.save_certificate(
                                                         id!,
-                                                        metadata,
-                                                        signature,
-                                                        {
-                                                            key: "",
-                                                            content: [],
-                                                            content_encoding: "",
-                                                            content_type: "",
-                                                            sha256: []
-                                                        }
+                                                        metadata
                                                     ).then((res) => {
                                                         setDataUpdated(false);
                                                         if ("Ok" in res) {
