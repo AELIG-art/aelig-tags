@@ -188,6 +188,7 @@ const Tag = () => {
                                         }
                                         signer.signMessage(JSON.stringify(messageJson))
                                             .then((signature) => {
+                                                // todo: add actual data inside save_certificate_with_media function
                                                 if (buttonAction === 'save') {
                                                     const metadata = {
                                                         name: name || tag?.metadata?.name || "",
@@ -195,10 +196,17 @@ const Tag = () => {
                                                         image: image || tag?.metadata?.image || "",
                                                         attributes: []
                                                     } as NFTMetadata;
-                                                    backend.save_certificate(
+                                                    backend.save_certificate_with_media(
                                                         id!,
                                                         metadata,
-                                                        signature
+                                                        signature,
+                                                        {
+                                                            key: "",
+                                                            content: [],
+                                                            content_encoding: "",
+                                                            content_type: "",
+                                                            sha256: []
+                                                        }
                                                     ).then((res) => {
                                                         setDataUpdated(false);
                                                         if ("Ok" in res) {
