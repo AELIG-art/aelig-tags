@@ -174,7 +174,7 @@ const Tag = () => {
                                                             .then((res) => {
                                                                 if ("Ok" in res) {
                                                                     setImage(
-                                                                        `${res.Ok.toString()}.ic0.app/${id!}`
+                                                                        `${res.Ok.toString()}.raw.icp0.app/${id!}`
                                                                     );
                                                                     enqueueSnackbar(
                                                                         'File updated',
