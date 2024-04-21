@@ -25,7 +25,7 @@ thread_local! {
     static MEMORY_MANAGER_MAP: RefCell<MemoryManager<DefaultMemoryImpl>> =
         RefCell::new(MemoryManager::init(DefaultMemoryImpl::default()));
 
-    static MEDIA_TO_ASSET_CANISTERS: RefCell<StableBTreeMap<u128, Principal, Memory>> =
+    static MEDIA_TO_ASSET_CANISTERS: RefCell<StableBTreeMap<String, Principal, Memory>> =
         RefCell::new(
             StableBTreeMap::init(
                 MEMORY_MANAGER_MAP.with(|m| m.borrow().get(
@@ -44,63 +44,50 @@ pub fn save_certificate_with_media(
 ) -> Result<String, Error> {
     match get_certificate(tag_id.clone()) {
         Ok(certificate) => {
-            match u128::from_str_radix(&tag_id, 16) {
-                Ok(tag_id_int) => {
-                    if is_valid_signature(
-                        tag_id.clone(),
-                        metadata.clone(),
-                        certificate.author.clone(),
-                        signature.clone()
-                    ) {
-                        ASSET_CANISTERS.with(|map| {
-                            let n_asset_canisters = 1;
-                            if n_asset_canisters > 0 {
-                                match map.borrow().get(&(n_asset_canisters - 1)) {
-                                    Some(principal) => {
-                                        match ic_cdk::notify(principal, "store", (media,)) {
-                                            Ok(_) => {
-                                                MEDIA_TO_ASSET_CANISTERS
-                                                    .with(|map| {
-                                                        map.borrow_mut()
-                                                            .insert(tag_id_int, principal);
-                                                        save_certificate(
-                                                            tag_id,
-                                                            tag_id_int,
-                                                            metadata
-                                                        )
-                                                    })
-                                            },
-                                            Err(_) => {
-                                                Err(Error::ServerError {
-                                                    msg: "Media not stored".to_string()
-                                                })
-                                            }
-                                        }
+            if is_valid_signature(
+                tag_id.clone(),
+                metadata.clone(),
+                certificate.author.clone(),
+                signature.clone()
+            ) {
+                ASSET_CANISTERS.with(|map| {
+                    let n_asset_canisters = 1;
+                    if n_asset_canisters > 0 {
+                        match map.borrow().get(&(n_asset_canisters - 1)) {
+                            Some(principal) => {
+                                match ic_cdk::notify(principal, "store", (media,)) {
+                                    Ok(_) => {
+                                        MEDIA_TO_ASSET_CANISTERS
+                                            .with(|map| {
+                                                map.borrow_mut()
+                                                    .insert(tag_id, principal);
+                                                Ok("Media uploaded".to_string())
+                                            })
                                     },
-                                    None => {
+                                    Err(_) => {
                                         Err(Error::ServerError {
-                                            msg: "Media canister not found".to_string()
+                                            msg: "Media not stored".to_string()
                                         })
                                     }
                                 }
-                            } else {
-                                Err(Error::NotFound {
-                                    msg: "No asset canister registered".to_string()
+                            },
+                            None => {
+                                Err(Error::ServerError {
+                                    msg: "Media canister not found".to_string()
                                 })
                             }
-                        })
-
+                        }
                     } else {
-                        Err(Error::Validation {
-                            msg: "Invalid signature".to_string()
+                        Err(Error::NotFound {
+                            msg: "No asset canister registered".to_string()
                         })
                     }
-                },
-                Err(_) => {
-                    Err(Error::ServerError {
-                        msg: "Cannot convert tag id into u128".to_string()
-                    })
-                },
+                })
+
+            } else {
+                Err(Error::Validation {
+                    msg: "Invalid signature".to_string()
+                })
             }
         },
         Err(_) => {
