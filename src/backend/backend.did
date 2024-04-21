@@ -85,7 +85,7 @@ service : {
     "get_tags": () -> (vec Tag) query;
     "get_tags_owned_by": (text) -> (vec Tag) query;
     "is_admin": (principal) -> (bool) query;
-    "save_certificate_with_media": (text, NFTMetadata, text, StoreArg) -> ();
+    "save_certificate_with_media": (text, NFTMetadata, text, StoreArg) -> (UpdateResult);
     "set_key": (text, text) -> (UpdateResult);
     "register_certificate": (text, text) -> (UpdateResult);
     "verify_tag": (text) -> (VerifyResult);
