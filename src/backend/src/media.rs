@@ -1,5 +1,7 @@
 use std::cell::RefCell;
 use candid::Principal;
+use ic_cdk::trap;
+use ic_certified_assets::asset_certification::types::http::{HttpRequest, HttpResponse};
 use ic_certified_assets::types::StoreArg;
 use ic_stable_structures::memory_manager::{MemoryId, MemoryManager};
 use ic_stable_structures::{DefaultMemoryImpl, StableBTreeMap};
