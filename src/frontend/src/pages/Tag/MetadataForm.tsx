@@ -59,7 +59,8 @@ const MetadataForm = (props: {
         if (tag) {
             if (!tag.registered) {
                 setCertificateRegistered(false);
-                setButtonText(isLoadingButton ? "Updating…" : (dataUpdated || isDataMissing) ? "Save" : "Register");
+                setButtonText(isLoadingButton ? "Updating…" :
+                    (dataUpdated || isDataMissing) ? "Save" : "Register");
                 setButtonAction(dataUpdated || isDataMissing ? "save" : "register");
             } else {
                 setCertificateRegistered(true);
