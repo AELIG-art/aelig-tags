@@ -1,11 +1,9 @@
 use std::cell::RefCell;
-use std::num::ParseIntError;
 use std::string::ToString;
 use ic_stable_structures::{DefaultMemoryImpl, StableBTreeMap};
 use ic_stable_structures::memory_manager::{MemoryId, MemoryManager};
 use crate::memory_ids::MemoryKeys;
 use crate::types::{Certificate, Error, Memory, NFTMetadata};
-use crate::utils::is_valid_signature;
 
 
 thread_local! {
