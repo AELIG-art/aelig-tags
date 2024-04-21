@@ -104,30 +104,18 @@ pub fn register_certificate(id: String) -> Result<String, Error> {
                 } else {
                     let metadata = certificate.metadata;
                     match metadata {
-                        Some(metadata) => {
-                            if is_valid_signature(
-                                id.clone(),
-                                metadata,
-                                certificate.clone().author,
-                                signature.clone()
-                            ) {
-                                map.borrow_mut().insert(
-                                    id,
-                                    Certificate {
-                                        id: certificate.id,
-                                        metadata: certificate.metadata,
-                                        author: certificate.author,
-                                        registered: true,
-                                        owner: certificate.owner,
-                                        signature: Some(signature)
-                                    }
-                                );
-                                Ok("Tag registered".to_string())
-                            } else {
-                                Err(Error::Validation {
-                                    msg: "Signature is not valid".to_string()
-                                })
-                            }
+                        Some(_) => {
+                            map.borrow_mut().insert(
+                                id,
+                                Certificate {
+                                    id: certificate.id,
+                                    metadata,
+                                    author: certificate.author,
+                                    registered: true,
+                                    owner: certificate.owner,
+                                }
+                            );
+                            Ok("Tag registered".to_string())
                         },
                         None => Err(Error::Validation {
                             msg: "Metadata are not set".to_string()
