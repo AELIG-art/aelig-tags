@@ -42,7 +42,7 @@ pub fn upload_media(
     match get_certificate(tag_id.clone()) {
         Ok(_) => {
             ASSET_CANISTERS.with(|map| {
-                let n_asset_canisters = 1;
+                let n_asset_canisters = map.borrow().len();
                 if n_asset_canisters > 0 {
                     match map.borrow().get(&(n_asset_canisters - 1)) {
                         Some(principal) => {
