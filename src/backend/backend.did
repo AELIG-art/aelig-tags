@@ -71,7 +71,7 @@ type GetCertificateResult = variant {
 };
 
 type StoreArg = record {
-    key: Key;
+    key: text;
     content_type: text;
     content_encoding: text;
     content: blob;
