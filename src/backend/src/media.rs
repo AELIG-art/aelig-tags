@@ -1,5 +1,7 @@
 use std::cell::RefCell;
 use candid::Principal;
+use ic_cdk::api::is_controller;
+use ic_cdk::caller;
 use ic_certified_assets::types::StoreArg;
 use ic_stable_structures::memory_manager::{MemoryId, MemoryManager};
 use ic_stable_structures::{DefaultMemoryImpl, StableBTreeMap};
@@ -93,4 +95,19 @@ fn get_storage_principal(id: String) -> Result<Principal, Error> {
             )
         }
     })
+}
+
+#[ic_cdk::update]
+fn add_storage_canister(principal: Principal) -> Result<String, Error> {
+    return if is_controller(&caller()) {
+        ASSET_CANISTERS.with(|map| {
+            let next_id = map.borrow().len();
+            map.borrow_mut().insert(next_id, principal);
+            Ok("New storage canister added".to_string())
+        })
+    } else {
+        Err(Error::PermissionDenied {
+            msg: "You are not allowed".to_string()
+        })
+    }
 }
