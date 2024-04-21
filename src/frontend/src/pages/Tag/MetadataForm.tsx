@@ -68,6 +68,105 @@ const MetadataForm = (props: {
         }
     }, [tag, dataUpdated, isLoadingButton]);
 
+    const uploadFile = () => {
+        if (inputRef.current?.files) {
+            const file = inputRef.current.files[0];
+            upload({data: [file]}).then((res) => {
+                setImage(res[0]);
+                setDataUpdated(true);
+            });
+        }
+    }
+
+    const formAction = () => {
+        setIsLoadingButton(true);
+        if (signer && tag && id && address) {
+            const messageJson = {
+                name: name || tag?.metadata?.name || "",
+                description: description || tag?.metadata?.description || "",
+                image: image || tag?.metadata?.image || "",
+                attributes: [],
+                id: id
+            }
+            signer.signMessage(JSON.stringify(messageJson))
+                .then((signature) => {
+                    if (buttonAction === 'save') {
+                        const metadata = {
+                            name: name || tag?.metadata?.name || "",
+                            description: description || tag?.metadata?.description || "",
+                            image: image || tag?.metadata?.image || "",
+                            attributes: []
+                        } as NFTMetadata;
+                        backend.save_certificate(
+                            id!,
+                            metadata,
+                            signature
+                        ).then((res) => {
+                            setDataUpdated(false);
+                            if ("Ok" in res) {
+                                enqueueSnackbar(
+                                    'Success',
+                                    {
+                                        variant: 'success',
+                                        persist: false,
+                                        preventDuplicate: true,
+                                        transitionDuration: 3
+                                    }
+                                );
+                                setSub(new Date().toISOString());
+                                setSubscription(new Date().toISOString());
+                            } else {
+                                enqueueSnackbar(
+                                    res.Err.toString(),
+                                    {
+                                        variant: 'error',
+                                        persist: false,
+                                        preventDuplicate: true,
+                                        transitionDuration: 3
+                                    }
+                                );
+                            }
+                            setIsLoadingButton(false);
+                        });
+                    } else {
+                        signer.signMessage(JSON.stringify(messageJson))
+                            .then((signature) => {
+                                backend.register_certificate(
+                                    id!,
+                                    signature
+                                ).then((res) => {
+                                    if ("Ok" in res) {
+                                        enqueueSnackbar(
+                                            'Success',
+                                            {
+                                                variant: 'success',
+                                                persist: false,
+                                                preventDuplicate: true,
+                                                transitionDuration: 3
+                                            }
+                                        );
+                                        setCertificateRegistered(true);
+                                        setSubscription(new Date().toISOString());
+                                        setSub(new Date().toISOString());
+                                    } else {
+                                        enqueueSnackbar(
+                                            res.Err.toString(),
+                                            {
+                                                variant: 'error',
+                                                persist: false,
+                                                preventDuplicate: true,
+                                                transitionDuration: 3
+                                            }
+                                        );
+                                    }
+                                    setIsLoadingButton(false);
+                                });
+                            });
+                    }
+                });
+        }
+    }
+
 
     return <div>
         <Form>
@@ -111,15 +210,7 @@ const MetadataForm = (props: {
                     type="file"
                     ref={inputRef}
                     accept="image/*,video/*"
-                    onChange={() => {
-                        if (inputRef.current?.files) {
-                            const file = inputRef.current.files[0];
-                            upload({data: [file]}).then((res) => {
-                                setImage(res[0]);
-                                setDataUpdated(true);
-                            });
-                        }
-                    }}
+                    onChange={uploadFile}
                 />
                 <Form.Text className="text-muted">
                     The image of the certificate.
@@ -131,94 +222,7 @@ const MetadataForm = (props: {
                 signer && tag && id && address ? <Button
                     variant="primary"
                     disabled={isLoadingButton || isDataMissing}
-                    onClick={() => {
-                        setIsLoadingButton(true);
-                        if (signer && tag && id && address) {
-                            const messageJson = {
-                                name: name || tag?.metadata?.name || "",
-                                description: description || tag?.metadata?.description || "",
-                                image: image || tag?.metadata?.image || "",
-                                attributes: [],
-                                id: id
-                            }
-                            signer.signMessage(JSON.stringify(messageJson))
-                                .then((signature) => {
-                                    if (buttonAction === 'save') {
-                                        const metadata = {
-                                            name: name || tag?.metadata?.name || "",
-                                            description: description || tag?.metadata?.description || "",
-                                            image: image || tag?.metadata?.image || "",
-                                            attributes: []
-                                        } as NFTMetadata;
-                                        backend.save_certificate(
-                                            id!,
-                                            metadata,
-                                            signature
-                                        ).then((res) => {
-                                            setDataUpdated(false);
-                                            if ("Ok" in res) {
-                                                enqueueSnackbar(
-                                                    'Success',
-                                                    {
-                                                        variant: 'success',
-                                                        persist: false,
-                                                        preventDuplicate: true,
-                                                        transitionDuration: 3
-                                                    }
-                                                );
-                                                setSub(new Date().toISOString());
-                                                setSubscription(new Date().toISOString());
-                                            } else {
-                                                enqueueSnackbar(
-                                                    res.Err.toString(),
-                                                    {
-                                                        variant: 'error',
-                                                        persist: false,
-                                                        preventDuplicate: true,
-                                                        transitionDuration: 3
-                                                    }
-                                                );
-                                            }
-                                            setIsLoadingButton(false);
-                                        });
-                                    } else {
-                                        signer.signMessage(JSON.stringify(messageJson))
-                                            .then((signature) => {
-                                                backend.register_certificate(
-                                                    id!,
-                                                    signature
-                                                ).then((res) => {
-                                                    if ("Ok" in res) {
-                                                        enqueueSnackbar(
-                                                            'Success',
-                                                            {
-                                                                variant: 'success',
-                                                                persist: false,
-                                                                preventDuplicate: true,
-                                                                transitionDuration: 3
-                                                            }
-                                                        );
-                                                        setCertificateRegistered(true);
-                                                        setSubscription(new Date().toISOString());
-                                                        setSub(new Date().toISOString());
-                                                    } else {
-                                                        enqueueSnackbar(
-                                                            res.Err.toString(),
-                                                            {
-                                                                variant: 'error',
-                                                                persist: false,
-                                                                preventDuplicate: true,
-                                                                transitionDuration: 3
-                                                            }
-                                                        );
-                                                    }
-                                                    setIsLoadingButton(false);
-                                                });
-                                            });
-                                    }
-                                });
-                        }
-                    }}
+                    onClick={formAction}
                 >
                     {buttonText}
                 </Button> : null
