@@ -1,7 +1,7 @@
 import React, {useEffect, useRef, useState} from "react";
 import {Link, useNavigate, useParams} from "react-router-dom";
 import { Button, Form } from "react-bootstrap";
-import {MediaRenderer, useAddress, useConnectionStatus, useSigner} from "@thirdweb-dev/react";
+import {MediaRenderer, useAddress, useConnectionStatus} from "@thirdweb-dev/react";
 import {NFTMetadata} from "../../declarations/backend/backend.did";
 import {backend} from "../../declarations/backend";
 import {TagExpanded} from "../../utils/types";
@@ -31,7 +31,6 @@ const Tag = () => {
         setButtonAction
     ] = useState("save" as "save"|"register");
 
-    const signer = useSigner();
     const address = useAddress();
     const navigate = useNavigate();
     const connectionStatus = useConnectionStatus();
@@ -233,95 +232,80 @@ const Tag = () => {
                     </Form>
                     <div className={"d-flex flex-row-reverse"}>
                         {
-                            !certificateRegistered && signer && tag && id && address ? <Button
+                            !certificateRegistered && tag && id && address ? <Button
                                 variant="primary"
                                 disabled={isLoadingButton || isDataMissing}
                                 onClick={() => {
                                     setIsLoadingButton(true);
-                                    if (signer && tag && id && address) {
-                                        const messageJson = {
-                                            name: name || tag?.metadata?.name || "",
-                                            description: description || tag?.metadata?.description || "",
-                                            image: image || tag?.metadata?.image || "",
-                                            attributes: [],
-                                            id: id
-                                        }
-                                        signer.signMessage(JSON.stringify(messageJson))
-                                            .then((signature) => {
-                                                // todo: add actual data inside save_certificate_with_media function
-                                                if (buttonAction === 'save') {
-                                                    const metadata = {
-                                                        name: name || tag?.metadata?.name || "",
-                                                        description: description || tag?.metadata?.description || "",
-                                                        image: image || tag?.metadata?.image || "",
-                                                        attributes: []
-                                                    } as NFTMetadata;
-                                                    backend.save_certificate(
-                                                        id!,
-                                                        metadata
-                                                    ).then((res) => {
-                                                        setDataUpdated(false);
-                                                        if ("Ok" in res) {
-                                                            enqueueSnackbar(
-                                                                'Success',
-                                                                {
-                                                                    variant: 'success',
-                                                                    persist: false,
-                                                                    preventDuplicate: true,
-                                                                    transitionDuration: 3
-                                                                }
-                                                            );
-                                                            setSub(new Date().toISOString());
-                                                            setSubscription(new Date().toISOString());
-                                                        } else {
-                                                            enqueueSnackbar(
-                                                                res.Err.toString(),
-                                                                {
-                                                                    variant: 'error',
-                                                                    persist: false,
-                                                                    preventDuplicate: true,
-                                                                    transitionDuration: 3
-                                                                }
-                                                            );
+                                    if (tag && id && address) {
+                                        if (buttonAction === 'save') {
+                                            const metadata = {
+                                                name: name || tag?.metadata?.name || "",
+                                                description: description || tag?.metadata?.description || "",
+                                                image: image || tag?.metadata?.image || "",
+                                                attributes: []
+                                            } as NFTMetadata;
+                                            backend.save_certificate(
+                                                id!,
+                                                metadata
+                                            ).then((res) => {
+                                                setDataUpdated(false);
+                                                if ("Ok" in res) {
+                                                    enqueueSnackbar(
+                                                        'Success',
+                                                        {
+                                                            variant: 'success',
+                                                            persist: false,
+                                                            preventDuplicate: true,
+                                                            transitionDuration: 3
                                                         }
-                                                        setIsLoadingButton(false);
-                                                    });
-                                            } else {
-                                                signer.signMessage(JSON.stringify(messageJson))
-                                                    .then((signature) => {
-                                                        backend.register_certificate(
-                                                            id!,
-                                                            signature
-                                                        ).then((res) => {
-                                                            if ("Ok" in res) {
-                                                                enqueueSnackbar(
-                                                                    'Success',
-                                                                    {
-                                                                        variant: 'success',
-                                                                        persist: false,
-                                                                        preventDuplicate: true,
-                                                                        transitionDuration: 3
-                                                                    }
-                                                                );
-                                                                setCertificateRegistered(true);
-                                                                setSubscription(new Date().toISOString());
-                                                                setSub(new Date().toISOString());
-                                                            } else {
-                                                                enqueueSnackbar(
-                                                                    res.Err.toString(),
-                                                                    {
-                                                                        variant: 'error',
-                                                                        persist: false,
-                                                                        preventDuplicate: true,
-                                                                        transitionDuration: 3
-                                                                    }
-                                                                );
-                                                            }
-                                                            setIsLoadingButton(false);
-                                                        });
-                                                });
-                                            }
-                                        });
+                                                    );
+                                                    setSub(new Date().toISOString());
+                                                    setSubscription(new Date().toISOString());
+                                                } else {
+                                                    enqueueSnackbar(
+                                                        res.Err.toString(),
+                                                        {
+                                                            variant: 'error',
+                                                            persist: false,
+                                                            preventDuplicate: true,
+                                                            transitionDuration: 3
+                                                        }
+                                                    );
+                                                }
+                                                setIsLoadingButton(false);
+                                            });
+                                        } else {
+                                            backend.register_certificate(
+                                                id!,
+                                            ).then((res) => {
+                                                if ("Ok" in res) {
+                                                    enqueueSnackbar(
+                                                        'Success',
+                                                        {
+                                                            variant: 'success',
+                                                            persist: false,
+                                                            preventDuplicate: true,
+                                                            transitionDuration: 3
+                                                        }
+                                                    );
+                                                    setCertificateRegistered(true);
+                                                    setSubscription(new Date().toISOString());
+                                                    setSub(new Date().toISOString());
+                                                } else {
+                                                    enqueueSnackbar(
+                                                        res.Err.toString(),
+                                                        {
+                                                            variant: 'error',
+                                                            persist: false,
+                                                            preventDuplicate: true,
+                                                            transitionDuration: 3
+                                                        }
+                                                    );
+                                                }
+                                                setIsLoadingButton(false);
+                                            });
+                                        }
                                     }
                                 }}
                             >
