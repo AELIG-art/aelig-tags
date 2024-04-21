@@ -125,7 +125,6 @@ service : {
     "get_tag": (tag_id: text) -> (GetTagResult) query;
     "get_tags": () -> (vec Tag) query;
     "get_tags_owned_by": (owner: text) -> (vec Tag) query;
-    "http_request": (req: HttpRequest) -> (HttpResponse) query;
     "is_admin": (user: principal) -> (bool) query;
     "register_certificate": (id: text) -> (UpdateResult);
     "save_certificate": (tag_id: text, metadata: NFTMetadata) -> (UpdateResult);
