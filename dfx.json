@@ -30,6 +30,11 @@
       "type": "assets",
       "workspace": "src/frontend",
       "optimize": "size"
+    },
+    "ic_siwe_provider": {
+      "type": "custom",
+      "candid": "https://github.com/kristoferlund/ic-siwe/releases/download/v0.0.5/ic_siwe_provider.did",
+      "wasm": "https://github.com/kristoferlund/ic-siwe/releases/download/v0.0.5/ic_siwe_provider.wasm.gz"
     }
   },
   "defaults": {
