@@ -22,7 +22,8 @@
     },
     "frontend": {
       "dependencies": [
-        "backend"
+        "backend",
+        "ic_siwe_provider"
       ],
       "source": [
         "src/frontend/dist"
