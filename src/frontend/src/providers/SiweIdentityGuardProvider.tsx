@@ -2,7 +2,7 @@ import {ReactNode, useEffect} from "react";
 import {useSiweIdentity} from "ic-use-siwe-identity";
 import {useAccount} from "wagmi";
 
-const SiweIdentityProvider = (props: {
+const SiweIdentityGuardProvider = (props: {
     children: ReactNode
 }) => {
     const {children} = props;
@@ -31,4 +31,4 @@ const SiweIdentityProvider = (props: {
     return children;
 }
 
-export default SiweIdentityProvider;
+export default SiweIdentityGuardProvider;
