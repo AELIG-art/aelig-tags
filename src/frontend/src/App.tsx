@@ -9,7 +9,10 @@ import Verify from "./pages/Verify/Verify";
 import VerificationLayout from "./layouts/VerifyLayout/VerifyLayout";
 import {AuthClientContext} from "./contexts/AuthClientContext";
 import WalletConnectProvider from "./providers/WalletConnectProvider";
-import SiweIdentityProvider from "./providers/SiweIdentityProvider";
+import { SiweIdentityProvider } from "ic-use-siwe-identity";
+import {_SERVICE} from "./declarations/ic_siwe_provider/ic_siwe_provider.did";
+import {canisterId, idlFactory} from "./declarations/ic_siwe_provider";
+import SiweIdentityGuardProvider from "./providers/SiweIdentityGuardProvider";
 
 function App() {
 
@@ -45,10 +48,15 @@ function App() {
     ]);
 
     return <WalletConnectProvider>
-        <SiweIdentityProvider>
-            <AuthClientContext>
-                <RouterProvider router={router} />
-            </AuthClientContext>
+        <SiweIdentityProvider<_SERVICE>
+            canisterId={canisterId}
+            idlFactory={idlFactory}
+        >
+            <SiweIdentityGuardProvider>
+                <AuthClientContext>
+                    <RouterProvider router={router} />
+                </AuthClientContext>
+            </SiweIdentityGuardProvider>
         </SiweIdentityProvider>
     </WalletConnectProvider>;
 }
