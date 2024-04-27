@@ -1,13 +1,13 @@
 import React from "react";
-import { useConnectionStatus } from "@thirdweb-dev/react";
 import CertificatesList from "./CertificatesList";
 import Disconnected from "./Disconnected";
 import Loading from "./Loading";
+import {useAccount} from "wagmi";
 
 const Home = () => {
-    const connectionStatus = useConnectionStatus();
+    const {status} = useAccount();
 
-    switch (connectionStatus) {
+    switch (status) {
         case "connected":
             return <CertificatesList />;
         case "disconnected":

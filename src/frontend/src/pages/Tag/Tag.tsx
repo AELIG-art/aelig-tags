@@ -7,6 +7,7 @@ import {SnackbarProvider} from "notistack";
 import "./styles.Tag.css";
 import MetadataForm from "./MetadataForm";
 import MetadataInfo from "./MetadataInfo";
+import { useAccount } from "wagmi";
 
 const Tag = () => {
     let { id } = useParams();
@@ -24,13 +25,12 @@ const Tag = () => {
         setCertificateRegistered
     ] = useState(false);
 
-    const connectionStatus = useConnectionStatus();
     const navigate = useNavigate();
-    const address = useAddress();
+    const { address, status } = useAccount();
 
 
     useEffect(() => {
-        if (connectionStatus === "disconnected") {
+        if (status === "disconnected") {
             navigate("/");
         }
         if (id && address) {
@@ -63,7 +63,7 @@ const Tag = () => {
                 }
             });
         }
-    }, [id, address, connectionStatus, subscription]);
+    }, [id, address, status, subscription]);
 
     return <div>
         <h1 className="mt-5">{tag?.short_id || tag?.id.toString(16)}</h1>
