@@ -63,7 +63,7 @@ const Tag = () => {
                 }
             });
         }
-    }, [id, address, status, subscription]);
+    }, [id, address, status, subscription, navigate]);
 
     return <div>
         <h1 className="mt-5">{tag?.short_id || tag?.id.toString(16)}</h1>
