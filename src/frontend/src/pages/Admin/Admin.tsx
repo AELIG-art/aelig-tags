@@ -6,8 +6,9 @@ import {useAuthClient} from "../../contexts/AuthClientContext";
 import {backend} from "../../declarations/backend";
 import {SnackbarProvider} from "notistack";
 import { Nav } from "react-bootstrap";
-import {useLocation} from "react-router-dom";
+import {useLocation, useNavigate} from "react-router-dom";
 import Frames from "./Frames";
+import "./styles.Admin.css";
 
 const Admin = () => {
     const [isAdmin, setIsAdmin] = useState(false);
@@ -21,6 +22,13 @@ const Admin = () => {
     const location = useLocation();
     const hash = location.hash;
     const isCertificatesSection = !hash || hash === '#certificates';
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        if (!hash) {
+            navigate("/admin/#certificates");
+        }
+    }, [hash]);
 
 
     useEffect(() => {
@@ -41,17 +49,26 @@ const Admin = () => {
     return <div>
         <TopBar
             isLogged={isLogged}
-            openModal={() => setNewTagModalOpen(true)}
             principal={principal?.toString()}
         />
         {
             isAdmin ? <div>
                 <Nav variant="underline" defaultActiveKey="admin/#certificates" className={"mt-3"}>
                     <Nav.Item>
-                        <Nav.Link href="admin/#certificates">Certificates</Nav.Link>
+                        <Nav.Link
+                            href="admin/#certificates"
+                            className={isCertificatesSection ? "navActive" : "nav"}
+                        >
+                            Certificates
+                        </Nav.Link>
                     </Nav.Item>
                     <Nav.Item>
-                        <Nav.Link href="admin/#frames">Frames</Nav.Link>
+                        <Nav.Link
+                            href="admin/#frames"
+                            className={!isCertificatesSection ? "navActive" : "nav"}
+                        >
+                            Frames
+                        </Nav.Link>
                     </Nav.Item>
                 </Nav>
                 {

@@ -1,0 +1,7 @@
+.navActive {
+    color: var(--primary-color) !important
+}
+
+.nav {
+    color: #000000 !important;
+}
