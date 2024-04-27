@@ -3,7 +3,6 @@ import {Form} from "react-bootstrap";
 import {NFTMetadata} from "../../declarations/backend/backend.did";
 import {backend} from "../../declarations/backend";
 import {enqueueSnackbar} from "notistack";
-import {useAddress} from "@thirdweb-dev/react";
 import {TagExpanded} from "../../utils/types";
 import {useTags} from "../../contexts/TagsContext";
 import Button from "../../components/Button/Button";
@@ -64,7 +63,7 @@ const MetadataForm = (props: {
                 setCertificateRegistered(true);
             }
         }
-    }, [tag, dataUpdated, isLoadingButton]);
+    }, [tag, dataUpdated, isLoadingButton, isDataMissing, setCertificateRegistered]);
 
     const uploadFile = () => {
         if (inputRef.current?.files) {
