@@ -7,6 +7,7 @@ import {useAddress} from "@thirdweb-dev/react";
 import {TagExpanded} from "../../utils/types";
 import {useTags} from "../../contexts/TagsContext";
 import Button from "../../components/Button/Button";
+import {useAccount} from "wagmi";
 
 const MetadataForm = (props: {
     id: string|undefined,
@@ -44,7 +45,7 @@ const MetadataForm = (props: {
         setButtonAction
     ] = useState("save" as "save"|"register");
 
-    const address = useAddress();
+    const { address } = useAccount();
 
     const { setSub } = useTags();
 
