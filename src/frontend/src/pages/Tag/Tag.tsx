@@ -7,7 +7,7 @@ import { SnackbarProvider } from "notistack";
 import "./styles.Tag.css";
 import MetadataForm from "./MetadataForm";
 import MetadataInfo from "./MetadataInfo";
-import { useAccount } from "wagmi";
+import {useSiweIdentity} from "ic-use-siwe-identity";
 
 const Tag = () => {
     let { id } = useParams();
@@ -26,17 +26,16 @@ const Tag = () => {
     ] = useState(false);
 
     const navigate = useNavigate();
-    const { address, status } = useAccount();
-
+    const { isInitializing, identityAddress } = useSiweIdentity();
 
     useEffect(() => {
-        if (status === "disconnected") {
+        if (identityAddress === undefined && !isInitializing) {
             navigate("/");
         }
-        if (id && address) {
+        if (id && identityAddress) {
             backend.get_tag(id).then((tagRes) => {
                 if ('Ok' in tagRes) {
-                    if (tagRes.Ok.owner === address) {
+                    if (tagRes.Ok.owner === identityAddress) {
                         backend.get_certificate(id!).then((certificateRes) => {
                             if ('Ok' in certificateRes) {
                                 setTag({
@@ -63,7 +62,7 @@ const Tag = () => {
                 }
             });
         }
-    }, [id, address, status, subscription, navigate]);
+    }, [id, identityAddress, isInitializing, subscription, navigate]);
 
     return <div>
         <h1 className="mt-5">{tag?.short_id || tag?.id.toString(16)}</h1>

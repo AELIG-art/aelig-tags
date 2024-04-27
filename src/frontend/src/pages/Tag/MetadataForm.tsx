@@ -6,7 +6,7 @@ import {enqueueSnackbar} from "notistack";
 import {TagExpanded} from "../../utils/types";
 import {useTags} from "../../contexts/TagsContext";
 import Button from "../../components/Button/Button";
-import {useAccount} from "wagmi";
+import {useSiweIdentity} from "ic-use-siwe-identity";
 
 const MetadataForm = (props: {
     id: string|undefined,
@@ -44,7 +44,7 @@ const MetadataForm = (props: {
         setButtonAction
     ] = useState("save" as "save"|"register");
 
-    const { address } = useAccount();
+    const { identityAddress } = useSiweIdentity();
 
     const { setSub } = useTags();
 
@@ -138,7 +138,7 @@ const MetadataForm = (props: {
 
     const formAction = () => {
         setIsLoadingButton(true);
-        if (tag && id && address) {
+        if (tag && id && identityAddress) {
             if (buttonAction === 'save') {
                 const metadata = {
                     name: name || tag?.metadata?.name || "",
@@ -262,7 +262,7 @@ const MetadataForm = (props: {
         </Form>
         <div className={"d-flex flex-row-reverse"}>
             {
-                tag && id && address ? <Button
+                tag && id && identityAddress ? <Button
                     variant="primary"
                     disabled={isLoadingButton || isDataMissing}
                     onClick={formAction}
