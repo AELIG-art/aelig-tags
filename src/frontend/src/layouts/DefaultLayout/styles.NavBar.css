@@ -1,0 +1,17 @@
+.styled-navbar {
+    background-color: transparent !important;
+    z-index: 1;
+}
+
+.navbar-background {
+    background-color: var(--secondary-color) !important;
+    z-index: 0;
+}
+
+.brand {
+    color: var(--primary-color) !important;
+}
+
+.connectButton {
+    border-radius: 0 !important;
+}
