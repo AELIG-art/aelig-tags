@@ -39,7 +39,7 @@
       "type": "rust",
       "optimize": "cycles",
       "declarations": {
-        "output": "src/frontend/src/declarations/storage"
+        "output": "src/frontend/src/declarations/assets"
       }
     },
     "ic_siwe_provider": {
