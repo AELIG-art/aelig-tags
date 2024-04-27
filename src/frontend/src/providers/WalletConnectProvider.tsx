@@ -1,6 +1,5 @@
 import React, {ReactNode} from "react";
 import {getDefaultConfig, lightTheme, RainbowKitProvider, Theme} from "@rainbow-me/rainbowkit";
-import {ThirdwebProvider} from "@thirdweb-dev/react";
 import {QueryClient, QueryClientProvider} from "@tanstack/react-query";
 import {mainnet} from "viem/chains";
 import {APP_NAME, WALLET_CONNECT_PROJECT_ID} from "../utils/constants";
@@ -46,9 +45,7 @@ const WalletConnectProvider = (props: {
     return <WagmiProvider config={config}>
         <QueryClientProvider client={queryClient}>
             <RainbowKitProvider theme={rainbowKitProviderTheme} appInfo={appInfo} >
-                <ThirdwebProvider>
-                    {children}
-                </ThirdwebProvider>
+                {children}
             </RainbowKitProvider>
         </QueryClientProvider>
     </WagmiProvider>;
