@@ -1,8 +1,6 @@
 import React, {useEffect, useState} from "react";
 import {Link, useNavigate, useParams} from "react-router-dom";
-import { Button, Form } from "react-bootstrap";
 import {MediaRenderer, useAddress, useConnectionStatus} from "@thirdweb-dev/react";
-import {NFTMetadata} from "../../declarations/backend/backend.did";
 import {backend} from "../../declarations/backend";
 import {TagExpanded} from "../../utils/types";
 import {SnackbarProvider} from "notistack";
