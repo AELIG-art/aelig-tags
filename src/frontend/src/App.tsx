@@ -9,6 +9,7 @@ import Verify from "./pages/Verify/Verify";
 import VerificationLayout from "./layouts/VerifyLayout/VerifyLayout";
 import {AuthClientContext} from "./contexts/AuthClientContext";
 import WalletConnectProvider from "./providers/WalletConnectProvider";
+import SiweIdentityProvider from "./providers/SiweIdentityProvider";
 
 function App() {
 
@@ -44,9 +45,11 @@ function App() {
     ]);
 
     return <WalletConnectProvider>
-        <AuthClientContext>
-            <RouterProvider router={router} />
-        </AuthClientContext>
+        <SiweIdentityProvider>
+            <AuthClientContext>
+                <RouterProvider router={router} />
+            </AuthClientContext>
+        </SiweIdentityProvider>
     </WalletConnectProvider>;
 }
 
