@@ -8,7 +8,7 @@
     "test": "npm run test --workspaces --if-present",
     "local-canister": "dfx start",
     "local-deploy": "npm run build && dfx deploy",
-    "generate": "dfx generate backend"
+    "generate": "dfx generate"
   },
   "type": "module",
   "workspaces": [
