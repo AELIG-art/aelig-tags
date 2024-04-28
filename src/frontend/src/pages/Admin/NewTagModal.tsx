@@ -74,7 +74,7 @@ const NewTagModal = (props: {
                 variant="primary"
                 disabled={isLoading}
                 onClick={() => {
-                    if (owner && tags.length == shortIds.length) {
+                    if (owner && tags.length === shortIds.length) {
                         tags.forEach((tag, index) => {
                             if (identity) {
                                 const agent = new HttpAgent({ identity });
