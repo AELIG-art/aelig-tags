@@ -7,4 +7,4 @@ mod keys;
 mod memory_ids;
 mod admin;
 mod media;
-mod siwe;
+mod ic_siwe_provider;
