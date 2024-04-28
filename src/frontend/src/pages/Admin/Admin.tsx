@@ -2,12 +2,12 @@ import React, { useEffect, useState } from "react";
 import TopBar from "./TopBar";
 import NewTagModal from "./NewTagModal";
 import Certificates from "./Certificates";
-import {useAuthClient} from "../../contexts/AuthClientContext";
 import {backend} from "../../declarations/backend";
 import { Nav } from "react-bootstrap";
 import {useLocation, useNavigate} from "react-router-dom";
 import Frames from "./Frames";
 import "./styles.Admin.css";
+import {useSiweIdentity} from "ic-use-siwe-identity";
 
 const Admin = () => {
     const [isAdmin, setIsAdmin] = useState(false);
@@ -16,12 +16,11 @@ const Admin = () => {
     const [isLogged, setIsLogged] = useState(false);
     const [certificatesSub, setCertificatesSub] = useState("");
     const [framesSub, setFramesSub] = useState("");
-    const { authClient } = useAuthClient();
-    const principal = authClient?.getIdentity().getPrincipal();
     const location = useLocation();
     const hash = location.hash;
     const isCertificatesSection = !hash || hash === '#certificates';
     const navigate = useNavigate();
+    const { identity } = useSiweIdentity();
 
     useEffect(() => {
         if (!hash) {
@@ -31,24 +30,22 @@ const Admin = () => {
 
 
     useEffect(() => {
-        authClient?.isAuthenticated().then((isAuthenticated) => {
-            if (isAuthenticated) {
-                const principal = authClient?.getIdentity().getPrincipal();
-                setIsLogged(true);
-                backend.is_admin(principal).then(res => {
-                    setIsAdmin(res);
-                });
-            } else {
-                setIsLogged(false);
-                setIsAdmin(false);
-            }
-        });
-    }, [principal?.toString()]);
+        if (identity) {
+            const principal = identity.getPrincipal();
+            setIsLogged(true);
+            backend.is_admin(principal).then(res => {
+                setIsAdmin(res);
+            });
+        } else {
+            setIsLogged(false);
+            setIsAdmin(false);
+        }
+    }, [identity]);
 
     return <div>
         <TopBar
             isLogged={isLogged}
-            principal={principal?.toString()}
+            principal={identity?.getPrincipal().toString()}
         />
         {
             isAdmin ? <div>

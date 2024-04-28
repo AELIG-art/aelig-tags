@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import { Form, Modal } from "react-bootstrap";
 import { canisterId, idlFactory} from "../../declarations/backend";
-import { useAuthClient } from "../../contexts/AuthClientContext";
 import { Actor, HttpAgent } from "@dfinity/agent";
 import {enqueueSnackbar} from "notistack";
 import Button from "../../components/Button/Button";
+import {useSiweIdentity} from "ic-use-siwe-identity";
 
 const NewTagModal = (props: {
     open: boolean,
@@ -15,9 +15,8 @@ const NewTagModal = (props: {
     const [owner, setOwner] = useState(undefined as string|undefined);
     const [tags, setTags] = useState([] as string[]);
     const [shortIds, setShortIds] = useState<string[]>([]);
-    const { authClient } = useAuthClient();
-    const identity = authClient?.getIdentity();
     const [isLoading, setIsLoading] = useState(false);
+    const { identity } = useSiweIdentity();
 
 
     return <Modal show={open} onHide={close}>

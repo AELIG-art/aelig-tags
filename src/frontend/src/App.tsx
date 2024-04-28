@@ -7,7 +7,6 @@ import '@rainbow-me/rainbowkit/styles.css';
 import Admin from "./pages/Admin/Admin";
 import Verify from "./pages/Verify/Verify";
 import VerificationLayout from "./layouts/VerifyLayout/VerifyLayout";
-import {AuthClientContext} from "./contexts/AuthClientContext";
 import WalletConnectProvider from "./providers/WalletConnectProvider";
 import { SiweIdentityProvider } from "ic-use-siwe-identity";
 import {_SERVICE} from "./declarations/ic_siwe_provider/ic_siwe_provider.did";
@@ -55,9 +54,7 @@ function App() {
                 idlFactory={idlFactory}
             >
                 <SiweIdentityGuardProvider>
-                        <AuthClientContext>
-                            <RouterProvider router={router} />
-                        </AuthClientContext>
+                    <RouterProvider router={router} />
                 </SiweIdentityGuardProvider>
             </SiweIdentityProvider>
         </WalletConnectProvider>
