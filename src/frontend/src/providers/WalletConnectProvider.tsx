@@ -44,7 +44,11 @@ const WalletConnectProvider = (props: {
 
     return <WagmiProvider config={config}>
         <QueryClientProvider client={queryClient}>
-            <RainbowKitProvider theme={rainbowKitProviderTheme} appInfo={appInfo}>
+            <RainbowKitProvider
+                theme={rainbowKitProviderTheme}
+                appInfo={appInfo}
+                modalSize={"compact"}
+            >
                 {children}
             </RainbowKitProvider>
         </QueryClientProvider>
