@@ -3,8 +3,8 @@ import { Form, Modal } from "react-bootstrap";
 import { canisterId, idlFactory} from "../../declarations/backend";
 import { useAuthClient } from "../../contexts/AuthClientContext";
 import { Actor, HttpAgent } from "@dfinity/agent";
-import {enqueueSnackbar} from "notistack";
 import Button from "../../components/Button/Button";
+import {alertToast} from "../../utils/alerts";
 
 const NewTagModal = (props: {
     open: boolean,
@@ -75,7 +75,7 @@ const NewTagModal = (props: {
                 variant="primary"
                 disabled={isLoading}
                 onClick={() => {
-                    if (owner && tags.length == shortIds.length) {
+                    if (owner && tags.length === shortIds.length) {
                         tags.forEach((tag, index) => {
                             if (identity) {
                                 const agent = new HttpAgent({ identity });
@@ -104,25 +104,9 @@ const NewTagModal = (props: {
                                         };
                                         if (resTyped.Ok) {
                                             close();
-                                            enqueueSnackbar(
-                                                'Success',
-                                                {
-                                                    variant: 'success',
-                                                    persist: false,
-                                                    preventDuplicate: true,
-                                                    transitionDuration: 3
-                                                }
-                                            );
+                                            alertToast("Success");
                                         } else {
-                                            enqueueSnackbar(
-                                                resTyped.Err,
-                                                {
-                                                    variant: 'error',
-                                                    persist: false,
-                                                    preventDuplicate: true,
-                                                    transitionDuration: 3
-                                                }
-                                            );
+                                            alertToast(resTyped.Err!, true);
                                         }
                                     });
                                 });

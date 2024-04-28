@@ -2,11 +2,11 @@ import React, {useEffect, useRef, useState} from "react";
 import {Form} from "react-bootstrap";
 import {NFTMetadata} from "../../declarations/backend/backend.did";
 import {backend} from "../../declarations/backend";
-import {enqueueSnackbar} from "notistack";
 import {useAddress, useSigner, useStorageUpload} from "@thirdweb-dev/react";
 import {TagExpanded} from "../../utils/types";
 import {useTags} from "../../contexts/TagsContext";
 import Button from "../../components/Button/Button";
+import {alertToast} from "../../utils/alerts";
 
 const MetadataForm = (props: {
     id: string|undefined,
@@ -104,27 +104,11 @@ const MetadataForm = (props: {
                         ).then((res) => {
                             setDataUpdated(false);
                             if ("Ok" in res) {
-                                enqueueSnackbar(
-                                    'Success',
-                                    {
-                                        variant: 'success',
-                                        persist: false,
-                                        preventDuplicate: true,
-                                        transitionDuration: 3
-                                    }
-                                );
+                                alertToast("Success");
                                 setSub(new Date().toISOString());
                                 setSubscription(new Date().toISOString());
                             } else {
-                                enqueueSnackbar(
-                                    res.Err.toString(),
-                                    {
-                                        variant: 'error',
-                                        persist: false,
-                                        preventDuplicate: true,
-                                        transitionDuration: 3
-                                    }
-                                );
+                                alertToast(res.Err.toString(), true);
                             }
                             setIsLoadingButton(false);
                         });
@@ -136,28 +120,12 @@ const MetadataForm = (props: {
                                     signature
                                 ).then((res) => {
                                     if ("Ok" in res) {
-                                        enqueueSnackbar(
-                                            'Success',
-                                            {
-                                                variant: 'success',
-                                                persist: false,
-                                                preventDuplicate: true,
-                                                transitionDuration: 3
-                                            }
-                                        );
+                                        alertToast("Success", true);
                                         setCertificateRegistered(true);
                                         setSubscription(new Date().toISOString());
                                         setSub(new Date().toISOString());
                                     } else {
-                                        enqueueSnackbar(
-                                            res.Err.toString(),
-                                            {
-                                                variant: 'error',
-                                                persist: false,
-                                                preventDuplicate: true,
-                                                transitionDuration: 3
-                                            }
-                                        );
+                                        alertToast(res.Err.toString(), true);
                                     }
                                     setIsLoadingButton(false);
                                 });
