@@ -1,6 +1,7 @@
 import {ReactNode, useEffect, useState} from "react";
 import {useSiweIdentity} from "ic-use-siwe-identity";
 import {useAccount} from "wagmi";
+import {enqueueSnackbar} from "notistack";
 
 const SiweIdentityGuardProvider = (props: {
     children: ReactNode
@@ -41,7 +42,15 @@ const SiweIdentityGuardProvider = (props: {
 
     useEffect(() => {
         if (prepareLoginError) {
-            // todo: show an error toast with message: `prepareLoginError.message`
+            enqueueSnackbar(
+                prepareLoginError.message,
+                {
+                    variant: "error",
+                    persist: false,
+                    preventDuplicate: true,
+                    transitionDuration: 3
+                }
+            );
         }
     }, [prepareLoginError]);
 
@@ -49,6 +58,15 @@ const SiweIdentityGuardProvider = (props: {
         if (loginError) {
             // todo: show an error toast with message: `loginError.message`
             // todo: disconnect wallet
+            enqueueSnackbar(
+                loginError.message,
+                {
+                    variant: "error",
+                    persist: false,
+                    preventDuplicate: true,
+                    transitionDuration: 3
+                }
+            );
         }
     }, [loginError]);
 
