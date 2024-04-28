@@ -60,7 +60,7 @@ const NewTagModal = (props: {
     }
 
 
-    return <Modal show={open} onHide={close}>
+    return <Modal show={open} onHide={close} contentClassName={"rounded-0"}>
         <Modal.Header closeButton>
             <Modal.Title>Add new tag</Modal.Title>
         </Modal.Header>
