@@ -1,6 +1,5 @@
 import React, {useEffect, useState} from "react";
 import {Certificate, Frame } from "../../declarations/backend/backend.did";
-import {MediaRenderer} from "@thirdweb-dev/react";
 
 const Success = (props: {
     tagContent: undefined|{ Frame: Frame }|{ Certificate: Certificate }
@@ -28,7 +27,7 @@ const Success = (props: {
             {
                 isCertificate ? <div className={"row"}>
                     <div className="col-sm-8 col-md-6 col-lg-4 mx-auto p-3">
-                        <MediaRenderer
+                        <img
                             src={(content as Certificate|undefined)?.metadata[0]!.image}
                             alt="Certificate"
                             className={"img-fluid w-100 h-100"}

@@ -47,7 +47,6 @@ pub async fn upload_media(
     }
     let principal = ASSET_CANISTERS.with(|map| {
         let n = map.borrow().len() - 1;
-        println!("N={}", n);
         map.borrow().get(&n)
     });
     match principal {
@@ -98,7 +97,7 @@ fn add_storage_canister(principal: Principal) -> Result<String, Error> {
         ASSET_CANISTERS.with(|map| {
             let next_id = map.borrow().len();
             map.borrow_mut().insert(next_id, principal);
-            Ok("New storage canister added".to_string())
+            Ok("New assets canister added".to_string())
         })
     } else {
         Err(Error::PermissionDenied {

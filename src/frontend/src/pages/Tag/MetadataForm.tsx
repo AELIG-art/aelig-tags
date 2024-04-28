@@ -1,12 +1,13 @@
 import React, {useEffect, useRef, useState} from "react";
 import {Form} from "react-bootstrap";
-import {NFTMetadata} from "../../declarations/backend/backend.did";
-import {backend} from "../../declarations/backend";
+import {NFTMetadata, UpdateResult} from "../../declarations/backend/backend.did";
+import {backend, canisterId, idlFactory} from "../../declarations/backend";
 import {enqueueSnackbar} from "notistack";
-import {useAddress} from "@thirdweb-dev/react";
 import {TagExpanded} from "../../utils/types";
 import {useTags} from "../../contexts/TagsContext";
 import Button from "../../components/Button/Button";
+import {useSiweIdentity} from "ic-use-siwe-identity";
+import {Actor, HttpAgent} from "@dfinity/agent";
 
 const MetadataForm = (props: {
     id: string|undefined,
@@ -44,7 +45,7 @@ const MetadataForm = (props: {
         setButtonAction
     ] = useState("save" as "save"|"register");
 
-    const address = useAddress();
+    const { identityAddress, identity } = useSiweIdentity();
 
     const { setSub } = useTags();
 
@@ -63,55 +64,189 @@ const MetadataForm = (props: {
                 setCertificateRegistered(true);
             }
         }
-    }, [tag, dataUpdated, isLoadingButton]);
+    }, [tag, dataUpdated, isLoadingButton, isDataMissing, setCertificateRegistered]);
 
     const uploadFile = () => {
-        if (inputRef.current?.files) {
+        if (inputRef.current?.files && identity) {
             const file = inputRef.current.files[0];
-            file.arrayBuffer().then((buffer) => {
-                const bytes = new Uint8Array(buffer);
-                if (id) {
-                    backend.upload_media(
-                        id,
-                        {
-                            content: bytes,
-                            content_encoding: "",
-                            content_type: file.type,
-                            key: id!,
-                            sha256: []
-                        }
-                    ).then(res => {
-                        if ("Ok" in res) {
-                            backend.get_storage_principal(id!)
-                                .then((res) => {
-                                    if ("Ok" in res) {
-                                        setImage(
-                                            `${res.Ok.toString()}.raw.icp0.app/${id!}`
-                                        );
-                                        enqueueSnackbar(
-                                            'File updated',
-                                            {
-                                                variant: 'success',
-                                                persist: false,
-                                                preventDuplicate: true,
-                                                transitionDuration: 3
+            const agent = new HttpAgent({ identity });
+            agent.fetchRootKey().then(() => {
+                const backendActor = Actor.createActor(
+                    idlFactory,
+                    {
+                        agent,
+                        canisterId
+                    }
+                );
+                file.arrayBuffer().then((buffer) => {
+                    const bytes = new Uint8Array(buffer);
+                    if (id) {
+                        backendActor.upload_media(
+                            id,
+                            {
+                                content: bytes,
+                                content_encoding: "",
+                                content_type: file.type,
+                                key: id!,
+                                sha256: []
+                            }
+                        )
+                            .then((res: unknown) => {
+                                const typedRes = res as UpdateResult;
+                                if ("Ok" in typedRes) {
+                                    backend.get_storage_principal(id!)
+                                        .then((res) => {
+                                            if ("Ok" in res) {
+                                                setImage(
+                                                    // todo: use localhost domain for local development
+                                                    `${res.Ok.toString()}.raw.icp0.app/${id!}`
+                                                );
+                                                enqueueSnackbar(
+                                                    'File updated',
+                                                    {
+                                                        variant: 'success',
+                                                        persist: false,
+                                                        preventDuplicate: true,
+                                                        transitionDuration: 3
+                                                    }
+                                                );
+                                            } else {
+                                                enqueueSnackbar(
+                                                    res.Err.toString(),
+                                                    {
+                                                        variant: 'error',
+                                                        persist: false,
+                                                        preventDuplicate: true,
+                                                        transitionDuration: 3
+                                                    }
+                                                );
                                             }
-                                        );
-                                    } else {
-                                        enqueueSnackbar(
-                                            res.Err.toString(),
-                                            {
-                                                variant: 'error',
-                                                persist: false,
-                                                preventDuplicate: true,
-                                                transitionDuration: 3
-                                            }
-                                        );
+                                        });
+                                } else {
+                                    enqueueSnackbar(
+                                        typedRes.Err.toString(),
+                                        {
+                                            variant: 'error',
+                                            persist: false,
+                                            preventDuplicate: true,
+                                            transitionDuration: 3
+                                        }
+                                    );
+                                }
+                            })
+                            .catch(() => {
+                                enqueueSnackbar(
+                                    "Server error",
+                                    {
+                                        variant: 'error',
+                                        persist: false,
+                                        preventDuplicate: true,
+                                        transitionDuration: 3
                                     }
-                                });
+                                );
+                            });
+                    } else {
+                        enqueueSnackbar(
+                            "Id not found",
+                            {
+                                variant: 'error',
+                                persist: false,
+                                preventDuplicate: true,
+                                transitionDuration: 3
+                            }
+                        );
+                    }
+                });
+            });
+        }
+    }
+
+    const formAction = () => {
+        setIsLoadingButton(true);
+        if (tag && id && identityAddress && identity) {
+            const agent = new HttpAgent({ identity });
+            agent.fetchRootKey().then(() => {
+                const backendActor = Actor.createActor(
+                    idlFactory,
+                    {
+                        agent,
+                        canisterId
+                    }
+                );
+                if (buttonAction === 'save') {
+                    const metadata = {
+                        name: name || tag?.metadata?.name || "",
+                        description: description || tag?.metadata?.description || "",
+                        image: image || tag?.metadata?.image || "",
+                        attributes: []
+                    } as NFTMetadata;
+
+                    backendActor.save_certificate(
+                        id!,
+                        metadata
+                    )
+                        .then((res: unknown) => {
+                            const typedResult = res as UpdateResult;
+                            setDataUpdated(false);
+                            if ("Ok" in typedResult) {
+                                enqueueSnackbar(
+                                    'Success',
+                                    {
+                                        variant: 'success',
+                                        persist: false,
+                                        preventDuplicate: true,
+                                        transitionDuration: 3
+                                    }
+                                );
+                                setSub(new Date().toISOString());
+                                setSubscription(new Date().toISOString());
+                            } else {
+                                enqueueSnackbar(
+                                    typedResult.Err.toString(),
+                                    {
+                                        variant: 'error',
+                                        persist: false,
+                                        preventDuplicate: true,
+                                        transitionDuration: 3
+                                    }
+                                );
+                            }
+                            setIsLoadingButton(false);
+                        })
+                        .catch(() => {
+                            enqueueSnackbar(
+                                "Server error",
+                                {
+                                    variant: 'error',
+                                    persist: false,
+                                    preventDuplicate: true,
+                                    transitionDuration: 3
+                                }
+                            );
+                            setIsLoadingButton(false);
+                        });
+
+                } else {
+                    backendActor.register_certificate(
+                        id!,
+                    ).then((res: unknown) => {
+                        const typedResult = res as UpdateResult;
+                        if ("Ok" in typedResult) {
+                            enqueueSnackbar(
+                                'Success',
+                                {
+                                    variant: 'success',
+                                    persist: false,
+                                    preventDuplicate: true,
+                                    transitionDuration: 3
+                                }
+                            );
+                            setCertificateRegistered(true);
+                            setSubscription(new Date().toISOString());
+                            setSub(new Date().toISOString());
                         } else {
                             enqueueSnackbar(
-                                res.Err.toString(),
+                                typedResult.Err.toString(),
                                 {
                                     variant: 'error',
                                     persist: false,
@@ -120,93 +255,10 @@ const MetadataForm = (props: {
                                 }
                             );
                         }
+                        setIsLoadingButton(false);
                     });
-                } else {
-                    enqueueSnackbar(
-                        "Id not found",
-                        {
-                            variant: 'error',
-                            persist: false,
-                            preventDuplicate: true,
-                            transitionDuration: 3
-                        }
-                    );
                 }
             });
-        }
-    }
-
-    const formAction = () => {
-        setIsLoadingButton(true);
-        if (tag && id && address) {
-            if (buttonAction === 'save') {
-                const metadata = {
-                    name: name || tag?.metadata?.name || "",
-                    description: description || tag?.metadata?.description || "",
-                    image: image || tag?.metadata?.image || "",
-                    attributes: []
-                } as NFTMetadata;
-                backend.save_certificate(
-                    id!,
-                    metadata
-                ).then((res) => {
-                    setDataUpdated(false);
-                    if ("Ok" in res) {
-                        enqueueSnackbar(
-                            'Success',
-                            {
-                                variant: 'success',
-                                persist: false,
-                                preventDuplicate: true,
-                                transitionDuration: 3
-                            }
-                        );
-                        setSub(new Date().toISOString());
-                        setSubscription(new Date().toISOString());
-                    } else {
-                        enqueueSnackbar(
-                            res.Err.toString(),
-                            {
-                                variant: 'error',
-                                persist: false,
-                                preventDuplicate: true,
-                                transitionDuration: 3
-                            }
-                        );
-                    }
-                    setIsLoadingButton(false);
-                });
-            } else {
-                backend.register_certificate(
-                    id!,
-                ).then((res) => {
-                    if ("Ok" in res) {
-                        enqueueSnackbar(
-                            'Success',
-                            {
-                                variant: 'success',
-                                persist: false,
-                                preventDuplicate: true,
-                                transitionDuration: 3
-                            }
-                        );
-                        setCertificateRegistered(true);
-                        setSubscription(new Date().toISOString());
-                        setSub(new Date().toISOString());
-                    } else {
-                        enqueueSnackbar(
-                            res.Err.toString(),
-                            {
-                                variant: 'error',
-                                persist: false,
-                                preventDuplicate: true,
-                                transitionDuration: 3
-                            }
-                        );
-                    }
-                    setIsLoadingButton(false);
-                });
-            }
         }
     }
 
@@ -262,7 +314,7 @@ const MetadataForm = (props: {
         </Form>
         <div className={"d-flex flex-row-reverse"}>
             {
-                tag && id && address ? <Button
+                tag && id && identityAddress ? <Button
                     variant="primary"
                     disabled={isLoadingButton || isDataMissing}
                     onClick={formAction}

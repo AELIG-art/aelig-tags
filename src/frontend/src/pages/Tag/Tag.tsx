@@ -1,12 +1,11 @@
 import React, {useEffect, useState} from "react";
-import {Link, useNavigate, useParams} from "react-router-dom";
-import {MediaRenderer, useAddress, useConnectionStatus} from "@thirdweb-dev/react";
-import {backend} from "../../declarations/backend";
-import {TagExpanded} from "../../utils/types";
-import {SnackbarProvider} from "notistack";
+import { Link, useNavigate, useParams } from "react-router-dom";
+import { backend } from "../../declarations/backend";
+import { TagExpanded } from "../../utils/types";
 import "./styles.Tag.css";
 import MetadataForm from "./MetadataForm";
 import MetadataInfo from "./MetadataInfo";
+import {useSiweIdentity} from "ic-use-siwe-identity";
 
 const Tag = () => {
     let { id } = useParams();
@@ -24,19 +23,17 @@ const Tag = () => {
         setCertificateRegistered
     ] = useState(false);
 
-    const connectionStatus = useConnectionStatus();
     const navigate = useNavigate();
-    const address = useAddress();
-
+    const { isInitializing, identityAddress } = useSiweIdentity();
 
     useEffect(() => {
-        if (connectionStatus === "disconnected") {
+        if (identityAddress === undefined && !isInitializing) {
             navigate("/");
         }
-        if (id && address) {
+        if (id && identityAddress) {
             backend.get_tag(id).then((tagRes) => {
                 if ('Ok' in tagRes) {
-                    if (tagRes.Ok.owner === address) {
+                    if (tagRes.Ok.owner === identityAddress) {
                         backend.get_certificate(id!).then((certificateRes) => {
                             if ('Ok' in certificateRes) {
                                 setTag({
@@ -63,7 +60,7 @@ const Tag = () => {
                 }
             });
         }
-    }, [id, address, connectionStatus, subscription]);
+    }, [id, identityAddress, isInitializing, subscription, navigate]);
 
     return <div>
         <h1 className="mt-5">{tag?.short_id || tag?.id.toString(16)}</h1>
@@ -73,7 +70,7 @@ const Tag = () => {
                 <div className={"col-6"}>
                     <div className={`d-flex w-100 h-100 ${!image ? "border" : ""}`}>
                         {
-                            image ? <MediaRenderer
+                            image ? <img
                                 src={image}
                                 alt="Certificate"
                                 className={"w-100 h-100"}
@@ -99,7 +96,6 @@ const Tag = () => {
                 </div>
             </div> : <p className="mt-4">Loading…</p>
         }
-        <SnackbarProvider />
     </div>;
 }
 

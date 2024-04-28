@@ -1,19 +1,16 @@
 import React from "react";
-import { useConnectionStatus } from "@thirdweb-dev/react";
 import CertificatesList from "./CertificatesList";
 import Disconnected from "./Disconnected";
 import Loading from "./Loading";
+import {useSiweIdentity} from "ic-use-siwe-identity";
 
 const Home = () => {
-    const connectionStatus = useConnectionStatus();
+    const { isInitializing, identityAddress } = useSiweIdentity();
 
-    switch (connectionStatus) {
-        case "connected":
-            return <CertificatesList />;
-        case "disconnected":
-            return <Disconnected />;
-        default:
-            return <Loading />;
+    if (isInitializing) {
+        return <Loading />;
+    } else {
+        return identityAddress ? <CertificatesList /> : <Disconnected />;
     }
 };
 
