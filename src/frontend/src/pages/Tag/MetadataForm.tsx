@@ -98,6 +98,7 @@ const MetadataForm = (props: {
                                         .then((res) => {
                                             if ("Ok" in res) {
                                                 setImage(
+                                                    // todo: use localhost domain for local development
                                                     `${res.Ok.toString()}.raw.icp0.app/${id!}`
                                                 );
                                                 enqueueSnackbar(
