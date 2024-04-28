@@ -36,7 +36,7 @@ After deploying backend and assets canisters:
 
 ## Deploy
 
-If canisters are already created. Create canister_ids.json file...
+If canisters are already created. Create canister_ids.json file... [TO BE COMPLETED]
 
 ## Custom domain
 
