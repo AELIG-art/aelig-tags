@@ -184,24 +184,38 @@ const MetadataForm = (props: {
                     backendActor.save_certificate(
                         id!,
                         metadata
-                    ).then((res: unknown) => {
-                        const typedResult = res as UpdateResult;
-                        setDataUpdated(false);
-                        if ("Ok" in typedResult) {
+                    )
+                        .then((res: unknown) => {
+                            const typedResult = res as UpdateResult;
+                            setDataUpdated(false);
+                            if ("Ok" in typedResult) {
+                                enqueueSnackbar(
+                                    'Success',
+                                    {
+                                        variant: 'success',
+                                        persist: false,
+                                        preventDuplicate: true,
+                                        transitionDuration: 3
+                                    }
+                                );
+                                setSub(new Date().toISOString());
+                                setSubscription(new Date().toISOString());
+                            } else {
+                                enqueueSnackbar(
+                                    typedResult.Err.toString(),
+                                    {
+                                        variant: 'error',
+                                        persist: false,
+                                        preventDuplicate: true,
+                                        transitionDuration: 3
+                                    }
+                                );
+                            }
+                            setIsLoadingButton(false);
+                        })
+                        .catch(() => {
                             enqueueSnackbar(
-                                'Success',
-                                {
-                                    variant: 'success',
-                                    persist: false,
-                                    preventDuplicate: true,
-                                    transitionDuration: 3
-                                }
-                            );
-                            setSub(new Date().toISOString());
-                            setSubscription(new Date().toISOString());
-                        } else {
-                            enqueueSnackbar(
-                                typedResult.Err.toString(),
+                                "Server error",
                                 {
                                     variant: 'error',
                                     persist: false,
@@ -209,9 +223,8 @@ const MetadataForm = (props: {
                                     transitionDuration: 3
                                 }
                             );
-                        }
-                        setIsLoadingButton(false);
-                    });
+                        });
+
                 } else {
                     backendActor.register_certificate(
                         id!,
