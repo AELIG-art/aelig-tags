@@ -9,7 +9,12 @@ const SiweIdentityGuardProvider = (props: {
     const {children} = props;
     const [isSigning, setIsSigning] = useState(false);
 
-    const { isConnected, address, isDisconnected } = useAccount();
+    const {
+        isConnected,
+        address,
+        isDisconnected,
+        connector
+    } = useAccount();
 
     const {
         clear,
@@ -56,8 +61,6 @@ const SiweIdentityGuardProvider = (props: {
 
     useEffect(() => {
         if (loginError) {
-            // todo: show an error toast with message: `loginError.message`
-            // todo: disconnect wallet
             enqueueSnackbar(
                 loginError.message,
                 {
@@ -67,8 +70,9 @@ const SiweIdentityGuardProvider = (props: {
                     transitionDuration: 3
                 }
             );
+            connector?.disconnect().then();
         }
-    }, [loginError]);
+    }, [loginError, connector]);
 
     useEffect(() => {
         if (address && !isInitializing && !identityAddress && !isSigning) {
@@ -77,10 +81,10 @@ const SiweIdentityGuardProvider = (props: {
                 setIsSigning(false);
             }).catch(() => {
                 setIsSigning(false);
-                // todo: disconnect wallet
+                connector?.disconnect().then();
             });
         }
-    }, [address, isInitializing, identityAddress, login, isSigning]);
+    }, [address, isInitializing, identityAddress, login, isSigning, connector]);
 
     return children;
 }
