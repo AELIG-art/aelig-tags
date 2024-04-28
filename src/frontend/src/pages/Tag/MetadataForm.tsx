@@ -180,6 +180,7 @@ const MetadataForm = (props: {
                         setName(event.target.value);
                         setDataUpdated(true);
                     }}
+                    className={"rounded-0"}
                 />
                 <Form.Text className="text-muted">
                     The name of the certificate.
@@ -198,6 +199,7 @@ const MetadataForm = (props: {
                         setDescription(event.target.value);
                         setDataUpdated(true);
                     }}
+                    className={"rounded-0"}
                 />
                 <Form.Text className="text-muted">
                     The description of the certificate.
@@ -211,6 +213,7 @@ const MetadataForm = (props: {
                     ref={inputRef}
                     accept="image/*,video/*"
                     onChange={uploadFile}
+                    className={"rounded-0"}
                 />
                 <Form.Text className="text-muted">
                     The image of the certificate.
