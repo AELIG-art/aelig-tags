@@ -66,7 +66,7 @@ const MetadataForm = (props: {
                 setCertificateRegistered(true);
             }
         }
-    }, [tag, dataUpdated, isLoadingButton]);
+    }, [tag, dataUpdated, isLoadingButton, isDataMissing, setCertificateRegistered]);
 
     const uploadFile = () => {
         if (inputRef.current?.files) {
