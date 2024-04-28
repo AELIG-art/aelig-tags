@@ -16,7 +16,7 @@ export const AuthClientContext = (props: {
         AuthClient.create().then((client) => {
             setAuthClient(client);
         });
-    });
+    }, [setAuthClient]);
 
     const context = {
         authClient,
