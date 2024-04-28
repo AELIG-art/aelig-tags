@@ -13,6 +13,7 @@ import { SiweIdentityProvider } from "ic-use-siwe-identity";
 import {_SERVICE} from "./declarations/ic_siwe_provider/ic_siwe_provider.did";
 import {canisterId, idlFactory} from "./declarations/ic_siwe_provider";
 import SiweIdentityGuardProvider from "./providers/SiweIdentityGuardProvider";
+import {SnackbarProvider} from "notistack";
 
 function App() {
 
@@ -47,18 +48,20 @@ function App() {
         }
     ]);
 
-    return <WalletConnectProvider>
-        <SiweIdentityProvider<_SERVICE>
-            canisterId={canisterId}
-            idlFactory={idlFactory}
-        >
-            <SiweIdentityGuardProvider>
-                <AuthClientContext>
-                    <RouterProvider router={router} />
-                </AuthClientContext>
-            </SiweIdentityGuardProvider>
-        </SiweIdentityProvider>
-    </WalletConnectProvider>;
+    return <SnackbarProvider>
+        <WalletConnectProvider>
+            <SiweIdentityProvider<_SERVICE>
+                canisterId={canisterId}
+                idlFactory={idlFactory}
+            >
+                <SiweIdentityGuardProvider>
+                        <AuthClientContext>
+                            <RouterProvider router={router} />
+                        </AuthClientContext>
+                </SiweIdentityGuardProvider>
+            </SiweIdentityProvider>
+        </WalletConnectProvider>
+    </SnackbarProvider>;
 }
 
 export default App;

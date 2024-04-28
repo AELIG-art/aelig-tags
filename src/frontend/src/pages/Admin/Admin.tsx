@@ -4,7 +4,6 @@ import NewTagModal from "./NewTagModal";
 import Certificates from "./Certificates";
 import {useAuthClient} from "../../contexts/AuthClientContext";
 import {backend} from "../../declarations/backend";
-import {SnackbarProvider} from "notistack";
 import { Nav } from "react-bootstrap";
 import {useLocation, useNavigate} from "react-router-dom";
 import Frames from "./Frames";
@@ -103,7 +102,6 @@ const Admin = () => {
             open={newTagModalOpen}
             isNewTagCertificate={isNewTagCertificate}
         />
-        <SnackbarProvider />
     </div>;
 }
 

@@ -3,7 +3,6 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import { MediaRenderer } from "@thirdweb-dev/react";
 import { backend } from "../../declarations/backend";
 import { TagExpanded } from "../../utils/types";
-import { SnackbarProvider } from "notistack";
 import "./styles.Tag.css";
 import MetadataForm from "./MetadataForm";
 import MetadataInfo from "./MetadataInfo";
@@ -98,7 +97,6 @@ const Tag = () => {
                 </div>
             </div> : <p className="mt-4">Loading…</p>
         }
-        <SnackbarProvider />
     </div>;
 }
 
