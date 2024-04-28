@@ -2,8 +2,8 @@ use std::cell::RefCell;
 use std::string::ToString;
 use ic_stable_structures::{DefaultMemoryImpl, StableBTreeMap};
 use ic_stable_structures::memory_manager::{MemoryId, MemoryManager};
+use crate::ic_siwe_provider::get_caller_address;
 use crate::memory_ids::MemoryKeys;
-use crate::siwe::get_address_from_siwe_identity;
 use crate::types::{Certificate, Error, Memory, NFTMetadata};
 
 thread_local! {
@@ -51,7 +51,8 @@ pub async fn save_certificate(
     tag_id: String,
     metadata: NFTMetadata,
 ) -> Result<String, Error> {
-    let caller_siwe_address_res = get_address_from_siwe_identity().await;
+    let caller_siwe_address_res = get_caller_address().await;
+
     match caller_siwe_address_res {
         Ok(address) => {
             CERTIFICATES.with(|map| {
@@ -107,7 +108,7 @@ pub async fn save_certificate(
 
 #[ic_cdk::update]
 pub async fn register_certificate(id: String) -> Result<String, Error> {
-    let caller_siwe_address_res = get_address_from_siwe_identity().await;
+    let caller_siwe_address_res = get_caller_address().await;
 
     match caller_siwe_address_res {
         Ok(address) => {
