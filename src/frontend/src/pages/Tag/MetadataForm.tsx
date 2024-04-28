@@ -223,6 +223,7 @@ const MetadataForm = (props: {
                                     transitionDuration: 3
                                 }
                             );
+                            setIsLoadingButton(false);
                         });
 
                 } else {
