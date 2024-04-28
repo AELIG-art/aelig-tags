@@ -6,7 +6,6 @@ use crate::memory_ids::MemoryKeys;
 use crate::siwe::get_address_from_siwe_identity;
 use crate::types::{Certificate, Error, Memory, NFTMetadata};
 
-
 thread_local! {
     static MEMORY_MANAGER: RefCell<MemoryManager<DefaultMemoryImpl>> =
         RefCell::new(MemoryManager::init(DefaultMemoryImpl::default()));
