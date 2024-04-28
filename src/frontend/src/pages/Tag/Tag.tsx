@@ -62,7 +62,7 @@ const Tag = () => {
         }
     }, [id, identityAddress, isInitializing, subscription, navigate]);
 
-    return <div>
+    return <div className={"pb-3"}>
         <h1 className="mt-5">{tag?.short_id || tag?.id.toString(16)}</h1>
         <Link to={"/"} className="back">Back</Link>
         {
