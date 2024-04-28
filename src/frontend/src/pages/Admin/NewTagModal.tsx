@@ -18,6 +18,63 @@ const NewTagModal = (props: {
     const [isLoading, setIsLoading] = useState(false);
     const { identity } = useSiweIdentity();
 
+    const addNewTag = () => {
+        if (owner && tags.length === shortIds.length) {
+            tags.forEach((tag, index) => {
+                if (identity) {
+                    const agent = new HttpAgent({ identity });
+                    agent.fetchRootKey().then(() => {
+                        const backendActor = Actor.createActor(
+                            idlFactory,
+                            {
+                                agent,
+                                canisterId
+                            }
+                        );
+                        setIsLoading(true);
+                        backendActor.add_tag(
+                            tag,
+                            {
+                                owner: owner,
+                                is_certificate: isNewTagCertificate,
+                                short_id: shortIds[index],
+                                id: BigInt(`0x${tag}`)
+                            }
+                        ).then((res: unknown) => {
+                            setIsLoading(false);
+                            const resTyped = res as {
+                                Ok?: string,
+                                Err?: string
+                            };
+                            if (resTyped.Ok) {
+                                close();
+                                enqueueSnackbar(
+                                    'Success',
+                                    {
+                                        variant: 'success',
+                                        persist: false,
+                                        preventDuplicate: true,
+                                        transitionDuration: 3
+                                    }
+                                );
+                            } else {
+                                enqueueSnackbar(
+                                    resTyped.Err,
+                                    {
+                                        variant: 'error',
+                                        persist: false,
+                                        preventDuplicate: true,
+                                        transitionDuration: 3
+                                    }
+                                );
+                            }
+                        });
+                    });
+                }
+            });
+        }
+    }
+
 
     return <Modal show={open} onHide={close}>
         <Modal.Header closeButton>
@@ -73,62 +130,7 @@ const NewTagModal = (props: {
             <Button
                 variant="primary"
                 disabled={isLoading}
-                onClick={() => {
-                    if (owner && tags.length === shortIds.length) {
-                        tags.forEach((tag, index) => {
-                            if (identity) {
-                                const agent = new HttpAgent({ identity });
-                                agent.fetchRootKey().then(() => {
-                                    const backendActor = Actor.createActor(
-                                        idlFactory,
-                                        {
-                                            agent,
-                                            canisterId
-                                        }
-                                    );
-                                    setIsLoading(true);
-                                    backendActor.add_tag(
-                                        tag,
-                                        {
-                                            owner: owner,
-                                            is_certificate: isNewTagCertificate,
-                                            short_id: shortIds[index],
-                                            id: BigInt(`0x${tag}`)
-                                        }
-                                    ).then((res: unknown) => {
-                                        setIsLoading(false);
-                                        const resTyped = res as {
-                                            Ok?: string,
-                                            Err?: string
-                                        };
-                                        if (resTyped.Ok) {
-                                            close();
-                                            enqueueSnackbar(
-                                                'Success',
-                                                {
-                                                    variant: 'success',
-                                                    persist: false,
-                                                    preventDuplicate: true,
-                                                    transitionDuration: 3
-                                                }
-                                            );
-                                        } else {
-                                            enqueueSnackbar(
-                                                resTyped.Err,
-                                                {
-                                                    variant: 'error',
-                                                    persist: false,
-                                                    preventDuplicate: true,
-                                                    transitionDuration: 3
-                                                }
-                                            );
-                                        }
-                                    });
-                                });
-                            }
-                        });
-                    }
-                }}
+                onClick={addNewTag}
             >
                 {isLoading ? "Updating…" : "Add new tags"}
             </Button>
