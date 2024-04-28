@@ -74,6 +74,7 @@ const NewTagModal = (props: {
                         onChange={(event) => {
                             setOwner(event.target.value);
                         }}
+                        className={"rounded-0"}
                     />
                 </Form.Group>
 
@@ -85,6 +86,7 @@ const NewTagModal = (props: {
                         onChange={(event) => {
                             setTags(event.target.value.split(","));
                         }}
+                        className={"rounded-0"}
                     />
                     <Form.Floating>Enter tag ids separated by a comma.</Form.Floating>
                 </Form.Group>
@@ -97,6 +99,7 @@ const NewTagModal = (props: {
                         onChange={(event) => {
                             setShortIds(event.target.value.split(","));
                         }}
+                        className={"rounded-0"}
                     />
                     <Form.Floating>Enter tag short ids separated by a comma.</Form.Floating>
                 </Form.Group>
