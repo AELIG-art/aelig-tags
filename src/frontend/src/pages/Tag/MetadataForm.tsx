@@ -3,7 +3,7 @@ import {Form} from "react-bootstrap";
 import {NFTMetadata} from "../../declarations/backend/backend.did";
 import {backend} from "../../declarations/backend";
 import {enqueueSnackbar} from "notistack";
-import {useAddress, useSigner, useStorageUpload} from "@thirdweb-dev/react";
+import {useAddress} from "@thirdweb-dev/react";
 import {TagExpanded} from "../../utils/types";
 import {useTags} from "../../contexts/TagsContext";
 import Button from "../../components/Button/Button";
@@ -33,9 +33,7 @@ const MetadataForm = (props: {
         setImage
     } = props;
 
-    const { mutateAsync: upload} = useStorageUpload();
     const inputRef = useRef<HTMLInputElement>(null);
-
 
     const [dataUpdated, setDataUpdated] = useState(false);
     const [isLoadingButton, setIsLoadingButton] = useState(false);
@@ -46,7 +44,6 @@ const MetadataForm = (props: {
         setButtonAction
     ] = useState("save" as "save"|"register");
 
-    const signer = useSigner();
     const address = useAddress();
 
     const { setSub } = useTags();
@@ -71,73 +68,28 @@ const MetadataForm = (props: {
     const uploadFile = () => {
         if (inputRef.current?.files) {
             const file = inputRef.current.files[0];
-            upload({data: [file]}).then((res) => {
-                setImage(res[0]);
-                setDataUpdated(true);
-            });
-        }
-    }
-
-    const formAction = () => {
-        setIsLoadingButton(true);
-        if (signer && tag && id && address) {
-            const messageJson = {
-                name: name || tag?.metadata?.name || "",
-                description: description || tag?.metadata?.description || "",
-                image: image || tag?.metadata?.image || "",
-                attributes: [],
-                id: id
-            }
-            signer.signMessage(JSON.stringify(messageJson))
-                .then((signature) => {
-                    if (buttonAction === 'save') {
-                        const metadata = {
-                            name: name || tag?.metadata?.name || "",
-                            description: description || tag?.metadata?.description || "",
-                            image: image || tag?.metadata?.image || "",
-                            attributes: []
-                        } as NFTMetadata;
-                        backend.save_certificate(
-                            id!,
-                            metadata,
-                            signature
-                        ).then((res) => {
-                            setDataUpdated(false);
-                            if ("Ok" in res) {
-                                enqueueSnackbar(
-                                    'Success',
-                                    {
-                                        variant: 'success',
-                                        persist: false,
-                                        preventDuplicate: true,
-                                        transitionDuration: 3
-                                    }
-                                );
-                                setSub(new Date().toISOString());
-                                setSubscription(new Date().toISOString());
-                            } else {
-                                enqueueSnackbar(
-                                    res.Err.toString(),
-                                    {
-                                        variant: 'error',
-                                        persist: false,
-                                        preventDuplicate: true,
-                                        transitionDuration: 3
-                                    }
-                                );
-                            }
-                            setIsLoadingButton(false);
-                        });
-                    } else {
-                        signer.signMessage(JSON.stringify(messageJson))
-                            .then((signature) => {
-                                backend.register_certificate(
-                                    id!,
-                                    signature
-                                ).then((res) => {
+            file.arrayBuffer().then((buffer) => {
+                const bytes = new Uint8Array(buffer);
+                if (id) {
+                    backend.upload_media(
+                        id,
+                        {
+                            content: bytes,
+                            content_encoding: "",
+                            content_type: file.type,
+                            key: id!,
+                            sha256: []
+                        }
+                    ).then(res => {
+                        if ("Ok" in res) {
+                            backend.get_storage_principal(id!)
+                                .then((res) => {
                                     if ("Ok" in res) {
+                                        setImage(
+                                            `${res.Ok.toString()}.raw.icp0.app/${id!}`
+                                        );
                                         enqueueSnackbar(
-                                            'Success',
+                                            'File updated',
                                             {
                                                 variant: 'success',
                                                 persist: false,
@@ -145,9 +97,6 @@ const MetadataForm = (props: {
                                                 transitionDuration: 3
                                             }
                                         );
-                                        setCertificateRegistered(true);
-                                        setSubscription(new Date().toISOString());
-                                        setSub(new Date().toISOString());
                                     } else {
                                         enqueueSnackbar(
                                             res.Err.toString(),
@@ -159,11 +108,105 @@ const MetadataForm = (props: {
                                             }
                                         );
                                     }
-                                    setIsLoadingButton(false);
                                 });
-                            });
+                        } else {
+                            enqueueSnackbar(
+                                res.Err.toString(),
+                                {
+                                    variant: 'error',
+                                    persist: false,
+                                    preventDuplicate: true,
+                                    transitionDuration: 3
+                                }
+                            );
+                        }
+                    });
+                } else {
+                    enqueueSnackbar(
+                        "Id not found",
+                        {
+                            variant: 'error',
+                            persist: false,
+                            preventDuplicate: true,
+                            transitionDuration: 3
+                        }
+                    );
+                }
+            });
+        }
+    }
+
+    const formAction = () => {
+        setIsLoadingButton(true);
+        if (tag && id && address) {
+            if (buttonAction === 'save') {
+                const metadata = {
+                    name: name || tag?.metadata?.name || "",
+                    description: description || tag?.metadata?.description || "",
+                    image: image || tag?.metadata?.image || "",
+                    attributes: []
+                } as NFTMetadata;
+                backend.save_certificate(
+                    id!,
+                    metadata
+                ).then((res) => {
+                    setDataUpdated(false);
+                    if ("Ok" in res) {
+                        enqueueSnackbar(
+                            'Success',
+                            {
+                                variant: 'success',
+                                persist: false,
+                                preventDuplicate: true,
+                                transitionDuration: 3
+                            }
+                        );
+                        setSub(new Date().toISOString());
+                        setSubscription(new Date().toISOString());
+                    } else {
+                        enqueueSnackbar(
+                            res.Err.toString(),
+                            {
+                                variant: 'error',
+                                persist: false,
+                                preventDuplicate: true,
+                                transitionDuration: 3
+                            }
+                        );
                     }
+                    setIsLoadingButton(false);
                 });
+            } else {
+                backend.register_certificate(
+                    id!,
+                ).then((res) => {
+                    if ("Ok" in res) {
+                        enqueueSnackbar(
+                            'Success',
+                            {
+                                variant: 'success',
+                                persist: false,
+                                preventDuplicate: true,
+                                transitionDuration: 3
+                            }
+                        );
+                        setCertificateRegistered(true);
+                        setSubscription(new Date().toISOString());
+                        setSub(new Date().toISOString());
+                    } else {
+                        enqueueSnackbar(
+                            res.Err.toString(),
+                            {
+                                variant: 'error',
+                                persist: false,
+                                preventDuplicate: true,
+                                transitionDuration: 3
+                            }
+                        );
+                    }
+                    setIsLoadingButton(false);
+                });
+            }
         }
     }
 
@@ -219,7 +262,7 @@ const MetadataForm = (props: {
         </Form>
         <div className={"d-flex flex-row-reverse"}>
             {
-                signer && tag && id && address ? <Button
+                tag && id && address ? <Button
                     variant="primary"
                     disabled={isLoadingButton || isDataMissing}
                     onClick={formAction}

@@ -22,7 +22,8 @@
     },
     "frontend": {
       "dependencies": [
-        "backend"
+        "backend",
+        "assets"
       ],
       "source": [
         "src/frontend/dist"
@@ -30,6 +31,15 @@
       "type": "assets",
       "workspace": "src/frontend",
       "optimize": "size"
+    },
+    "assets": {
+      "candid": "src/assets/assets.did",
+      "package": "assets",
+      "type": "rust",
+      "optimize": "cycles",
+      "declarations": {
+        "output": "src/frontend/src/declarations/storage"
+      }
     }
   },
   "defaults": {

@@ -6,3 +6,4 @@ mod frames;
 mod keys;
 mod memory_ids;
 mod admin;
+mod media;
