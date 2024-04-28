@@ -1,6 +1,5 @@
 import React, {useEffect, useState} from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { MediaRenderer } from "@thirdweb-dev/react";
 import { backend } from "../../declarations/backend";
 import { TagExpanded } from "../../utils/types";
 import "./styles.Tag.css";
@@ -71,7 +70,7 @@ const Tag = () => {
                 <div className={"col-6"}>
                     <div className={`d-flex w-100 h-100 ${!image ? "border" : ""}`}>
                         {
-                            image ? <MediaRenderer
+                            image ? <img
                                 src={image}
                                 alt="Certificate"
                                 className={"w-100 h-100"}
