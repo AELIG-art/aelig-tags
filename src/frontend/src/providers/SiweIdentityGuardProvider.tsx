@@ -8,7 +8,7 @@ const SiweIdentityGuardProvider = (props: {
     const {children} = props;
     const [isSigning, setIsSigning] = useState(false);
 
-    const { isConnected, address } = useAccount();
+    const { isConnected, address, isDisconnected } = useAccount();
 
     const {
         clear,
@@ -23,10 +23,10 @@ const SiweIdentityGuardProvider = (props: {
     } = useSiweIdentity();
 
     useEffect(() => {
-        if (!isConnected && identity) {
+        if (isDisconnected && identity) {
             clear();
         }
-    }, [isConnected, clear, identity]);
+    }, [isDisconnected, clear, identity]);
 
     useEffect(() => {
         if (identityAddress && address && address !== identityAddress) {
