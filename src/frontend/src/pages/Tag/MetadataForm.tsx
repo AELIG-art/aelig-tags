@@ -135,7 +135,7 @@ const MetadataForm = (props: {
                                 }
                             })
                             .catch(() => {
-+                                enqueueSnackbar(
+                                enqueueSnackbar(
                                     "Server error",
                                     {
                                         variant: 'error',
