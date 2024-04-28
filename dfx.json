@@ -1,43 +1,51 @@
 {
-  "canisters": {
-    "internet_identity": {
-      "candid": "https://github.com/dfinity/internet-identity/releases/latest/download/internet_identity.did",
-      "frontend": {},
-      "remote": {
-        "id": {
-          "ic": "rdmx6-jaaaa-aaaaa-aaadq-cai"
+    "canisters": {
+        "backend": {
+            "candid": "src/backend/backend.did",
+            "package": "backend",
+            "type": "rust",
+            "optimize": "cycles",
+            "declarations": {
+                "output": "src/frontend/src/declarations/backend"
+            }
+        },
+        "frontend": {
+            "dependencies": [
+                "backend",
+                "assets",
+                "ic_siwe_provider"
+            ],
+            "source": [
+                "src/frontend/dist"
+            ],
+            "type": "assets",
+            "workspace": "src/frontend",
+            "optimize": "size"
+        },
+        "assets": {
+            "candid": "src/assets/assets.did",
+            "package": "assets",
+            "type": "rust",
+            "optimize": "cycles",
+            "declarations": {
+                "output": "src/frontend/src/declarations/assets"
+            }
+        },
+        "ic_siwe_provider": {
+            "type": "custom",
+            "candid": "https://github.com/kristoferlund/ic-siwe/releases/download/v0.0.5/ic_siwe_provider.did",
+            "wasm": "https://github.com/kristoferlund/ic-siwe/releases/download/v0.0.5/ic_siwe_provider.wasm.gz",
+            "declarations": {
+                "output": "src/frontend/src/declarations/ic_siwe_provider"
+            }
         }
-      },
-      "type": "custom",
-      "wasm": "https://github.com/dfinity/internet-identity/releases/latest/download/internet_identity_dev.wasm.gz"
     },
-    "backend": {
-      "candid": "src/backend/backend.did",
-      "package": "backend",
-      "type": "rust",
-      "optimize": "cycles",
-      "declarations": {
-        "output": "src/frontend/src/declarations/backend"
-      }
+    "defaults": {
+        "build": {
+            "args": "",
+            "packtool": ""
+        }
     },
-    "frontend": {
-      "dependencies": [
-        "backend"
-      ],
-      "source": [
-        "src/frontend/dist"
-      ],
-      "type": "assets",
-      "workspace": "src/frontend",
-      "optimize": "size"
-    }
-  },
-  "defaults": {
-    "build": {
-      "args": "",
-      "packtool": ""
-    }
-  },
-  "output_env_file": ".env",
-  "version": 1
+    "output_env_file": ".env",
+    "version": 1
 }

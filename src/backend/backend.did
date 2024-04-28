@@ -16,7 +16,6 @@ type Certificate = record {
     metadata: opt NFTMetadata;
     owner: text;
     author: text;
-    signature: opt text;
 };
 
 type Error = variant {
@@ -65,20 +64,37 @@ type GetTagResult = variant {
     Err: Error;
 };
 
+type GetStorageResult = variant {
+    Ok: principal;
+    Err: Error;
+};
+
 type GetCertificateResult = variant {
     Ok: Certificate;
     Err: Error;
 };
 
+type StoreArg = record {
+    key: text;
+    content_type: text;
+    content_encoding: text;
+    content: blob;
+    sha256: opt blob
+};
+
+
 service : {
-    "verify_tag": (text) -> (VerifyResult);
-    "set_key": (text, text) -> (UpdateResult);
-    "get_tags_owned_by": (text) -> (vec Tag) query;
-    "get_tag": (text) -> (GetTagResult) query;
-    "get_certificate": (text) -> (GetCertificateResult) query;
+    "add_storage_canister": (principal) -> (UpdateResult);
+    "add_tag": (id: text, tag: Tag) -> (UpdateResult);
+    "get_certificate": (tag_id: text) -> (GetCertificateResult) query;
+    "get_storage_principal": (tag: text) -> (GetStorageResult) query;
+    "get_tag": (tag_id: text) -> (GetTagResult) query;
     "get_tags": () -> (vec Tag) query;
-    "add_tag": (text, Tag) -> (UpdateResult);
-    "is_admin": (principal) -> (bool) query;
-    "save_certificate": (text, NFTMetadata, text) -> (UpdateResult);
-    "register_certificate": (text, text) -> (UpdateResult);
+    "get_tags_owned_by": (owner: text) -> (vec Tag) query;
+    "is_admin": (user: principal) -> (bool) query;
+    "register_certificate": (id: text) -> (UpdateResult);
+    "save_certificate": (tag_id: text, metadata: NFTMetadata) -> (UpdateResult);
+    "set_key": (key: text, value: text) -> (UpdateResult);
+    "upload_media": (tag_id: text, media: StoreArg) -> (UpdateResult);
+    "verify_tag": (msg: text) -> (VerifyResult);
 };

@@ -1,14 +1,18 @@
 import React from 'react';
-import { ThirdwebProvider } from "@thirdweb-dev/react";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import Home from "./pages/Home/Home";
 import DefaultLayout from "./layouts/DefaultLayout/DefaultLayout";
 import Tag from "./pages/Tag/Tag";
-import { THIRDWEB_CLIENT_ID } from "./utils/constants";
+import '@rainbow-me/rainbowkit/styles.css';
 import Admin from "./pages/Admin/Admin";
 import Verify from "./pages/Verify/Verify";
 import VerificationLayout from "./layouts/VerifyLayout/VerifyLayout";
-import {AuthClientContext} from "./contexts/AuthClientContext";
+import WalletConnectProvider from "./providers/WalletConnectProvider";
+import { SiweIdentityProvider } from "ic-use-siwe-identity";
+import {_SERVICE} from "./declarations/ic_siwe_provider/ic_siwe_provider.did";
+import {canisterId, idlFactory} from "./declarations/ic_siwe_provider";
+import SiweIdentityGuardProvider from "./providers/SiweIdentityGuardProvider";
+import {SnackbarProvider} from "notistack";
 
 function App() {
 
@@ -43,11 +47,18 @@ function App() {
         }
     ]);
 
-    return <ThirdwebProvider clientId={THIRDWEB_CLIENT_ID}>
-        <AuthClientContext>
-            <RouterProvider router={router} />
-        </AuthClientContext>
-    </ThirdwebProvider>;
+    return <SnackbarProvider>
+        <WalletConnectProvider>
+            <SiweIdentityProvider<_SERVICE>
+                canisterId={canisterId}
+                idlFactory={idlFactory}
+            >
+                <SiweIdentityGuardProvider>
+                    <RouterProvider router={router} />
+                </SiweIdentityGuardProvider>
+            </SiweIdentityProvider>
+        </WalletConnectProvider>
+    </SnackbarProvider>;
 }
 
 export default App;

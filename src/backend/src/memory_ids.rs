@@ -4,4 +4,6 @@ pub enum MemoryKeys {
     Frames = 2,
     Keys = 3,
     TagCounters = 4,
+    MediaCanisters = 5,
+    AssetToMediaCanister = 6
 }

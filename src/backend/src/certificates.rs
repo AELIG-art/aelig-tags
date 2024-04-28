@@ -1,12 +1,10 @@
 use std::cell::RefCell;
-use std::str::FromStr;
 use std::string::ToString;
 use ic_stable_structures::{DefaultMemoryImpl, StableBTreeMap};
 use ic_stable_structures::memory_manager::{MemoryId, MemoryManager};
+use crate::ic_siwe_provider::get_caller_address;
 use crate::memory_ids::MemoryKeys;
-use crate::types::{Certificate, Error, Memory, NFTMetadata, SignMessage};
-use ethers_core::{types::{Address, RecoveryMessage, Signature}};
-
+use crate::types::{Certificate, Error, Memory, NFTMetadata};
 
 thread_local! {
     static MEMORY_MANAGER: RefCell<MemoryManager<DefaultMemoryImpl>> =
@@ -42,75 +40,50 @@ pub fn add_certificate(tag_id: String, author: String) {
             id: id_int,
             registered: false,
             metadata: None,
-            signature: None,
             owner: author.clone(),
             author
         });
     });
 }
 
-fn is_valid_signature(
-    id: String,
-    metadata: NFTMetadata,
-    author: String,
-    user_signature: String
-) -> bool {
-    let signature_message = SignMessage {
-        name: metadata.name,
-        description: metadata.description,
-        image: metadata.image,
-        attributes: metadata.attributes,
-        id
-    };
-
-    match serde_json::to_string(&signature_message) {
-        Ok(message) => {
-            Signature::from_str(&user_signature)
-                .unwrap()
-                .verify(
-                    RecoveryMessage::Data(message.into_bytes()),
-                    Address::from_str(&author).unwrap(),
-                )
-                .is_ok()
-        },
-        Err(_) => false,
-    }
-}
-
 #[ic_cdk::update]
-pub fn save_certificate(
+pub async fn save_certificate(
     tag_id: String,
     metadata: NFTMetadata,
-    signature: String
 ) -> Result<String, Error> {
-    match u128::from_str_radix(&tag_id, 16) {
-        Ok(tag_id_int) => {
+    let caller_siwe_address_res = get_caller_address().await;
+
+    match caller_siwe_address_res {
+        Ok(address) => {
             CERTIFICATES.with(|map| {
-                let certificate_option = CERTIFICATES.with(|map| {
+                let certificate_option = CERTIFICATES.with(
+                    |map| {
                     map.borrow().get(&tag_id)
                 });
                 match certificate_option {
                     Some(certificate) => {
+                        if certificate.author != address {
+                            return Err(Error::PermissionDenied {
+                                msg: "You are not the author of this certificate".to_string()
+                            });
+                        }
                         if !certificate.registered {
-                            if is_valid_signature(
-                                tag_id.clone(),
-                                metadata.clone(),
-                                certificate.author.clone(),
-                                signature.clone()
-                            ) {
-                                map.borrow_mut().insert(tag_id, Certificate {
-                                    id: tag_id_int,
-                                    registered: false,
-                                    metadata: Some(metadata),
-                                    signature: None,
-                                    owner: certificate.author.clone(),
-                                    author: certificate.author
-                                });
-                                Ok("Certificate saved".to_string())
-                            } else {
-                                Err(Error::Validation {
-                                    msg: "Invalid signature".to_string()
-                                })
+                            match u128::from_str_radix(&tag_id, 16) {
+                                Ok(tag_id_int) => {
+                                    map.borrow_mut().insert(tag_id, Certificate {
+                                        id: tag_id_int,
+                                        registered: false,
+                                        metadata: Some(metadata),
+                                        owner: certificate.author.clone(),
+                                        author: certificate.author
+                                    });
+                                    Ok("Certificate saved".to_string())
+                                }
+                                Err(_) => {
+                                    Err(Error::ServerError {
+                                        msg: "Cannot convert string to int".to_string()
+                                    })
+                                }
                             }
                         } else {
                             Err(Error::PermissionDenied {
@@ -127,61 +100,59 @@ pub fn save_certificate(
                 }
             })
         },
-        Err(_) => {
-            Err(Error::ServerError {
-                msg: "Cannot convert tag id into u128".to_string()
-            })
-        },
+        Err(e) => {
+            Err(e)
+        }
     }
 }
 
 #[ic_cdk::update]
-pub fn register_certificate(id: String, signature: String) -> Result<String, Error> {
-    CERTIFICATES.with(|map| {
-        let certificate = map.borrow().get(&id);
-        match certificate {
-            Some(certificate) => {
-                if certificate.registered {
-                    Err(Error::Validation {
-                        msg: "Certificate is already registered".to_string()
-                    })
-                } else {
-                    let metadata = certificate.clone().metadata;
-                    match metadata {
-                        Some(metadata) => {
-                            if is_valid_signature(
-                                id.clone(),
-                                metadata,
-                                certificate.clone().author,
-                                signature.clone()
-                            ) {
-                                map.borrow_mut().insert(
-                                    id,
-                                    Certificate {
-                                        id: certificate.id,
-                                        metadata: certificate.metadata,
-                                        author: certificate.author,
-                                        registered: true,
-                                        owner: certificate.owner,
-                                        signature: Some(signature)
-                                    }
-                                );
-                                Ok("Tag registered".to_string())
-                            } else {
-                                Err(Error::Validation {
-                                    msg: "Signature is not valid".to_string()
+pub async fn register_certificate(id: String) -> Result<String, Error> {
+    let caller_siwe_address_res = get_caller_address().await;
+
+    match caller_siwe_address_res {
+        Ok(address) => {
+            CERTIFICATES.with(|map| {
+                let certificate = map.borrow().get(&id);
+                match certificate {
+                    Some(certificate) => {
+                        if certificate.author != address {
+                            return Err(Error::PermissionDenied {
+                                msg: "You are not the author of this certificate".to_string()
+                            });
+                        }
+                        if certificate.registered {
+                            Err(Error::Validation {
+                                msg: "Certificate is already registered".to_string()
+                            })
+                        } else {
+                            let metadata = certificate.metadata;
+                            match metadata {
+                                Some(_) => {
+                                    map.borrow_mut().insert(
+                                        id,
+                                        Certificate {
+                                            id: certificate.id,
+                                            metadata,
+                                            author: certificate.author,
+                                            registered: true,
+                                            owner: certificate.owner,
+                                        }
+                                    );
+                                    Ok("Tag registered".to_string())
+                                },
+                                None => Err(Error::Validation {
+                                    msg: "Metadata are not set".to_string()
                                 })
                             }
-                        },
-                        None => Err(Error::Validation {
-                            msg: "Metadata are not set".to_string()
-                        })
-                    }
+                        }
+                    },
+                    None => Err(Error::NotFound {
+                        msg: format!("Cannot find the certificate with id: {}", id)
+                    })
                 }
-            },
-            None => Err(Error::NotFound {
-                msg: format!("Cannot find the certificate with id: {}", id)
             })
-        }
-    })
+        },
+        Err(e) => Err(e)
+    }
 }

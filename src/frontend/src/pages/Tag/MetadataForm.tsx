@@ -1,12 +1,13 @@
 import React, {useEffect, useRef, useState} from "react";
 import {Form} from "react-bootstrap";
-import {NFTMetadata} from "../../declarations/backend/backend.did";
-import {backend} from "../../declarations/backend";
-import {useAddress, useSigner, useStorageUpload} from "@thirdweb-dev/react";
+import {NFTMetadata, UpdateResult} from "../../declarations/backend/backend.did";
+import {backend, canisterId, idlFactory} from "../../declarations/backend";
 import {TagExpanded} from "../../utils/types";
 import {useTags} from "../../contexts/TagsContext";
 import Button from "../../components/Button/Button";
 import {alertToast} from "../../utils/alerts";
+import {useSiweIdentity} from "ic-use-siwe-identity";
+import {Actor, HttpAgent} from "@dfinity/agent";
 
 const MetadataForm = (props: {
     id: string|undefined,
@@ -33,9 +34,7 @@ const MetadataForm = (props: {
         setImage
     } = props;
 
-    const { mutateAsync: upload} = useStorageUpload();
     const inputRef = useRef<HTMLInputElement>(null);
-
 
     const [dataUpdated, setDataUpdated] = useState(false);
     const [isLoadingButton, setIsLoadingButton] = useState(false);
@@ -46,8 +45,7 @@ const MetadataForm = (props: {
         setButtonAction
     ] = useState("save" as "save"|"register");
 
-    const signer = useSigner();
-    const address = useAddress();
+    const { identityAddress, identity } = useSiweIdentity();
 
     const { setSub } = useTags();
 
@@ -69,69 +67,118 @@ const MetadataForm = (props: {
     }, [tag, dataUpdated, isLoadingButton, isDataMissing, setCertificateRegistered]);
 
     const uploadFile = () => {
-        if (inputRef.current?.files) {
+        if (inputRef.current?.files && identity) {
             const file = inputRef.current.files[0];
-            upload({data: [file]}).then((res) => {
-                setImage(res[0]);
-                setDataUpdated(true);
+            const agent = new HttpAgent({ identity });
+            agent.fetchRootKey().then(() => {
+                const backendActor = Actor.createActor(
+                    idlFactory,
+                    {
+                        agent,
+                        canisterId
+                    }
+                );
+                file.arrayBuffer().then((buffer) => {
+                    const bytes = new Uint8Array(buffer);
+                    if (id) {
+                        backendActor.upload_media(
+                            id,
+                            {
+                                content: bytes,
+                                content_encoding: "",
+                                content_type: file.type,
+                                key: id!,
+                                sha256: []
+                            }
+                        )
+                            .then((res: unknown) => {
+                                const typedRes = res as UpdateResult;
+                                if ("Ok" in typedRes) {
+                                    backend.get_storage_principal(id!)
+                                        .then((res) => {
+                                            if ("Ok" in res) {
+                                                setImage(
+                                                    // todo: use localhost domain for local development
+                                                    `${res.Ok.toString()}.raw.icp0.app/${id!}`
+                                                );
+                                                alertToast("File updated");
+                                            } else {
+                                                alertToast(res.Err.toString(), true);
+                                            }
+                                        });
+                                } else {
+                                    alertToast(typedRes.Err.toString(), true);
+                                }
+                            })
+                            .catch(() => {
+                                alertToast("Server error", true);
+                            });
+                    } else {
+                        alertToast("Id not found", true);
+                    }
+                });
             });
         }
     }
 
     const formAction = () => {
         setIsLoadingButton(true);
-        if (signer && tag && id && address) {
-            const messageJson = {
-                name: name || tag?.metadata?.name || "",
-                description: description || tag?.metadata?.description || "",
-                image: image || tag?.metadata?.image || "",
-                attributes: [],
-                id: id
-            }
-            signer.signMessage(JSON.stringify(messageJson))
-                .then((signature) => {
-                    if (buttonAction === 'save') {
-                        const metadata = {
-                            name: name || tag?.metadata?.name || "",
-                            description: description || tag?.metadata?.description || "",
-                            image: image || tag?.metadata?.image || "",
-                            attributes: []
-                        } as NFTMetadata;
-                        backend.save_certificate(
-                            id!,
-                            metadata,
-                            signature
-                        ).then((res) => {
+        if (tag && id && identityAddress && identity) {
+            const agent = new HttpAgent({ identity });
+            agent.fetchRootKey().then(() => {
+                const backendActor = Actor.createActor(
+                    idlFactory,
+                    {
+                        agent,
+                        canisterId
+                    }
+                );
+                if (buttonAction === 'save') {
+                    const metadata = {
+                        name: name || tag?.metadata?.name || "",
+                        description: description || tag?.metadata?.description || "",
+                        image: image || tag?.metadata?.image || "",
+                        attributes: []
+                    } as NFTMetadata;
+
+                    backendActor.save_certificate(
+                        id!,
+                        metadata
+                    )
+                        .then((res: unknown) => {
+                            const typedResult = res as UpdateResult;
                             setDataUpdated(false);
-                            if ("Ok" in res) {
+                            if ("Ok" in typedResult) {
                                 alertToast("Success");
                                 setSub(new Date().toISOString());
                                 setSubscription(new Date().toISOString());
                             } else {
-                                alertToast(res.Err.toString(), true);
+                                alertToast(typedResult.Err.toString(), true);
                             }
                             setIsLoadingButton(false);
+                        })
+                        .catch(() => {
+                            alertToast("Server error", true);
+                            setIsLoadingButton(false);
                         });
-                    } else {
-                        signer.signMessage(JSON.stringify(messageJson))
-                            .then((signature) => {
-                                backend.register_certificate(
-                                    id!,
-                                    signature
-                                ).then((res) => {
-                                    if ("Ok" in res) {
-                                        alertToast("Success", true);
-                                        setCertificateRegistered(true);
-                                        setSubscription(new Date().toISOString());
-                                        setSub(new Date().toISOString());
-                                    } else {
-                                        alertToast(res.Err.toString(), true);
-                                    }
-                                    setIsLoadingButton(false);
-                                });
-                            });
-                    }
-                });
+
+                } else {
+                    backendActor.register_certificate(
+                        id!,
+                    ).then((res: unknown) => {
+                        const typedResult = res as UpdateResult;
+                        if ("Ok" in typedResult) {
+                            alertToast("Success");
+                            setCertificateRegistered(true);
+                            setSubscription(new Date().toISOString());
+                            setSub(new Date().toISOString());
+                        } else {
+                            alertToast(typedResult.Err.toString(), true);
+                        }
+                        setIsLoadingButton(false);
+                    });
+                }
+            });
         }
     }
 
@@ -190,7 +237,7 @@ const MetadataForm = (props: {
         </Form>
         <div className={"d-flex flex-row-reverse"}>
             {
-                signer && tag && id && address ? <Button
+                tag && id && identityAddress ? <Button
                     variant="primary"
                     disabled={isLoadingButton || isDataMissing}
                     onClick={formAction}

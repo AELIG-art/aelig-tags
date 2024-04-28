@@ -2,8 +2,8 @@ import React, { useContext, useEffect, useState } from "react";
 import { createContext, ReactNode } from "react";
 import { TagExpanded } from "../utils/types";
 import { expandTag } from "../utils/datastore";
-import { useAddress } from "@thirdweb-dev/react";
 import {backend} from "../declarations/backend";
+import {useSiweIdentity} from "ic-use-siwe-identity";
 
 const Context = createContext({} as TagsContextInterface);
 
@@ -12,7 +12,7 @@ export const TagsContext = (props: {
 }) => {
     const [tags, setTags] = useState([] as TagExpanded[]);
     const [sub, setSub] = useState("");
-    const address = useAddress();
+    const { identityAddress } = useSiweIdentity();
     const {children} = props;
 
     const getTagsExpanded = async (address: string) => {
@@ -30,12 +30,12 @@ export const TagsContext = (props: {
     }
 
     useEffect(() => {
-        if (address) {
-            getTagsExpanded(address).then((tags) => {
+        if (identityAddress) {
+            getTagsExpanded(identityAddress).then((tags) => {
                 setTags(tags);
             });
         }
-    }, [address, sub]);
+    }, [identityAddress, sub]);
 
     const context = {
         tags: tags,
