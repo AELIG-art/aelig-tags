@@ -47,7 +47,6 @@ pub async fn upload_media(
     }
     let principal = ASSET_CANISTERS.with(|map| {
         let n = map.borrow().len() - 1;
-        println!("N={}", n);
         map.borrow().get(&n)
     });
     match principal {
