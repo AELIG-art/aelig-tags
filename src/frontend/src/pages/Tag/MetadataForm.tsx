@@ -2,10 +2,10 @@ import React, {useEffect, useRef, useState} from "react";
 import {Form} from "react-bootstrap";
 import {NFTMetadata, UpdateResult} from "../../declarations/backend/backend.did";
 import {backend, canisterId, idlFactory} from "../../declarations/backend";
-import {enqueueSnackbar} from "notistack";
 import {TagExpanded} from "../../utils/types";
 import {useTags} from "../../contexts/TagsContext";
 import Button from "../../components/Button/Button";
+import {alertToast} from "../../utils/alerts";
 import {useSiweIdentity} from "ic-use-siwe-identity";
 import {Actor, HttpAgent} from "@dfinity/agent";
 
@@ -101,60 +101,20 @@ const MetadataForm = (props: {
                                                     // todo: use localhost domain for local development
                                                     `${res.Ok.toString()}.raw.icp0.app/${id!}`
                                                 );
-                                                enqueueSnackbar(
-                                                    'File updated',
-                                                    {
-                                                        variant: 'success',
-                                                        persist: false,
-                                                        preventDuplicate: true,
-                                                        transitionDuration: 3
-                                                    }
-                                                );
+                                                alertToast("File updated");
                                             } else {
-                                                enqueueSnackbar(
-                                                    res.Err.toString(),
-                                                    {
-                                                        variant: 'error',
-                                                        persist: false,
-                                                        preventDuplicate: true,
-                                                        transitionDuration: 3
-                                                    }
-                                                );
+                                                alertToast(res.Err.toString(), true);
                                             }
                                         });
                                 } else {
-                                    enqueueSnackbar(
-                                        typedRes.Err.toString(),
-                                        {
-                                            variant: 'error',
-                                            persist: false,
-                                            preventDuplicate: true,
-                                            transitionDuration: 3
-                                        }
-                                    );
+                                    alertToast(typedRes.Err.toString(), true);
                                 }
                             })
                             .catch(() => {
-                                enqueueSnackbar(
-                                    "Server error",
-                                    {
-                                        variant: 'error',
-                                        persist: false,
-                                        preventDuplicate: true,
-                                        transitionDuration: 3
-                                    }
-                                );
+                                alertToast("Server error", true);
                             });
                     } else {
-                        enqueueSnackbar(
-                            "Id not found",
-                            {
-                                variant: 'error',
-                                persist: false,
-                                preventDuplicate: true,
-                                transitionDuration: 3
-                            }
-                        );
+                        alertToast("Id not found", true);
                     }
                 });
             });
@@ -189,40 +149,16 @@ const MetadataForm = (props: {
                             const typedResult = res as UpdateResult;
                             setDataUpdated(false);
                             if ("Ok" in typedResult) {
-                                enqueueSnackbar(
-                                    'Success',
-                                    {
-                                        variant: 'success',
-                                        persist: false,
-                                        preventDuplicate: true,
-                                        transitionDuration: 3
-                                    }
-                                );
+                                alertToast("Success");
                                 setSub(new Date().toISOString());
                                 setSubscription(new Date().toISOString());
                             } else {
-                                enqueueSnackbar(
-                                    typedResult.Err.toString(),
-                                    {
-                                        variant: 'error',
-                                        persist: false,
-                                        preventDuplicate: true,
-                                        transitionDuration: 3
-                                    }
-                                );
+                                alertToast(typedResult.Err.toString(), true);
                             }
                             setIsLoadingButton(false);
                         })
                         .catch(() => {
-                            enqueueSnackbar(
-                                "Server error",
-                                {
-                                    variant: 'error',
-                                    persist: false,
-                                    preventDuplicate: true,
-                                    transitionDuration: 3
-                                }
-                            );
+                            alertToast("Server error", true);
                             setIsLoadingButton(false);
                         });
 
@@ -232,28 +168,12 @@ const MetadataForm = (props: {
                     ).then((res: unknown) => {
                         const typedResult = res as UpdateResult;
                         if ("Ok" in typedResult) {
-                            enqueueSnackbar(
-                                'Success',
-                                {
-                                    variant: 'success',
-                                    persist: false,
-                                    preventDuplicate: true,
-                                    transitionDuration: 3
-                                }
-                            );
+                            alertToast("Success");
                             setCertificateRegistered(true);
                             setSubscription(new Date().toISOString());
                             setSub(new Date().toISOString());
                         } else {
-                            enqueueSnackbar(
-                                typedResult.Err.toString(),
-                                {
-                                    variant: 'error',
-                                    persist: false,
-                                    preventDuplicate: true,
-                                    transitionDuration: 3
-                                }
-                            );
+                            alertToast(typedResult.Err.toString(), true);
                         }
                         setIsLoadingButton(false);
                     });
@@ -275,6 +195,7 @@ const MetadataForm = (props: {
                         setName(event.target.value);
                         setDataUpdated(true);
                     }}
+                    className={"rounded-0"}
                 />
                 <Form.Text className="text-muted">
                     The name of the certificate.
@@ -293,6 +214,7 @@ const MetadataForm = (props: {
                         setDescription(event.target.value);
                         setDataUpdated(true);
                     }}
+                    className={"rounded-0"}
                 />
                 <Form.Text className="text-muted">
                     The description of the certificate.
@@ -306,6 +228,7 @@ const MetadataForm = (props: {
                     ref={inputRef}
                     accept="image/*,video/*"
                     onChange={uploadFile}
+                    className={"rounded-0"}
                 />
                 <Form.Text className="text-muted">
                     The image of the certificate.

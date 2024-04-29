@@ -2,8 +2,8 @@ import React, { useState } from "react";
 import { Form, Modal } from "react-bootstrap";
 import { canisterId, idlFactory} from "../../declarations/backend";
 import { Actor, HttpAgent } from "@dfinity/agent";
-import {enqueueSnackbar} from "notistack";
 import Button from "../../components/Button/Button";
+import {alertToast} from "../../utils/alerts";
 import {useSiweIdentity} from "ic-use-siwe-identity";
 
 const NewTagModal = (props: {
@@ -48,25 +48,9 @@ const NewTagModal = (props: {
                             };
                             if (resTyped.Ok) {
                                 close();
-                                enqueueSnackbar(
-                                    'Success',
-                                    {
-                                        variant: 'success',
-                                        persist: false,
-                                        preventDuplicate: true,
-                                        transitionDuration: 3
-                                    }
-                                );
+                                alertToast("Success");
                             } else {
-                                enqueueSnackbar(
-                                    resTyped.Err,
-                                    {
-                                        variant: 'error',
-                                        persist: false,
-                                        preventDuplicate: true,
-                                        transitionDuration: 3
-                                    }
-                                );
+                                alertToast(resTyped.Err!, true);
                             }
                         });
                     });
@@ -76,7 +60,7 @@ const NewTagModal = (props: {
     }
 
 
-    return <Modal show={open} onHide={close}>
+    return <Modal show={open} onHide={close} contentClassName={"rounded-0"}>
         <Modal.Header closeButton>
             <Modal.Title>Add new tag</Modal.Title>
         </Modal.Header>
@@ -90,6 +74,7 @@ const NewTagModal = (props: {
                         onChange={(event) => {
                             setOwner(event.target.value);
                         }}
+                        className={"rounded-0"}
                     />
                 </Form.Group>
 
@@ -101,6 +86,7 @@ const NewTagModal = (props: {
                         onChange={(event) => {
                             setTags(event.target.value.split(","));
                         }}
+                        className={"rounded-0"}
                     />
                     <Form.Floating>Enter tag ids separated by a comma.</Form.Floating>
                 </Form.Group>
@@ -113,6 +99,7 @@ const NewTagModal = (props: {
                         onChange={(event) => {
                             setShortIds(event.target.value.split(","));
                         }}
+                        className={"rounded-0"}
                     />
                     <Form.Floating>Enter tag short ids separated by a comma.</Form.Floating>
                 </Form.Group>
