@@ -1,3 +1,5 @@
+use candid::Principal;
+use ic_cdk::api::is_controller;
 use crate::ic_siwe_provider::get_caller_address;
 use crate::tags::get_tag;
 
@@ -14,4 +16,9 @@ pub async fn is_authenticated(tag_id: String) -> bool {
         }
         Err(_) => false
     }
+}
+
+#[ic_cdk::query]
+fn is_admin(user: Principal) -> bool {
+    is_controller(&user)
 }
