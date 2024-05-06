@@ -54,6 +54,11 @@ type VerifyResult = variant {
     Err: Error;
 };
 
+type FrameResult = variant {
+    Ok: Frame;
+    Err: Error;
+};
+
 type UpdateResult = variant {
     Ok: text;
     Err: Error;
@@ -97,4 +102,7 @@ service : {
     "set_key": (key: text, value: text) -> (UpdateResult);
     "upload_media": (tag_id: text, media: StoreArg) -> (UpdateResult);
     "verify_tag": (msg: text) -> (VerifyResult);
+    "set_nft_on_frame": (tag_id: text, nft: NFT) -> (UpdateResult);
+    "get_frame": (tag_id: text) -> (FrameResult) query;
+    "clean_frame": (tag_id: text) -> (UpdateResult);
 };
