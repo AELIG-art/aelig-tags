@@ -4,6 +4,7 @@ use ic_cdk::caller;
 use ic_stable_structures::{DefaultMemoryImpl, StableBTreeMap};
 use ic_stable_structures::memory_manager::{MemoryId, MemoryManager};
 use crate::certificates::add_certificate;
+use crate::frames::add_frame;
 use crate::memory_ids::MemoryKeys;
 use crate::types::{Error, Memory, Tag};
 
@@ -65,6 +66,8 @@ fn add_tag(id: String, tag: Tag) -> Result<String, Error> {
             map.borrow_mut().insert(id.clone(), tag.clone());
             if tag.is_certificate {
                 add_certificate(id, tag.owner);
+            } else {
+                add_frame(id);
             }
             Ok("Tag inserted".to_string())
         })

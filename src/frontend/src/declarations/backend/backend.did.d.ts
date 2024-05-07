@@ -15,6 +15,8 @@ export type Error = { 'NotFound' : ErrorReason } |
   { 'Validation' : ErrorReason };
 export interface ErrorReason { 'msg' : string }
 export interface Frame { 'id' : bigint, 'nft' : [] | [NFT] }
+export type FrameResult = { 'Ok' : Frame } |
+  { 'Err' : Error };
 export type GetCertificateResult = { 'Ok' : Certificate } |
   { 'Err' : Error };
 export type GetStorageResult = { 'Ok' : Principal } |
@@ -55,7 +57,9 @@ export type VerifyResult = {
 export interface _SERVICE {
   'add_storage_canister' : ActorMethod<[Principal], UpdateResult>,
   'add_tag' : ActorMethod<[string, Tag], UpdateResult>,
+  'clean_frame' : ActorMethod<[string], UpdateResult>,
   'get_certificate' : ActorMethod<[string], GetCertificateResult>,
+  'get_frame' : ActorMethod<[string], FrameResult>,
   'get_storage_principal' : ActorMethod<[string], GetStorageResult>,
   'get_tag' : ActorMethod<[string], GetTagResult>,
   'get_tags' : ActorMethod<[], Array<Tag>>,
@@ -64,6 +68,7 @@ export interface _SERVICE {
   'register_certificate' : ActorMethod<[string], UpdateResult>,
   'save_certificate' : ActorMethod<[string, NFTMetadata], UpdateResult>,
   'set_key' : ActorMethod<[string, string], UpdateResult>,
+  'set_nft_on_frame' : ActorMethod<[string, NFT], UpdateResult>,
   'upload_media' : ActorMethod<[string, StoreArg], UpdateResult>,
   'verify_tag' : ActorMethod<[string], VerifyResult>,
 }

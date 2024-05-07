@@ -5,6 +5,6 @@ mod certificates;
 mod frames;
 mod keys;
 mod memory_ids;
-mod admin;
 mod media;
 mod ic_siwe_provider;
+mod auth;

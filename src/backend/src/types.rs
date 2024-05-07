@@ -69,7 +69,7 @@ impl Storable for Certificate {
 }
 
 #[derive(CandidType, Deserialize, Clone)]
-struct NFT {
+pub struct NFT {
     id: String,
     contract_address: String,
     chain: String,
@@ -77,8 +77,8 @@ struct NFT {
 
 #[derive(CandidType, Deserialize, Clone)]
 pub struct Frame {
-    id: u128,
-    nft: Option<NFT>
+    pub(crate) id: u128,
+    pub(crate) nft: Option<NFT>
 }
 
 impl Storable for Frame {
