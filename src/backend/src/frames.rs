@@ -61,7 +61,7 @@ pub async fn set_nft_on_frame(tag_id: String, nft: NFT) -> Result<String, Error>
                         nft: Some(nft),
                     },
                 );
-                Ok("NFT set on frame".to_string())
+                Ok("NFT set on the frame".to_string())
             },
             None => Err(Error::NotFound {
                 msg: "Frame not found".to_string(),
