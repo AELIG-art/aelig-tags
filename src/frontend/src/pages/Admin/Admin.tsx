@@ -26,7 +26,7 @@ const Admin = () => {
         if (!hash) {
             navigate("/admin/#certificates");
         }
-    }, [hash]);
+    }, [hash, navigate]);
 
 
     useEffect(() => {
@@ -77,7 +77,7 @@ const Admin = () => {
                     /> : <Frames
                         tagsSub={framesSub}
                         openModal={() => {
-                            setIsNewTagCertificate(true);
+                            setIsNewTagCertificate(false);
                             setNewTagModalOpen(true);
                         }}
                     />
