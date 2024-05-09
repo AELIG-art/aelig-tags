@@ -45,12 +45,8 @@ pub async fn upload_media(
             msg: "Certificate does not exist".to_string()
         });
     }
-    let principal = ASSET_CANISTERS.with(|map| {
-        let n = map.borrow().len() - 1;
-        map.borrow().get(&n)
-    });
-    match principal {
-        Some(principal) => {
+    match get_storage_principal(tag_id.clone()) {
+        Ok(principal) => {
             let response: Result<(), (RejectionCode, String)> = call(
                 principal,
                 "store",
@@ -69,11 +65,7 @@ pub async fn upload_media(
                 })
             }
         },
-        None => {
-            Err(Error::ServerError {
-                msg: "Media canister not found".to_string()
-            })
-        }
+        Err(e) => Err(e)
     }
 }
 
