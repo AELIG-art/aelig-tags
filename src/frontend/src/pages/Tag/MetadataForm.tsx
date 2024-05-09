@@ -87,7 +87,7 @@ const MetadataForm = (props: {
                                 content: bytes,
                                 content_encoding: "identity",
                                 content_type: file.type,
-                                key: id!,
+                                key: `/${id!}`,
                                 sha256: []
                             }
                         )
@@ -99,7 +99,7 @@ const MetadataForm = (props: {
                                             if ("Ok" in res) {
                                                 setImage(
                                                     // todo: use localhost domain for local development
-                                                    `${res.Ok.toString()}.raw.icp0.app/${id!}`
+                                                    `https://${res.Ok.toString()}.icp0.io/${id!}`
                                                 );
                                                 alertToast("File updated");
                                             } else {
