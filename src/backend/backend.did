@@ -87,6 +87,10 @@ type StoreArg = record {
     sha256: opt blob
 };
 
+type LastStorageResult = variant {
+    Ok: Principal;
+    Err: Error;
+}
 
 service : {
     "add_storage_canister": (principal) -> (UpdateResult);
@@ -105,4 +109,5 @@ service : {
     "set_nft_on_frame": (tag_id: text, nft: NFT) -> (UpdateResult);
     "get_frame": (tag_id: text) -> (FrameResult) query;
     "clean_frame": (tag_id: text) -> (UpdateResult);
+    "get_last_storage_canister": () -> (LastStorageResult) query;
 };
