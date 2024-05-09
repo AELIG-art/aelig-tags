@@ -109,7 +109,7 @@ fn add_storage_canister(principal: Principal) -> Result<String, Error> {
 #[ic_cdk::query]
 fn get_last_storage_canister() -> Result<Principal, Error> {
     ASSET_CANISTERS.with(|map| {
-        if map.borrow().len() {
+        if map.borrow().len() == 0 {
             Err(Error::NotFound {
                 msg: "No asset canisters configured".to_string()
             })
