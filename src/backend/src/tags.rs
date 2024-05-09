@@ -62,15 +62,25 @@ fn get_tags() -> Vec<Tag> {
 #[ic_cdk::update]
 fn add_tag(id: String, tag: Tag) -> Result<String, Error> {
     return if is_controller(&caller()) {
-        TAGS.with(|map| {
-            map.borrow_mut().insert(id.clone(), tag.clone());
-            if tag.is_certificate {
-                add_certificate(id, tag.owner);
-            } else {
-                add_frame(id);
+        match get_tag(id.clone()) {
+            Ok(_) => {
+                Err(Error::PermissionDenied {
+                    msg: "This tag already exists".to_string()
+                })
+            },
+            Err(_) => {
+                TAGS.with(|map| {
+                    map.borrow_mut().insert(id.clone(), tag.clone());
+                    if tag.is_certificate {
+                        add_certificate(id, tag.owner);
+                    } else {
+                        add_frame(id);
+                    }
+                    Ok("Tag inserted".to_string())
+                })
             }
-            Ok("Tag inserted".to_string())
-        })
+        }
+
     } else {
         Err(Error::PermissionDenied {
             msg: "You are not allowed".to_string()
