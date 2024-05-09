@@ -85,7 +85,7 @@ const MetadataForm = (props: {
                             id,
                             {
                                 content: bytes,
-                                content_encoding: "",
+                                content_encoding: "identity",
                                 content_type: file.type,
                                 key: id!,
                                 sha256: []
