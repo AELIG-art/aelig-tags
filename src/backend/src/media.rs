@@ -70,9 +70,9 @@ pub async fn upload_media(
 }
 
 #[ic_cdk::query]
-fn get_storage_principal(id: String) -> Result<Principal, Error> {
+fn get_storage_principal(tag_id: String) -> Result<Principal, Error> {
     MEDIA_TO_ASSET_CANISTERS.with(|map| {
-        match map.borrow().get(&id) {
+        match map.borrow().get(&tag_id) {
             Some(principal) => Ok(principal),
             None => Err(
                 Error::NotFound {
