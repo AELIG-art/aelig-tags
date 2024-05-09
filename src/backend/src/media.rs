@@ -74,11 +74,7 @@ fn get_storage_principal(tag_id: String) -> Result<Principal, Error> {
     MEDIA_TO_ASSET_CANISTERS.with(|map| {
         match map.borrow().get(&tag_id) {
             Some(principal) => Ok(principal),
-            None => Err(
-                Error::NotFound {
-                    msg: "Id not found".to_string()
-                }
-            )
+            None => get_last_storage_principal()
         }
     })
 }
