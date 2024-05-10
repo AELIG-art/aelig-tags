@@ -53,8 +53,14 @@ pub async fn set_nft_on_frame(tag_id: String, nft: NFT) -> Result<String, Error>
 
     FRAMES.with(|map| {
         match map.borrow().get(&tag_id) {
-            Some(mut frame) => {
-                frame.nft = Some(nft);
+            Some(frame) => {
+                map.borrow_mut().insert(
+                    tag_id,
+                    Frame {
+                        id: frame.id,
+                        nft: Some(nft),
+                    },
+                );
                 Ok("NFT set on the frame".to_string())
             },
             None => Err(Error::NotFound {
@@ -74,8 +80,14 @@ pub async fn clean_frame(tag_id: String) -> Result<String, Error> {
 
     FRAMES.with(|map| {
         match map.borrow().get(&tag_id) {
-            Some(mut frame) => {
-                frame.nft = None;
+            Some(frame) => {
+                map.borrow_mut().insert(
+                    tag_id,
+                    Frame {
+                        id: frame.id,
+                        nft: None,
+                    },
+                );
                 Ok("Frame cleaned".to_string())
             },
             None => Err(Error::NotFound {
