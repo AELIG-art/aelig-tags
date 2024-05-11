@@ -1,11 +1,12 @@
 import React, {useEffect, useState} from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { backend } from "../../declarations/backend";
 import { TagExpanded } from "../../utils/types";
 import "./styles.Tag.css";
 import MetadataForm from "./MetadataForm";
 import MetadataInfo from "./MetadataInfo";
 import {useSiweIdentity} from "ic-use-siwe-identity";
+import {useBackendActor} from "../../contexts/BackendActorContext";
+import {GetCertificateResult, GetTagResult} from "../../declarations/backend/backend.did";
 
 const Tag = () => {
     let { id } = useParams();
@@ -17,6 +18,8 @@ const Tag = () => {
     const [description, setDescription] = useState<undefined|string>();
     const [image, setImage] = useState<undefined|string>();
     const [isLoading, setIsLoading] = useState(true);
+
+    const {backendActor} = useBackendActor();
 
     const [
         certificateRegistered,
@@ -30,22 +33,24 @@ const Tag = () => {
         if (identityAddress === undefined && !isInitializing) {
             navigate("/");
         }
-        if (id && identityAddress) {
-            backend.get_tag(id).then((tagRes) => {
-                if ('Ok' in tagRes) {
-                    if (tagRes.Ok.owner === identityAddress) {
-                        backend.get_certificate(id!).then((certificateRes) => {
-                            if ('Ok' in certificateRes) {
+        if (id && identityAddress && backendActor) {
+            backendActor.get_tag(id).then((tagRes) => {
+                const tagResTyped = tagRes as GetTagResult;
+                if ('Ok' in tagResTyped) {
+                    if (tagResTyped.Ok.owner === identityAddress) {
+                        backendActor.get_certificate(id!).then((certificateRes) => {
+                            const certificateResTyped = certificateRes as GetCertificateResult;
+                            if ('Ok' in certificateResTyped) {
                                 setTag({
-                                    ...tagRes.Ok,
-                                    registered: certificateRes.Ok.registered,
-                                    metadata: certificateRes.Ok.metadata.length > 0 ? certificateRes.Ok.metadata[0]
+                                    ...tagResTyped.Ok,
+                                    registered: certificateResTyped.Ok.registered,
+                                    metadata: certificateResTyped.Ok.metadata.length > 0 ? certificateResTyped.Ok.metadata[0]
                                         : undefined
                                 });
-                                if (certificateRes.Ok.metadata.length > 0) {
-                                    setName(certificateRes.Ok.metadata[0]!.name);
-                                    setDescription(certificateRes.Ok.metadata[0]!.description);
-                                    setImage(certificateRes.Ok.metadata[0]!.image);
+                                if (certificateResTyped.Ok.metadata.length > 0) {
+                                    setName(certificateResTyped.Ok.metadata[0]!.name);
+                                    setDescription(certificateResTyped.Ok.metadata[0]!.description);
+                                    setImage(certificateResTyped.Ok.metadata[0]!.image);
                                 }
                                 setIsLoading(false);
                             } else {
@@ -63,7 +68,7 @@ const Tag = () => {
     }, [id, identityAddress, isInitializing, subscription, navigate]);
 
     return <div className={"pb-3"}>
-        <h1 className="mt-5">{tag?.short_id || tag?.id.toString(16)}</h1>
+        <h1 className="mt-5">{tag?.short_id || tag?.id}</h1>
         <Link to={"/"} className="back">Back</Link>
         {
             !isLoading ? <div className={"row mt-4"}>
