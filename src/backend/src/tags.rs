@@ -58,13 +58,18 @@ fn get_tags_owned_by(owner: String) -> Vec<Tag> {
 }
 
 #[ic_cdk::query]
-pub fn get_tags() -> Vec<Tag> {
-    TAGS.with(|tags| {
-        tags.borrow()
-            .iter()
-            .map(|(_, tag)| tag.clone())
-            .collect()
-    })
+pub fn get_tags() -> Result<Vec<Tag>, Error> {
+    if is_controller(&caller()) {
+        return Ok(TAGS.with(|tags| {
+            tags.borrow()
+                .iter()
+                .map(|(_, tag)| tag.clone())
+                .collect()
+        }))
+    }
+    return Err(Error::PermissionDenied {
+        msg: "The caller is not a canister controller".to_string()
+    });
 }
 
 #[ic_cdk::update]

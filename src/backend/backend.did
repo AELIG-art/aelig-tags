@@ -101,13 +101,18 @@ type GetCertificatesResult = variant {
     Err: Error;
 };
 
+type GetTagsResult = variant {
+    Ok: vec Tag;
+    Err: Error;
+}
+
 service : {
     "add_storage_canister": (principal) -> (UpdateResult);
     "add_tag": (id: text, tag: Tag) -> (UpdateResult);
     "get_certificate": (tag_id: text) -> (GetCertificateResult) query;
     "get_storage_principal": (tag_id: text) -> (GetStorageResult) query;
     "get_tag": (tag_id: text) -> (GetTagResult) query;
-    "get_tags": () -> (vec Tag) query;
+    "get_tags": () -> (GetTagsResult) query;
     "get_tags_owned_by": (owner: text) -> (vec Tag) query;
     "is_admin": (user: principal) -> (bool) query;
     "register_certificate": (id: text) -> (UpdateResult);
