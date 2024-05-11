@@ -21,13 +21,16 @@ export const idlFactory = ({ IDL }) => {
   });
   const Certificate = IDL.Record({
     'id' : IDL.Text,
-    'owner' : IDL.Text,
     'metadata' : IDL.Opt(NFTMetadata),
     'author' : IDL.Text,
     'registered' : IDL.Bool,
   });
   const GetCertificateResult = IDL.Variant({
     'Ok' : Certificate,
+    'Err' : Error,
+  });
+  const GetCertificatesResult = IDL.Variant({
+    'Ok' : IDL.Vec(Certificate),
     'Err' : Error,
   });
   const NFT = IDL.Record({
@@ -44,6 +47,7 @@ export const idlFactory = ({ IDL }) => {
   });
   const GetStorageResult = IDL.Variant({ 'Ok' : IDL.Principal, 'Err' : Error });
   const GetTagResult = IDL.Variant({ 'Ok' : Tag, 'Err' : Error });
+  const GetTagsResult = IDL.Variant({ 'Ok' : IDL.Vec(Tag), 'Err' : Error });
   const StoreArg = IDL.Record({
     'key' : IDL.Text,
     'content' : IDL.Vec(IDL.Nat8),
@@ -60,6 +64,7 @@ export const idlFactory = ({ IDL }) => {
     'add_tag' : IDL.Func([IDL.Text, Tag], [UpdateResult], []),
     'clean_frame' : IDL.Func([IDL.Text], [UpdateResult], []),
     'get_certificate' : IDL.Func([IDL.Text], [GetCertificateResult], ['query']),
+    'get_certificates' : IDL.Func([], [GetCertificatesResult], ['query']),
     'get_frame' : IDL.Func([IDL.Text], [FrameResult], ['query']),
     'get_frames' : IDL.Func([], [GetFramesResult], ['query']),
     'get_last_storage_principal' : IDL.Func([], [LastStorageResult], ['query']),
@@ -69,7 +74,7 @@ export const idlFactory = ({ IDL }) => {
         ['query'],
       ),
     'get_tag' : IDL.Func([IDL.Text], [GetTagResult], ['query']),
-    'get_tags' : IDL.Func([], [IDL.Vec(Tag)], ['query']),
+    'get_tags' : IDL.Func([], [GetTagsResult], ['query']),
     'get_tags_owned_by' : IDL.Func([IDL.Text], [IDL.Vec(Tag)], ['query']),
     'is_admin' : IDL.Func([IDL.Principal], [IDL.Bool], ['query']),
     'register_certificate' : IDL.Func([IDL.Text], [UpdateResult], []),
