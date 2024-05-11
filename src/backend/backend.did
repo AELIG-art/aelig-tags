@@ -90,12 +90,12 @@ type StoreArg = record {
 type LastStorageResult = variant {
     Ok: principal;
     Err: Error;
-}
+};
 
 type GetFramesResult = variant {
     Ok: vec Frame;
     Err: Error;
-}
+};
 
 service : {
     "add_storage_canister": (principal) -> (UpdateResult);
