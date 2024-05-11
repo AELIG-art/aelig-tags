@@ -1,0 +1,26 @@
+name: Deploy canisters
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Install DFX Command
+        run: sh -ci "$(curl -fsSL https://internetcomputer.org/install.sh)"
+
+      - name: Setup Identity
+        run: |
+          echo "${{ secrets.IDENTITY_KEY }}" > identity.pem
+          dfx identity import git_identity identity.pem
+
+      - name: Deploy to the IC
+        run: dfx deploy --ic
+
