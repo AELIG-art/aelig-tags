@@ -96,6 +96,11 @@ type GetFramesResult = variant {
     Err: Error;
 };
 
+type GetCertificatesResult = variant {
+    Ok: vec Certificate;
+    Err: Error;
+};
+
 service : {
     "add_storage_canister": (principal) -> (UpdateResult);
     "add_tag": (id: text, tag: Tag) -> (UpdateResult);
@@ -116,4 +121,5 @@ service : {
     "get_last_storage_principal": () -> (LastStorageResult) query;
     "transfer_frame": (tag_id: text, to_address: text) -> (UpdateResult);
     "get_frames": () -> (GetFramesResult) query;
+    "get_certificates": () -> (GetCertificatesResult) query;
 };
