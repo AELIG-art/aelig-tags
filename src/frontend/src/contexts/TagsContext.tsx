@@ -2,8 +2,9 @@ import React, { useContext, useEffect, useState } from "react";
 import { createContext, ReactNode } from "react";
 import { TagExpanded } from "../utils/types";
 import { expandTag } from "../utils/datastore";
-import {backend} from "../declarations/backend";
 import {useSiweIdentity} from "ic-use-siwe-identity";
+import {GetTagsResult} from "../declarations/backend/backend.did";
+import {useBackendActor} from "./BackendActorContext";
 
 const Context = createContext({} as TagsContextInterface);
 
@@ -15,14 +16,20 @@ export const TagsContext = (props: {
     const { identityAddress } = useSiweIdentity();
     const {children} = props;
 
-    const getTagsExpanded = async (address: string) => {
-        const tagsRes = await backend.get_tags_owned_by(address);
-        const tags: TagExpanded[] = [];
+    const { backendActor } = useBackendActor();
 
-        for (const tag of tagsRes) {
-            if (tag.is_certificate) {
-                const tagExpanded = await expandTag(tag);
-                tags.push(tagExpanded);
+    const getTagsExpanded = async (address: string) => {
+        if (backendActor) {
+            const tagsRes = await backendActor.get_tags_owned_by(address) as GetTagsResult;
+            const tags: TagExpanded[] = [];
+
+            if ("Ok" in tagsRes) {
+                for (const tag of tagsRes.Ok) {
+                    if (tag.is_certificate) {
+                        const tagExpanded = await expandTag(tag);
+                        tags.push(tagExpanded);
+                    }
+                }
             }
         }
 
@@ -35,7 +42,7 @@ export const TagsContext = (props: {
                 setTags(tags);
             });
         }
-    }, [identityAddress, sub]);
+    }, [identityAddress, sub, backendActor]);
 
     const context = {
         tags: tags,

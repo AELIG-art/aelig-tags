@@ -1,13 +1,13 @@
 import React, {useEffect, useRef, useState} from "react";
 import {Form} from "react-bootstrap";
 import {NFTMetadata, UpdateResult} from "../../declarations/backend/backend.did";
-import {backend, canisterId, idlFactory} from "../../declarations/backend";
+import {backend} from "../../declarations/backend";
 import {TagExpanded} from "../../utils/types";
 import {useTags} from "../../contexts/TagsContext";
 import Button from "../../components/Button/Button";
 import {alertToast} from "../../utils/alerts";
 import {useSiweIdentity} from "ic-use-siwe-identity";
-import {Actor, HttpAgent} from "@dfinity/agent";
+import {useBackendActor} from "../../contexts/BackendActorContext";
 
 const MetadataForm = (props: {
     id: string|undefined,
@@ -49,6 +49,8 @@ const MetadataForm = (props: {
 
     const { setSub } = useTags();
 
+    const {backendActor} = useBackendActor();
+
     useEffect(() => {
         setIsDataMissing(!image || image === "" || !name || name === "" || !description || description === "");
     }, [image, name, description]);
@@ -69,116 +71,96 @@ const MetadataForm = (props: {
     const uploadFile = () => {
         if (inputRef.current?.files && identity) {
             const file = inputRef.current.files[0];
-            const agent = new HttpAgent({ identity });
-            agent.fetchRootKey().then(() => {
-                const backendActor = Actor.createActor(
-                    idlFactory,
-                    {
-                        agent,
-                        canisterId
-                    }
-                );
-                file.arrayBuffer().then((buffer) => {
-                    const bytes = new Uint8Array(buffer);
-                    if (id) {
-                        backendActor.upload_media(
-                            id,
-                            {
-                                content: bytes,
-                                content_encoding: "identity",
-                                content_type: file.type,
-                                key: `/${id!}`,
-                                sha256: []
+            file.arrayBuffer().then((buffer) => {
+                const bytes = new Uint8Array(buffer);
+                if (id && backendActor) {
+                    backendActor.upload_media(
+                        id,
+                        {
+                            content: bytes,
+                            content_encoding: "identity",
+                            content_type: file.type,
+                            key: `/${id!}`,
+                            sha256: []
+                        }
+                    )
+                        .then((res: unknown) => {
+                            const typedRes = res as UpdateResult;
+                            if ("Ok" in typedRes) {
+                                backend.get_storage_principal(id!)
+                                    .then((res) => {
+                                        if ("Ok" in res) {
+                                            setImage(
+                                                // todo: use localhost domain for local development
+                                                `https://${res.Ok.toString()}.icp0.io/${id!}`
+                                            );
+                                            alertToast("File updated");
+                                        } else {
+                                            alertToast(res.Err.toString(), true);
+                                        }
+                                    });
+                            } else {
+                                alertToast(typedRes.Err.toString(), true);
                             }
-                        )
-                            .then((res: unknown) => {
-                                const typedRes = res as UpdateResult;
-                                if ("Ok" in typedRes) {
-                                    backend.get_storage_principal(id!)
-                                        .then((res) => {
-                                            if ("Ok" in res) {
-                                                setImage(
-                                                    // todo: use localhost domain for local development
-                                                    `https://${res.Ok.toString()}.icp0.io/${id!}`
-                                                );
-                                                alertToast("File updated");
-                                            } else {
-                                                alertToast(res.Err.toString(), true);
-                                            }
-                                        });
-                                } else {
-                                    alertToast(typedRes.Err.toString(), true);
-                                }
-                            })
-                            .catch(() => {
-                                alertToast("Server error", true);
-                            });
-                    } else {
-                        alertToast("Id not found", true);
-                    }
-                });
+                        })
+                        .catch(() => {
+                            alertToast("Server error", true);
+                        });
+                } else {
+                    alertToast("Id not found", true);
+                }
             });
         }
     }
 
     const formAction = () => {
         setIsLoadingButton(true);
-        if (tag && id && identityAddress && identity) {
-            const agent = new HttpAgent({ identity });
-            agent.fetchRootKey().then(() => {
-                const backendActor = Actor.createActor(
-                    idlFactory,
-                    {
-                        agent,
-                        canisterId
-                    }
-                );
-                if (buttonAction === 'save') {
-                    const metadata = {
-                        name: name || tag?.metadata?.name || "",
-                        description: description || tag?.metadata?.description || "",
-                        image: image || tag?.metadata?.image || "",
-                        attributes: []
-                    } as NFTMetadata;
+        if (tag && id && identityAddress && backendActor) {
+            if (buttonAction === 'save') {
+                const metadata = {
+                    name: name || tag?.metadata?.name || "",
+                    description: description || tag?.metadata?.description || "",
+                    image: image || tag?.metadata?.image || "",
+                    attributes: []
+                } as NFTMetadata;
 
-                    backendActor.save_certificate(
-                        id!,
-                        metadata
-                    )
-                        .then((res: unknown) => {
-                            const typedResult = res as UpdateResult;
-                            setDataUpdated(false);
-                            if ("Ok" in typedResult) {
-                                alertToast("Success");
-                                setSub(new Date().toISOString());
-                                setSubscription(new Date().toISOString());
-                            } else {
-                                alertToast(typedResult.Err.toString(), true);
-                            }
-                            setIsLoadingButton(false);
-                        })
-                        .catch(() => {
-                            alertToast("Server error", true);
-                            setIsLoadingButton(false);
-                        });
-
-                } else {
-                    backendActor.register_certificate(
-                        id!,
-                    ).then((res: unknown) => {
+                backendActor.save_certificate(
+                    id!,
+                    metadata
+                )
+                    .then((res: unknown) => {
                         const typedResult = res as UpdateResult;
+                        setDataUpdated(false);
                         if ("Ok" in typedResult) {
                             alertToast("Success");
-                            setCertificateRegistered(true);
-                            setSubscription(new Date().toISOString());
                             setSub(new Date().toISOString());
+                            setSubscription(new Date().toISOString());
                         } else {
                             alertToast(typedResult.Err.toString(), true);
                         }
                         setIsLoadingButton(false);
+                    })
+                    .catch(() => {
+                        alertToast("Server error", true);
+                        setIsLoadingButton(false);
                     });
-                }
-            });
+
+            } else {
+                backendActor.register_certificate(
+                    id!,
+                ).then((res: unknown) => {
+                    const typedResult = res as UpdateResult;
+                    if ("Ok" in typedResult) {
+                        alertToast("Success");
+                        setCertificateRegistered(true);
+                        setSubscription(new Date().toISOString());
+                        setSub(new Date().toISOString());
+                    } else {
+                        alertToast(typedResult.Err.toString(), true);
+                    }
+                    setIsLoadingButton(false);
+                });
+            }
         }
     }
 

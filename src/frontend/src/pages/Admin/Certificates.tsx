@@ -4,6 +4,7 @@ import {Tag} from "../../declarations/backend/backend.did";
 import {backend} from "../../declarations/backend";
 import Button from "../../components/Button/Button";
 import Table from "../../components/Table/Table";
+import {useBackendActor} from "../../contexts/BackendActorContext";
 
 const Certificates = (props: {
     tagsSub: string,
@@ -11,6 +12,7 @@ const Certificates = (props: {
 }) => {
     const {  tagsSub, openModal } = props;
     const [tagsExpanded, setTagsExpanded] = useState([] as TagExpanded[]);
+    const {backendActor} = useBackendActor();
 
     useEffect(() => {
         backend.get_tags().then((tags: Tag[]) => {
@@ -33,6 +35,12 @@ const Certificates = (props: {
             });
         });
     }, [tagsSub]);
+        if (backendActor) {
+            backendActor.get_tags().then((tags) => {
+                const tagsType = tags as GetTagsResult;
+            });
+        }
+    }, [tagsSub, backendActor]);
 
     return <div className={'mt-3'}>
         <Button onClick={openModal}>

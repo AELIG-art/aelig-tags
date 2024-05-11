@@ -16,43 +16,33 @@ const NewTagModal = (props: {
     const [tags, setTags] = useState([] as string[]);
     const [shortIds, setShortIds] = useState<string[]>([]);
     const [isLoading, setIsLoading] = useState(false);
-    const { identity } = useSiweIdentity();
+    const {backendActor} = useBackendActor();
 
     const addNewTag = () => {
         if (owner && tags.length === shortIds.length) {
             tags.forEach((tag, index) => {
-                if (identity) {
-                    const agent = new HttpAgent({ identity });
-                    agent.fetchRootKey().then(() => {
-                        const backendActor = Actor.createActor(
-                            idlFactory,
-                            {
-                                agent,
-                                canisterId
-                            }
-                        );
-                        setIsLoading(true);
-                        backendActor.add_tag(
-                            tag,
-                            {
-                                owner: owner,
-                                is_certificate: isNewTagCertificate,
-                                short_id: shortIds[index],
-                                id: tag
-                            }
-                        ).then((res: unknown) => {
-                            setIsLoading(false);
-                            const resTyped = res as {
-                                Ok?: string,
-                                Err?: string
-                            };
-                            if (resTyped.Ok) {
-                                close();
-                                alertToast("Success");
-                            } else {
-                                alertToast(resTyped.Err!, true);
-                            }
-                        });
+                if (backendActor) {
+                    setIsLoading(true);
+                    backendActor.add_tag(
+                        tag,
+                        {
+                            owner: owner,
+                            is_certificate: isNewTagCertificate,
+                            short_id: shortIds[index],
+                            id: tag
+                        }
+                    ).then((res: unknown) => {
+                        setIsLoading(false);
+                        const resTyped = res as {
+                            Ok?: string,
+                            Err?: string
+                        };
+                        if (resTyped.Ok) {
+                            close();
+                            alertToast("Success");
+                        } else {
+                            alertToast(resTyped.Err!, true);
+                        }
                     });
                 }
             });

@@ -13,6 +13,7 @@ import {_SERVICE} from "./declarations/ic_siwe_provider/ic_siwe_provider.did";
 import {canisterId, idlFactory} from "./declarations/ic_siwe_provider";
 import SiweIdentityGuardProvider from "./providers/SiweIdentityGuardProvider";
 import {SnackbarProvider} from "notistack";
+import BackendActorContext from "./contexts/BackendActorContext";
 
 function App() {
 
@@ -54,7 +55,9 @@ function App() {
                 idlFactory={idlFactory}
             >
                 <SiweIdentityGuardProvider>
-                    <RouterProvider router={router} />
+                    <BackendActorContext>
+                        <RouterProvider router={router} />
+                    </BackendActorContext>
                 </SiweIdentityGuardProvider>
             </SiweIdentityProvider>
         </WalletConnectProvider>
