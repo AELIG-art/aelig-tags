@@ -35,9 +35,8 @@ pub fn get_certificate(tag_id: String) -> Result<Certificate, Error> {
 
 pub fn add_certificate(tag_id: String, author: String) {
     CERTIFICATES.with(|map| {
-        let id_int = u128::from_str_radix(&tag_id, 16).expect("Id conversion error");
-        map.borrow_mut().insert(tag_id, Certificate {
-            id: id_int,
+        map.borrow_mut().insert(tag_id.clone(), Certificate {
+            id: tag_id,
             registered: false,
             metadata: None,
             owner: author.clone(),
@@ -68,23 +67,14 @@ pub async fn save_certificate(
                             });
                         }
                         if !certificate.registered {
-                            match u128::from_str_radix(&tag_id, 16) {
-                                Ok(tag_id_int) => {
-                                    map.borrow_mut().insert(tag_id, Certificate {
-                                        id: tag_id_int,
-                                        registered: false,
-                                        metadata: Some(metadata),
-                                        owner: certificate.author.clone(),
-                                        author: certificate.author
-                                    });
-                                    Ok("Certificate saved".to_string())
-                                }
-                                Err(_) => {
-                                    Err(Error::ServerError {
-                                        msg: "Cannot convert string to int".to_string()
-                                    })
-                                }
-                            }
+                            map.borrow_mut().insert(tag_id.clone(), Certificate {
+                                id: tag_id,
+                                registered: false,
+                                metadata: Some(metadata),
+                                owner: certificate.author.clone(),
+                                author: certificate.author
+                            });
+                            Ok("Certificate saved".to_string())
                         } else {
                             Err(Error::PermissionDenied {
                                 msg: "Owner does not coincide or certificate already registered"

@@ -32,11 +32,10 @@ pub fn get_frame(tag_id: String) -> Result<Frame, Error> {
 
 pub fn add_frame(tag_id: String) {
     FRAMES.with(|map| {
-        let id_int = u128::from_str_radix(&tag_id, 16).expect("Id conversion error");
         map.borrow_mut().insert(
-            tag_id,
+            tag_id.clone(),
             Frame {
-                id: id_int,
+                id: tag_id,
                 nft: None,
             }
         );

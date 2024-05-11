@@ -11,7 +11,7 @@ type Attribute = record {
 };
 
 type Certificate = record {
-    id: nat;
+    id: text;
     registered: bool;
     metadata: opt NFTMetadata;
     owner: text;
@@ -29,12 +29,12 @@ type ErrorReason = record {
 };
 
 type Frame = record {
-    id: nat;
+    id: text;
     nft: opt NFT
 };
 
 type Tag = record {
-    id: nat;
+    id: text;
     short_id: text;
     is_certificate: bool;
     owner: text;
