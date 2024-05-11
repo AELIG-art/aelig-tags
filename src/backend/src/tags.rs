@@ -6,6 +6,7 @@ use ic_stable_structures::memory_manager::{MemoryId, MemoryManager};
 use crate::auth::is_authenticated;
 use crate::certificates::add_certificate;
 use crate::frames::add_frame;
+use crate::ic_siwe_provider::get_caller_address;
 use crate::memory_ids::MemoryKeys;
 use crate::types::{Error, Memory, Tag};
 
@@ -44,19 +45,30 @@ pub fn _get_tag(id: String) -> Result<Tag, Error> {
 }
 
 #[ic_cdk::query]
-fn get_tags_owned_by(owner: String) -> Vec<Tag> {
-    TAGS.with(|tags| {
-        tags.borrow()
-            .iter()
-            .filter_map(|(_, tag)| {
-                if tag.owner == owner {
-                    Some(tag.clone())
-                } else {
-                    None
-                }
-            })
-            .collect()
-    })
+async fn get_tags_owned_by(owner: String) -> Result<Vec<Tag>, Error> {
+    match get_caller_address().await {
+        Ok(address) => {
+            if address != owner {
+                Err(Error::PermissionDenied {
+                    msg: "Caller is not the same as input owner".to_string()
+                })
+            } else {
+                Ok(TAGS.with(|tags| {
+                    tags.borrow()
+                        .iter()
+                        .filter_map(|(_, tag)| {
+                            if tag.owner == owner {
+                                Some(tag.clone())
+                            } else {
+                                None
+                            }
+                        })
+                        .collect()
+                }))
+            }
+        }
+        Err(e) => {Err(e)}
+    }
 }
 
 #[ic_cdk::query]
