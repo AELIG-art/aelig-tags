@@ -23,17 +23,19 @@ thread_local! {
 }
 
 #[ic_cdk::query]
-pub fn get_tag(id: String) -> Result<Tag, Error>  {
+pub async fn get_tag(id: String) -> Result<Tag, Error>  {
+    if !(is_controller(&caller()) || is_authenticated(id.clone()).await) {
+        return Err(Error::PermissionDenied {
+            msg: "Caller is not controller or tag owner".to_string()
+        });
+    }
+    _get_tag(id)
+}
+
+pub fn _get_tag(id: String) -> Result<Tag, Error> {
     TAGS.with(|map| {
         match map.borrow().get(&id) {
-            Some(tag) => {
-                if is_controller(&caller()) || is_authenticated(id) {
-                    return Ok(tag.clone());
-                }
-                return Err(Error::PermissionDenied {
-                    msg: "Caller is not controller or tag owner".to_string()
-                });
-            },
+            Some(tag) => Ok(tag),
             None => Err(Error::NotFound {
                 msg: "Tag does not exist".to_string()
             })
@@ -58,24 +60,28 @@ fn get_tags_owned_by(owner: String) -> Vec<Tag> {
 }
 
 #[ic_cdk::query]
-pub fn get_tags() -> Result<Vec<Tag>, Error> {
+fn get_tags() -> Result<Vec<Tag>, Error> {
     if is_controller(&caller()) {
-        return Ok(TAGS.with(|tags| {
-            tags.borrow()
-                .iter()
-                .map(|(_, tag)| tag.clone())
-                .collect()
-        }))
+        return Ok(_get_tags())
     }
     return Err(Error::PermissionDenied {
         msg: "The caller is not a canister controller".to_string()
     });
 }
 
+pub fn _get_tags() -> Vec<Tag> {
+    TAGS.with(|tags| {
+        tags.borrow()
+            .iter()
+            .map(|(_, tag)| tag.clone())
+            .collect()
+    })
+}
+
 #[ic_cdk::update]
 fn add_tag(id: String, tag: Tag) -> Result<String, Error> {
     return if is_controller(&caller()) {
-        match get_tag(id.clone()) {
+        match _get_tag(id.clone()) {
             Ok(_) => {
                 Err(Error::PermissionDenied {
                     msg: "This tag already exists".to_string()
@@ -102,7 +108,7 @@ fn add_tag(id: String, tag: Tag) -> Result<String, Error> {
 }
 
 pub fn update_tag_ownership(id: String, to: String) -> Result<String, Error> {
-    match get_tag(id.clone()) {
+    match _get_tag(id.clone()) {
         Ok(mut tag) => {
             tag.owner = to;
             TAGS.with(|map| {

@@ -5,7 +5,7 @@ use ic_stable_structures::{DefaultMemoryImpl, StableBTreeMap};
 use ic_stable_structures::memory_manager::{MemoryId, MemoryManager};
 use crate::ic_siwe_provider::get_caller_address;
 use crate::memory_ids::MemoryKeys;
-use crate::tags::get_tags;
+use crate::tags::{_get_tags};
 use crate::types::{Certificate, Error, Memory, NFTMetadata};
 
 thread_local! {
@@ -150,7 +150,7 @@ async fn register_certificate(id: String) -> Result<String, Error> {
 async fn get_certificates() -> Result<Vec<Certificate>, Error> {
     match get_caller_address().await {
         Ok(address) => {
-            Ok(get_tags().iter().filter(|tag| {
+            Ok(_get_tags().iter().filter(|tag| {
                 tag.owner == address
             }).map(|tag| {
                 CERTIFICATES.with(|map| {

@@ -5,8 +5,7 @@ use ic_stable_structures::memory_manager::{MemoryId, MemoryManager};
 use crate::auth::is_authenticated;
 use crate::ic_siwe_provider::get_caller_address;
 use crate::memory_ids::MemoryKeys;
-use crate::tags::update_tag_ownership;
-use crate::tags::get_tags;
+use crate::tags::{_get_tags, update_tag_ownership};
 use crate::types::{Error, Frame, Memory, NFT};
 
 thread_local! {
@@ -106,7 +105,7 @@ async fn clean_frame(tag_id: String) -> Result<String, Error> {
 pub async fn get_frames() -> Result<Vec<Frame>, Error> {
     match get_caller_address().await {
         Ok(address) => {
-            Ok(get_tags().iter().filter(|tag| {
+            Ok(_get_tags().iter().filter(|tag| {
                 tag.owner == address
             }).map(|tag| {
                 FRAMES.with(|map| {
