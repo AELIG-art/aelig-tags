@@ -92,6 +92,11 @@ type LastStorageResult = variant {
     Err: Error;
 }
 
+type GetFramesResult = variant {
+    Ok: vec Frame;
+    Err: Error;
+}
+
 service : {
     "add_storage_canister": (principal) -> (UpdateResult);
     "add_tag": (id: text, tag: Tag) -> (UpdateResult);
@@ -110,4 +115,5 @@ service : {
     "get_frame": (tag_id: text) -> (FrameResult) query;
     "clean_frame": (tag_id: text) -> (UpdateResult);
     "get_last_storage_principal": () -> (LastStorageResult) query;
+    "get_frames": () -> (GetFramesResult) query;
 };

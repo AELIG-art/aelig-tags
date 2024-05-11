@@ -1,8 +1,11 @@
 use std::cell::RefCell;
+use ic_cdk::{trap};
 use ic_stable_structures::{DefaultMemoryImpl, StableBTreeMap};
 use ic_stable_structures::memory_manager::{MemoryId, MemoryManager};
 use crate::auth::is_authenticated;
+use crate::ic_siwe_provider::get_caller_address;
 use crate::memory_ids::MemoryKeys;
+use crate::tags::get_tags;
 use crate::types::{Error, Frame, Memory, NFT};
 
 thread_local! {
@@ -96,4 +99,23 @@ pub async fn clean_frame(tag_id: String) -> Result<String, Error> {
             }),
         }
     })
+}
+
+#[ic_cdk::query]
+pub async fn get_frames() -> Result<Vec<Frame>, Error> {
+    match get_caller_address().await {
+        Ok(address) => {
+            Ok(get_tags().iter().filter(|tag| {
+                tag.owner == address
+            }).map(|tag| {
+                FRAMES.with(|map| {
+                    match map.borrow().get(&tag.id) {
+                        Some(frame) => frame,
+                        None => trap("Frame does not exist")
+                    }
+                })
+            }).collect())
+        },
+        Err(e) => Err(e)
+    }
 }

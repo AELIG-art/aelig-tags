@@ -50,7 +50,7 @@ fn get_tags_owned_by(owner: String) -> Vec<Tag> {
 }
 
 #[ic_cdk::query]
-fn get_tags() -> Vec<Tag> {
+pub fn get_tags() -> Vec<Tag> {
     TAGS.with(|tags| {
         tags.borrow()
             .iter()
