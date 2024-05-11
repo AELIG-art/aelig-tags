@@ -59,8 +59,13 @@ const NewTagModal = (props: {
         }
     }
 
+    const handleClose = () => {
+        setIsLoading(false);
+        close();
+    }
 
-    return <Modal show={open} onHide={close} contentClassName={"rounded-0"}>
+
+    return <Modal show={open} onHide={handleClose} contentClassName={"rounded-0"}>
         <Modal.Header closeButton>
             <Modal.Title>Add new tag</Modal.Title>
         </Modal.Header>
