@@ -84,7 +84,7 @@ const MetadataForm = (props: {
                             sha256: []
                         }
                     )
-                        .then((res: unknown) => {
+                        .then((res) => {
                             const typedRes = res as UpdateResult;
                             if ("Ok" in typedRes) {
                                 backend.get_storage_principal(id!)
@@ -100,7 +100,8 @@ const MetadataForm = (props: {
                                         }
                                     });
                             } else {
-                                alertToast(typedRes.Err.toString(), true);
+                                alertToast("Server error", true);
+                                // todo: fix this code ->  alertToast(typedRes.Err.Err.msg, true);
                             }
                         })
                         .catch(() => {
