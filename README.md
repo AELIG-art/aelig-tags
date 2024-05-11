@@ -20,6 +20,7 @@ After deploying backend and assets canisters:
 
 - Add assets canister to backend: `dfx canister call backend  backend add_storage_canister '(principal "{CANISTER_ID_ASSETS}")'`
 - Authorize backend canister to upload media to assets canister: ` dfx canister call assets authorize '(principal "{CANISTER_ID_BACKEND}")'`
+- Give backend canister commit permission for asset canister: `dfx canister call --ic assets grant_permission '(record{permission=variant {Commit};to_principal=principal "{CANISTER_ID_BACKEND}"})'`
 - Add tag key: `dfx canister call backend set_key '("TAG_KEY","***")''`
 - Add siwe principal: `dfx canister call backend set_key '("SIWE","{CANISTER_ID_IC_SIWE_PROVIDER}")'`
 
