@@ -44,7 +44,7 @@ pub fn add_frame(tag_id: String) {
 }
 
 #[ic_cdk::update]
-pub async fn set_nft_on_frame(tag_id: String, nft: NFT) -> Result<String, Error> {
+async fn set_nft_on_frame(tag_id: String, nft: NFT) -> Result<String, Error> {
     if !is_authenticated(tag_id.clone()).await {
         return Err(Error::PermissionDenied {
             msg: "Caller is not the owner of frame".to_string(),
@@ -72,7 +72,7 @@ pub async fn set_nft_on_frame(tag_id: String, nft: NFT) -> Result<String, Error>
 }
 
 #[ic_cdk::update]
-pub async fn clean_frame(tag_id: String) -> Result<String, Error> {
+async fn clean_frame(tag_id: String) -> Result<String, Error> {
     if !is_authenticated(tag_id.clone()).await {
         return Err(Error::PermissionDenied {
             msg: "Caller is not the owner of frame".to_string(),

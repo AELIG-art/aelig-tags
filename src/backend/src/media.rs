@@ -36,7 +36,7 @@ thread_local! {
 }
 
 #[ic_cdk::update]
-pub async fn upload_media(
+async fn upload_media(
     tag_id: String,
     media: StoreArg
 ) -> Result<String, Error> {
