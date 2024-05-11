@@ -7,6 +7,7 @@ export interface Certificate {
   'id' : string,
   'metadata' : [] | [NFTMetadata],
   'author' : string,
+  'short_id' : string,
   'registered' : boolean,
 }
 export type Error = { 'NotFound' : ErrorReason } |

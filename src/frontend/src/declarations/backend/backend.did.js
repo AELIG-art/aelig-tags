@@ -23,6 +23,7 @@ export const idlFactory = ({ IDL }) => {
     'id' : IDL.Text,
     'metadata' : IDL.Opt(NFTMetadata),
     'author' : IDL.Text,
+    'short_id' : IDL.Text,
     'registered' : IDL.Bool,
   });
   const GetCertificateResult = IDL.Variant({

@@ -24,7 +24,7 @@ pub struct Attribute {
 #[derive(CandidType, Deserialize, Clone)]
 pub struct Tag {
     pub(crate) id: String,
-    short_id: String,
+    pub(crate) short_id: String,
     pub(crate) is_certificate: bool,
     pub(crate) owner: String,
 }
@@ -50,6 +50,7 @@ pub struct Certificate {
     pub(crate) registered: bool,
     pub(crate) metadata: Option<NFTMetadata>,
     pub(crate) author: String,
+    pub(crate) short_id: String,
 }
 
 impl Storable for Certificate {

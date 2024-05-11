@@ -35,12 +35,13 @@ pub fn get_certificate(tag_id: String) -> Result<Certificate, Error> {
     })
 }
 
-pub fn add_certificate(tag_id: String, author: String) {
+pub fn add_certificate(tag_id: String, author: String, short_id: String) {
     CERTIFICATES.with(|map| {
         map.borrow_mut().insert(tag_id.clone(), Certificate {
             id: tag_id,
             registered: false,
             metadata: None,
+            short_id,
             author
         });
     });
@@ -72,7 +73,8 @@ async fn save_certificate(
                                 id: tag_id,
                                 registered: false,
                                 metadata: Some(metadata),
-                                author: certificate.author
+                                author: certificate.author,
+                                short_id: certificate.short_id
                             });
                             Ok("Certificate saved".to_string())
                         } else {
@@ -126,6 +128,7 @@ async fn register_certificate(id: String) -> Result<String, Error> {
                                             metadata,
                                             author: certificate.author,
                                             registered: true,
+                                            short_id: certificate.short_id
                                         }
                                     );
                                     Ok("Tag registered".to_string())

@@ -75,7 +75,7 @@ fn add_tag(id: String, tag: Tag) -> Result<String, Error> {
                 TAGS.with(|map| {
                     map.borrow_mut().insert(id.clone(), tag.clone());
                     if tag.is_certificate {
-                        add_certificate(id, tag.owner);
+                        add_certificate(id, tag.owner, tag.short_id);
                     } else {
                         add_frame(id);
                     }
