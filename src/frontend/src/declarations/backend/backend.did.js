@@ -75,7 +75,7 @@ export const idlFactory = ({ IDL }) => {
       ),
     'get_tag' : IDL.Func([IDL.Text], [GetTagResult], ['query']),
     'get_tags' : IDL.Func([], [GetTagsResult], ['query']),
-    'get_tags_owned_by' : IDL.Func([IDL.Text], [IDL.Vec(Tag)], ['query']),
+    'get_tags_owned_by' : IDL.Func([IDL.Text], [GetTagsResult], ['query']),
     'is_admin' : IDL.Func([IDL.Principal], [IDL.Bool], ['query']),
     'register_certificate' : IDL.Func([IDL.Text], [UpdateResult], []),
     'save_certificate' : IDL.Func([IDL.Text, NFTMetadata], [UpdateResult], []),
