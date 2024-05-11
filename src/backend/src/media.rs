@@ -45,12 +45,8 @@ pub async fn upload_media(
             msg: "Certificate does not exist".to_string()
         });
     }
-    let principal = ASSET_CANISTERS.with(|map| {
-        let n = map.borrow().len() - 1;
-        map.borrow().get(&n)
-    });
-    match principal {
-        Some(principal) => {
+    match get_storage_principal(tag_id.clone()) {
+        Ok(principal) => {
             let response: Result<(), (RejectionCode, String)> = call(
                 principal,
                 "store",
@@ -69,24 +65,16 @@ pub async fn upload_media(
                 })
             }
         },
-        None => {
-            Err(Error::ServerError {
-                msg: "Media canister not found".to_string()
-            })
-        }
+        Err(e) => Err(e)
     }
 }
 
 #[ic_cdk::query]
-fn get_storage_principal(id: String) -> Result<Principal, Error> {
+fn get_storage_principal(tag_id: String) -> Result<Principal, Error> {
     MEDIA_TO_ASSET_CANISTERS.with(|map| {
-        match map.borrow().get(&id) {
+        match map.borrow().get(&tag_id) {
             Some(principal) => Ok(principal),
-            None => Err(
-                Error::NotFound {
-                    msg: "Id not found".to_string()
-                }
-            )
+            None => get_last_storage_principal()
         }
     })
 }
@@ -104,4 +92,23 @@ fn add_storage_canister(principal: Principal) -> Result<String, Error> {
             msg: "You are not allowed".to_string()
         })
     }
+}
+
+#[ic_cdk::query]
+fn get_last_storage_principal() -> Result<Principal, Error> {
+    ASSET_CANISTERS.with(|map| {
+        if map.borrow().len() == 0 {
+            Err(Error::NotFound {
+                msg: "No asset canisters configured".to_string()
+            })
+        } else {
+            let last_id = map.borrow().len() - 1;
+            match map.borrow().get(&last_id) {
+                Some(principal) => Ok(principal),
+                None => Err(Error::NotFound {
+                    msg: "Asset canister not found".to_string()
+                })
+            }
+        }
+    })
 }

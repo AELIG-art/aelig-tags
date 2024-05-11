@@ -87,12 +87,16 @@ type StoreArg = record {
     sha256: opt blob
 };
 
+type LastStorageResult = variant {
+    Ok: principal;
+    Err: Error;
+}
 
 service : {
     "add_storage_canister": (principal) -> (UpdateResult);
     "add_tag": (id: text, tag: Tag) -> (UpdateResult);
     "get_certificate": (tag_id: text) -> (GetCertificateResult) query;
-    "get_storage_principal": (tag: text) -> (GetStorageResult) query;
+    "get_storage_principal": (tag_id: text) -> (GetStorageResult) query;
     "get_tag": (tag_id: text) -> (GetTagResult) query;
     "get_tags": () -> (vec Tag) query;
     "get_tags_owned_by": (owner: text) -> (vec Tag) query;
@@ -105,4 +109,5 @@ service : {
     "set_nft_on_frame": (tag_id: text, nft: NFT) -> (UpdateResult);
     "get_frame": (tag_id: text) -> (FrameResult) query;
     "clean_frame": (tag_id: text) -> (UpdateResult);
+    "get_last_storage_principal": () -> (LastStorageResult) query;
 };
