@@ -100,6 +100,7 @@ pub async fn clean_frame(tag_id: String) -> Result<String, Error> {
     })
 }
 
+#[ic_cdk::update]
 async fn transfer_frame(tag_id: String, to_address: String) -> Result<String, Error> {
     if !is_authenticated(tag_id.clone()).await {
         return Err(Error::PermissionDenied {

@@ -110,4 +110,5 @@ service : {
     "get_frame": (tag_id: text) -> (FrameResult) query;
     "clean_frame": (tag_id: text) -> (UpdateResult);
     "get_last_storage_principal": () -> (LastStorageResult) query;
+    "transfer_frame": (tag_id: text, to_address: text) -> (UpdateResult);
 };
