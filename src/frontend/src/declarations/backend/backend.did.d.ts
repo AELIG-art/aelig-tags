@@ -4,7 +4,7 @@ import type { IDL } from '@dfinity/candid';
 
 export interface Attribute { 'trait_type' : string, 'value' : string }
 export interface Certificate {
-  'id' : bigint,
+  'id' : string,
   'owner' : string,
   'metadata' : [] | [NFTMetadata],
   'author' : string,
@@ -14,10 +14,12 @@ export type Error = { 'NotFound' : ErrorReason } |
   { 'PermissionDenied' : ErrorReason } |
   { 'Validation' : ErrorReason };
 export interface ErrorReason { 'msg' : string }
-export interface Frame { 'id' : bigint, 'nft' : [] | [NFT] }
+export interface Frame { 'id' : string, 'nft' : [] | [NFT] }
 export type FrameResult = { 'Ok' : Frame } |
   { 'Err' : Error };
 export type GetCertificateResult = { 'Ok' : Certificate } |
+  { 'Err' : Error };
+export type GetFramesResult = { 'Ok' : Array<Frame> } |
   { 'Err' : Error };
 export type GetStorageResult = { 'Ok' : Principal } |
   { 'Err' : Error };
@@ -44,7 +46,7 @@ export interface StoreArg {
   'content_encoding' : string,
 }
 export interface Tag {
-  'id' : bigint,
+  'id' : string,
   'owner' : string,
   'is_certificate' : boolean,
   'short_id' : string,
@@ -62,6 +64,7 @@ export interface _SERVICE {
   'clean_frame' : ActorMethod<[string], UpdateResult>,
   'get_certificate' : ActorMethod<[string], GetCertificateResult>,
   'get_frame' : ActorMethod<[string], FrameResult>,
+  'get_frames' : ActorMethod<[], GetFramesResult>,
   'get_last_storage_principal' : ActorMethod<[], LastStorageResult>,
   'get_storage_principal' : ActorMethod<[string], GetStorageResult>,
   'get_tag' : ActorMethod<[string], GetTagResult>,

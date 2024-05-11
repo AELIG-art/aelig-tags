@@ -7,7 +7,7 @@ export const idlFactory = ({ IDL }) => {
   });
   const UpdateResult = IDL.Variant({ 'Ok' : IDL.Text, 'Err' : Error });
   const Tag = IDL.Record({
-    'id' : IDL.Nat,
+    'id' : IDL.Text,
     'owner' : IDL.Text,
     'is_certificate' : IDL.Bool,
     'short_id' : IDL.Text,
@@ -20,7 +20,7 @@ export const idlFactory = ({ IDL }) => {
     'image' : IDL.Text,
   });
   const Certificate = IDL.Record({
-    'id' : IDL.Nat,
+    'id' : IDL.Text,
     'owner' : IDL.Text,
     'metadata' : IDL.Opt(NFTMetadata),
     'author' : IDL.Text,
@@ -35,8 +35,9 @@ export const idlFactory = ({ IDL }) => {
     'chain' : IDL.Text,
     'contract_address' : IDL.Text,
   });
-  const Frame = IDL.Record({ 'id' : IDL.Nat, 'nft' : IDL.Opt(NFT) });
+  const Frame = IDL.Record({ 'id' : IDL.Text, 'nft' : IDL.Opt(NFT) });
   const FrameResult = IDL.Variant({ 'Ok' : Frame, 'Err' : Error });
+  const GetFramesResult = IDL.Variant({ 'Ok' : IDL.Vec(Frame), 'Err' : Error });
   const LastStorageResult = IDL.Variant({
     'Ok' : IDL.Principal,
     'Err' : Error,
@@ -60,6 +61,7 @@ export const idlFactory = ({ IDL }) => {
     'clean_frame' : IDL.Func([IDL.Text], [UpdateResult], []),
     'get_certificate' : IDL.Func([IDL.Text], [GetCertificateResult], ['query']),
     'get_frame' : IDL.Func([IDL.Text], [FrameResult], ['query']),
+    'get_frames' : IDL.Func([], [GetFramesResult], ['query']),
     'get_last_storage_principal' : IDL.Func([], [LastStorageResult], ['query']),
     'get_storage_principal' : IDL.Func(
         [IDL.Text],
