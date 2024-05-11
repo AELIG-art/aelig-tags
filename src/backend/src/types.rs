@@ -49,7 +49,6 @@ pub struct Certificate {
     pub(crate) id: String,
     pub(crate) registered: bool,
     pub(crate) metadata: Option<NFTMetadata>,
-    pub(crate) owner: String,
     pub(crate) author: String,
 }
 

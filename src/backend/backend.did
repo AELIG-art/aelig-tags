@@ -14,7 +14,6 @@ type Certificate = record {
     id: text;
     registered: bool;
     metadata: opt NFTMetadata;
-    owner: text;
     author: text;
 };
 

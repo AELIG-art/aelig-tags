@@ -39,7 +39,6 @@ pub fn add_certificate(tag_id: String, author: String) {
             id: tag_id,
             registered: false,
             metadata: None,
-            owner: author.clone(),
             author
         });
     });
@@ -71,7 +70,6 @@ async fn save_certificate(
                                 id: tag_id,
                                 registered: false,
                                 metadata: Some(metadata),
-                                owner: certificate.author.clone(),
                                 author: certificate.author
                             });
                             Ok("Certificate saved".to_string())
@@ -126,7 +124,6 @@ async fn register_certificate(id: String) -> Result<String, Error> {
                                             metadata,
                                             author: certificate.author,
                                             registered: true,
-                                            owner: certificate.owner,
                                         }
                                     );
                                     Ok("Tag registered".to_string())
