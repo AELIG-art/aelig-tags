@@ -3,6 +3,7 @@ use ic_cdk::api::is_controller;
 use ic_cdk::caller;
 use ic_stable_structures::{DefaultMemoryImpl, StableBTreeMap};
 use ic_stable_structures::memory_manager::{MemoryId, MemoryManager};
+use crate::auth::is_authenticated;
 use crate::certificates::add_certificate;
 use crate::frames::add_frame;
 use crate::memory_ids::MemoryKeys;
@@ -25,7 +26,14 @@ thread_local! {
 pub fn get_tag(id: String) -> Result<Tag, Error>  {
     TAGS.with(|map| {
         match map.borrow().get(&id) {
-            Some(tag) => Ok(tag.clone()),
+            Some(tag) => {
+                if is_controller(&caller()) || is_authenticated(id) {
+                    return Ok(tag.clone());
+                }
+                return Err(Error::PermissionDenied {
+                    msg: "Caller is not controller or tag owner".to_string()
+                });
+            },
             None => Err(Error::NotFound {
                 msg: "Tag does not exist".to_string()
             })
