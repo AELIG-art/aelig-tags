@@ -38,7 +38,7 @@ const NewTagModal = (props: {
                                 owner: owner,
                                 is_certificate: isNewTagCertificate,
                                 short_id: shortIds[index],
-                                id: BigInt(`0x${tag}`)
+                                id: tag
                             }
                         ).then((res: unknown) => {
                             setIsLoading(false);
