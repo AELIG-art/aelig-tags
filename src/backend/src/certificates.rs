@@ -46,7 +46,7 @@ pub fn add_certificate(tag_id: String, author: String) {
 }
 
 #[ic_cdk::update]
-pub async fn save_certificate(
+async fn save_certificate(
     tag_id: String,
     metadata: NFTMetadata,
 ) -> Result<String, Error> {
@@ -97,7 +97,7 @@ pub async fn save_certificate(
 }
 
 #[ic_cdk::update]
-pub async fn register_certificate(id: String) -> Result<String, Error> {
+async fn register_certificate(id: String) -> Result<String, Error> {
     let caller_siwe_address_res = get_caller_address().await;
 
     match caller_siwe_address_res {

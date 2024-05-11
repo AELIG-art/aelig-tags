@@ -5,12 +5,12 @@ use crate::keys::get_key;
 use crate::types::Error;
 
 #[derive(Debug, CandidType, Deserialize)]
-pub enum GetAddressResponse {
+enum GetAddressResponse {
     Ok(String),
     Err(String)
 }
 
-pub struct IcSiweProvider(pub Principal);
+struct IcSiweProvider(pub Principal);
 
 impl IcSiweProvider {
     pub async fn get_address(&self, arg0: ByteBuf) -> CallResult<
