@@ -5,6 +5,7 @@ use ic_stable_structures::memory_manager::{MemoryId, MemoryManager};
 use crate::auth::is_authenticated;
 use crate::ic_siwe_provider::get_caller_address;
 use crate::memory_ids::MemoryKeys;
+use crate::tags::update_tag_ownership;
 use crate::tags::get_tags;
 use crate::types::{Error, Frame, Memory, NFT};
 
@@ -116,6 +117,19 @@ pub async fn get_frames() -> Result<Vec<Frame>, Error> {
                 })
             }).collect())
         },
+        Err(e) => Err(e)
+    }
+}
+
+#[ic_cdk::update]
+async fn transfer_frame(tag_id: String, to_address: String) -> Result<String, Error> {
+    if !is_authenticated(tag_id.clone()).await {
+        return Err(Error::PermissionDenied {
+            msg: "Caller is not the owner of frame".to_string(),
+        });
+    }
+    match update_tag_ownership(tag_id, to_address) {
+        Ok(_) => Ok("Frame ownership updated".to_string()),
         Err(e) => Err(e)
     }
 }
