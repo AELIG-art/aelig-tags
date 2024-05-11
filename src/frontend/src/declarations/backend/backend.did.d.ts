@@ -73,7 +73,6 @@ export interface _SERVICE {
   'get_storage_principal' : ActorMethod<[string], GetStorageResult>,
   'get_tag' : ActorMethod<[string], GetTagResult>,
   'get_tags' : ActorMethod<[], GetTagsResult>,
-  'get_tags_owned_by' : ActorMethod<[string], GetTagsResult>,
   'is_admin' : ActorMethod<[Principal], boolean>,
   'register_certificate' : ActorMethod<[string], UpdateResult>,
   'save_certificate' : ActorMethod<[string, NFTMetadata], UpdateResult>,

@@ -146,7 +146,7 @@ async fn register_certificate(id: String) -> Result<String, Error> {
     }
 }
 
-#[ic_cdk::query]
+#[ic_cdk::update]
 async fn get_certificates() -> Result<Vec<Certificate>, Error> {
     match get_caller_address().await {
         Ok(address) => {

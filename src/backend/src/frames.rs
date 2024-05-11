@@ -101,7 +101,7 @@ async fn clean_frame(tag_id: String) -> Result<String, Error> {
     })
 }
 
-#[ic_cdk::query]
+#[ic_cdk::update]
 pub async fn get_frames() -> Result<Vec<Frame>, Error> {
     match get_caller_address().await {
         Ok(address) => {
