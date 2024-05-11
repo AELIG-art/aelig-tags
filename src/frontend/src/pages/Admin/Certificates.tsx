@@ -17,7 +17,6 @@ const Certificates = (props: {
     useEffect(() => {
         if (backendActor) {
             backendActor.get_tags().then((tags) => {
-                console.log(tags);
                 const tagsType = tags as GetTagsResult;
                 if ("Ok" in tagsType) {
                     const tagsOk = tagsType.Ok;
