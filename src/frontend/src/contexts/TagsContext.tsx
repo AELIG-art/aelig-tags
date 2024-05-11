@@ -19,9 +19,9 @@ export const TagsContext = (props: {
     const { backendActor } = useBackendActor();
 
     const getTagsExpanded = async (address: string) => {
+        const tags: TagExpanded[] = [];
         if (backendActor) {
             const tagsRes = await backendActor.get_tags_owned_by(address) as GetTagsResult;
-            const tags: TagExpanded[] = [];
 
             if ("Ok" in tagsRes) {
                 for (const tag of tagsRes.Ok) {
