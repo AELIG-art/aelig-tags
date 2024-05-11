@@ -37,6 +37,10 @@ export const idlFactory = ({ IDL }) => {
   });
   const Frame = IDL.Record({ 'id' : IDL.Nat, 'nft' : IDL.Opt(NFT) });
   const FrameResult = IDL.Variant({ 'Ok' : Frame, 'Err' : Error });
+  const LastStorageResult = IDL.Variant({
+    'Ok' : IDL.Principal,
+    'Err' : Error,
+  });
   const GetStorageResult = IDL.Variant({ 'Ok' : IDL.Principal, 'Err' : Error });
   const GetTagResult = IDL.Variant({ 'Ok' : Tag, 'Err' : Error });
   const StoreArg = IDL.Record({
@@ -56,6 +60,7 @@ export const idlFactory = ({ IDL }) => {
     'clean_frame' : IDL.Func([IDL.Text], [UpdateResult], []),
     'get_certificate' : IDL.Func([IDL.Text], [GetCertificateResult], ['query']),
     'get_frame' : IDL.Func([IDL.Text], [FrameResult], ['query']),
+    'get_last_storage_principal' : IDL.Func([], [LastStorageResult], ['query']),
     'get_storage_principal' : IDL.Func(
         [IDL.Text],
         [GetStorageResult],
@@ -69,6 +74,7 @@ export const idlFactory = ({ IDL }) => {
     'save_certificate' : IDL.Func([IDL.Text, NFTMetadata], [UpdateResult], []),
     'set_key' : IDL.Func([IDL.Text, IDL.Text], [UpdateResult], []),
     'set_nft_on_frame' : IDL.Func([IDL.Text, NFT], [UpdateResult], []),
+    'transfer_frame' : IDL.Func([IDL.Text, IDL.Text], [UpdateResult], []),
     'upload_media' : IDL.Func([IDL.Text, StoreArg], [UpdateResult], []),
     'verify_tag' : IDL.Func([IDL.Text], [VerifyResult], []),
   });

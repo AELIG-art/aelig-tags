@@ -87,3 +87,18 @@ fn add_tag(id: String, tag: Tag) -> Result<String, Error> {
         })
     }
 }
+
+pub fn update_tag_ownership(id: String, to: String) -> Result<String, Error> {
+    match get_tag(id.clone()) {
+        Ok(mut tag) => {
+            tag.owner = to;
+            TAGS.with(|map| {
+                map.borrow_mut().insert(id, tag);
+                Ok("Tag ownership updated".to_string())
+            })
+        }
+        Err(e) => {
+            Err(e)
+        }
+    }
+}

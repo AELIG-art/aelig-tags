@@ -23,6 +23,8 @@ export type GetStorageResult = { 'Ok' : Principal } |
   { 'Err' : Error };
 export type GetTagResult = { 'Ok' : Tag } |
   { 'Err' : Error };
+export type LastStorageResult = { 'Ok' : Principal } |
+  { 'Err' : Error };
 export interface NFT {
   'id' : string,
   'chain' : string,
@@ -60,6 +62,7 @@ export interface _SERVICE {
   'clean_frame' : ActorMethod<[string], UpdateResult>,
   'get_certificate' : ActorMethod<[string], GetCertificateResult>,
   'get_frame' : ActorMethod<[string], FrameResult>,
+  'get_last_storage_principal' : ActorMethod<[], LastStorageResult>,
   'get_storage_principal' : ActorMethod<[string], GetStorageResult>,
   'get_tag' : ActorMethod<[string], GetTagResult>,
   'get_tags' : ActorMethod<[], Array<Tag>>,
@@ -69,6 +72,7 @@ export interface _SERVICE {
   'save_certificate' : ActorMethod<[string, NFTMetadata], UpdateResult>,
   'set_key' : ActorMethod<[string, string], UpdateResult>,
   'set_nft_on_frame' : ActorMethod<[string, NFT], UpdateResult>,
+  'transfer_frame' : ActorMethod<[string, string], UpdateResult>,
   'upload_media' : ActorMethod<[string, StoreArg], UpdateResult>,
   'verify_tag' : ActorMethod<[string], VerifyResult>,
 }
