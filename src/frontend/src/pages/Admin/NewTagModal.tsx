@@ -1,10 +1,8 @@
 import React, { useState } from "react";
 import { Form, Modal } from "react-bootstrap";
-import { canisterId, idlFactory} from "../../declarations/backend";
-import { Actor, HttpAgent } from "@dfinity/agent";
 import Button from "../../components/Button/Button";
 import {alertToast} from "../../utils/alerts";
-import {useSiweIdentity} from "ic-use-siwe-identity";
+import {useBackendActor} from "../../contexts/BackendActorContext";
 
 const NewTagModal = (props: {
     open: boolean,
