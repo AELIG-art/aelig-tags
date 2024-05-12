@@ -106,7 +106,7 @@ pub async fn get_frames() -> Result<Vec<Frame>, Error> {
     match get_caller_address().await {
         Ok(address) => {
             Ok(_get_tags().iter().filter(|tag| {
-                tag.owner == address
+                tag.owner == address && !tag.is_certificate
             }).map(|tag| {
                 FRAMES.with(|map| {
                     match map.borrow().get(&tag.id) {
