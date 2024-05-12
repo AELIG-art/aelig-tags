@@ -1,40 +1,28 @@
 import React, { useEffect, useState } from "react";
 import { TagExpanded } from "../../utils/types";
-import {Tag} from "../../declarations/backend/backend.did";
-import {backend} from "../../declarations/backend";
+import {GetTagsResult} from "../../declarations/backend/backend.did";
 import Button from "../../components/Button/Button";
 import Table from "../../components/Table/Table";
+import {useBackendActor} from "../../contexts/BackendActorContext";
 
 const Frames = (props: {
     tagsSub: string,
     openModal: () => void
 }) => {
     const {  tagsSub, openModal } = props;
-    const [tagsExpanded, setTagsExpanded] = useState([] as TagExpanded[]);
+    const [tags, setTags] = useState([] as TagExpanded[]);
+    const {backendActor} = useBackendActor();
 
     useEffect(() => {
-        backend.get_tags().then((tags: Tag[]) => {
-            const tagsExpanded: Promise<TagExpanded[]> = Promise.all(
-                tags.filter((tag: Tag) => !tag.is_certificate)
-                    .map(async (tag: Tag) => {
-                        // todo: get frame from tag
-                        /*const frame = await backend.get_certificate(tag.id.toString(16));
-                        if ("Ok" in certificate) {
-                            const expanded: TagExpanded = tag;
-                            expanded.metadata = certificate.Ok.metadata;
-                            expanded.registered = certificate.Ok.registered;
-                            return expanded;
-                        } else {
-                            return tag as TagExpanded;
-                        }*/
-                        return tag as TagExpanded;
-                    })
-            );
-            tagsExpanded.then((res) => {
-                setTagsExpanded(res);
+        if (backendActor) {
+            backendActor.get_tags().then((res) => {
+                const typedRes = res as GetTagsResult;
+                if ("Ok" in typedRes) {
+                    setTags(typedRes.Ok.filter((tag) => !tag.is_certificate));
+                }
             });
-        });
-    }, [tagsSub]);
+        }
+    }, [tagsSub, backendActor]);
 
     return <div className={'mt-3'}>
         <Button
@@ -44,10 +32,10 @@ const Frames = (props: {
         </Button>
         <Table headers={["#", "Id"]}>
             {
-                tagsExpanded.map((tag) => {
+                tags.map((tag) => {
                     return <tr key={tag.id}>
                         <td>{tag.short_id}</td>
-                        <td>{tag.id.toString(16)}</td>
+                        <td>{tag.id}</td>
                     </tr>
                 })
             }

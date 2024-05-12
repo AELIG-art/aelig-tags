@@ -1,9 +1,11 @@
 use std::cell::RefCell;
+use ic_cdk::{trap};
 use ic_stable_structures::{DefaultMemoryImpl, StableBTreeMap};
 use ic_stable_structures::memory_manager::{MemoryId, MemoryManager};
 use crate::auth::is_authenticated;
+use crate::ic_siwe_provider::get_caller_address;
 use crate::memory_ids::MemoryKeys;
-use crate::tags::update_tag_ownership;
+use crate::tags::{_get_tags, update_tag_ownership};
 use crate::types::{Error, Frame, Memory, NFT};
 
 thread_local! {
@@ -33,11 +35,10 @@ pub fn get_frame(tag_id: String) -> Result<Frame, Error> {
 
 pub fn add_frame(tag_id: String) {
     FRAMES.with(|map| {
-        let id_int = u128::from_str_radix(&tag_id, 16).expect("Id conversion error");
         map.borrow_mut().insert(
-            tag_id,
+            tag_id.clone(),
             Frame {
-                id: id_int,
+                id: tag_id,
                 nft: None,
             }
         );
@@ -98,6 +99,25 @@ async fn clean_frame(tag_id: String) -> Result<String, Error> {
             }),
         }
     })
+}
+
+#[ic_cdk::update]
+pub async fn get_frames() -> Result<Vec<Frame>, Error> {
+    match get_caller_address().await {
+        Ok(address) => {
+            Ok(_get_tags().iter().filter(|tag| {
+                tag.owner == address
+            }).map(|tag| {
+                FRAMES.with(|map| {
+                    match map.borrow().get(&tag.id) {
+                        Some(frame) => frame,
+                        None => trap("Frame does not exist")
+                    }
+                })
+            }).collect())
+        },
+        Err(e) => Err(e)
+    }
 }
 
 #[ic_cdk::update]

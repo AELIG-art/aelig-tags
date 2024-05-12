@@ -23,8 +23,8 @@ pub struct Attribute {
 
 #[derive(CandidType, Deserialize, Clone)]
 pub struct Tag {
-    id: u128,
-    short_id: String,
+    pub(crate) id: String,
+    pub(crate) short_id: String,
     pub(crate) is_certificate: bool,
     pub(crate) owner: String,
 }
@@ -46,11 +46,11 @@ impl Storable for Tag {
 
 #[derive(CandidType, Deserialize, Clone)]
 pub struct Certificate {
-    pub(crate) id: u128,
+    pub(crate) id: String,
     pub(crate) registered: bool,
     pub(crate) metadata: Option<NFTMetadata>,
-    pub(crate) owner: String,
     pub(crate) author: String,
+    pub(crate) short_id: String,
 }
 
 impl Storable for Certificate {
@@ -77,7 +77,7 @@ pub struct NFT {
 
 #[derive(CandidType, Deserialize, Clone)]
 pub struct Frame {
-    pub(crate) id: u128,
+    pub(crate) id: String,
     pub(crate) nft: Option<NFT>
 }
 

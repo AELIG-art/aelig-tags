@@ -4,24 +4,30 @@ import type { IDL } from '@dfinity/candid';
 
 export interface Attribute { 'trait_type' : string, 'value' : string }
 export interface Certificate {
-  'id' : bigint,
-  'owner' : string,
+  'id' : string,
   'metadata' : [] | [NFTMetadata],
   'author' : string,
+  'short_id' : string,
   'registered' : boolean,
 }
 export type Error = { 'NotFound' : ErrorReason } |
   { 'PermissionDenied' : ErrorReason } |
   { 'Validation' : ErrorReason };
 export interface ErrorReason { 'msg' : string }
-export interface Frame { 'id' : bigint, 'nft' : [] | [NFT] }
+export interface Frame { 'id' : string, 'nft' : [] | [NFT] }
 export type FrameResult = { 'Ok' : Frame } |
   { 'Err' : Error };
 export type GetCertificateResult = { 'Ok' : Certificate } |
   { 'Err' : Error };
+export type GetCertificatesResult = { 'Ok' : Array<Certificate> } |
+  { 'Err' : Error };
+export type GetFramesResult = { 'Ok' : Array<Frame> } |
+  { 'Err' : Error };
 export type GetStorageResult = { 'Ok' : Principal } |
   { 'Err' : Error };
 export type GetTagResult = { 'Ok' : Tag } |
+  { 'Err' : Error };
+export type GetTagsResult = { 'Ok' : Array<Tag> } |
   { 'Err' : Error };
 export type LastStorageResult = { 'Ok' : Principal } |
   { 'Err' : Error };
@@ -44,7 +50,7 @@ export interface StoreArg {
   'content_encoding' : string,
 }
 export interface Tag {
-  'id' : bigint,
+  'id' : string,
   'owner' : string,
   'is_certificate' : boolean,
   'short_id' : string,
@@ -61,12 +67,13 @@ export interface _SERVICE {
   'add_tag' : ActorMethod<[string, Tag], UpdateResult>,
   'clean_frame' : ActorMethod<[string], UpdateResult>,
   'get_certificate' : ActorMethod<[string], GetCertificateResult>,
+  'get_certificates' : ActorMethod<[], GetCertificatesResult>,
   'get_frame' : ActorMethod<[string], FrameResult>,
+  'get_frames' : ActorMethod<[], GetFramesResult>,
   'get_last_storage_principal' : ActorMethod<[], LastStorageResult>,
   'get_storage_principal' : ActorMethod<[string], GetStorageResult>,
   'get_tag' : ActorMethod<[string], GetTagResult>,
-  'get_tags' : ActorMethod<[], Array<Tag>>,
-  'get_tags_owned_by' : ActorMethod<[string], Array<Tag>>,
+  'get_tags' : ActorMethod<[], GetTagsResult>,
   'is_admin' : ActorMethod<[Principal], boolean>,
   'register_certificate' : ActorMethod<[string], UpdateResult>,
   'save_certificate' : ActorMethod<[string, NFTMetadata], UpdateResult>,

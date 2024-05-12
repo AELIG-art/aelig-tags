@@ -11,11 +11,11 @@ type Attribute = record {
 };
 
 type Certificate = record {
-    id: nat;
+    id: text;
     registered: bool;
     metadata: opt NFTMetadata;
-    owner: text;
     author: text;
+    short_id: text;
 };
 
 type Error = variant {
@@ -29,12 +29,12 @@ type ErrorReason = record {
 };
 
 type Frame = record {
-    id: nat;
+    id: text;
     nft: opt NFT
 };
 
 type Tag = record {
-    id: nat;
+    id: text;
     short_id: text;
     is_certificate: bool;
     owner: text;
@@ -90,6 +90,21 @@ type StoreArg = record {
 type LastStorageResult = variant {
     Ok: principal;
     Err: Error;
+};
+
+type GetFramesResult = variant {
+    Ok: vec Frame;
+    Err: Error;
+};
+
+type GetCertificatesResult = variant {
+    Ok: vec Certificate;
+    Err: Error;
+};
+
+type GetTagsResult = variant {
+    Ok: vec Tag;
+    Err: Error;
 }
 
 service : {
@@ -97,9 +112,8 @@ service : {
     "add_tag": (id: text, tag: Tag) -> (UpdateResult);
     "get_certificate": (tag_id: text) -> (GetCertificateResult) query;
     "get_storage_principal": (tag_id: text) -> (GetStorageResult) query;
-    "get_tag": (tag_id: text) -> (GetTagResult) query;
-    "get_tags": () -> (vec Tag) query;
-    "get_tags_owned_by": (owner: text) -> (vec Tag) query;
+    "get_tag": (tag_id: text) -> (GetTagResult);
+    "get_tags": () -> (GetTagsResult) query;
     "is_admin": (user: principal) -> (bool) query;
     "register_certificate": (id: text) -> (UpdateResult);
     "save_certificate": (tag_id: text, metadata: NFTMetadata) -> (UpdateResult);
@@ -111,4 +125,6 @@ service : {
     "clean_frame": (tag_id: text) -> (UpdateResult);
     "get_last_storage_principal": () -> (LastStorageResult) query;
     "transfer_frame": (tag_id: text, to_address: text) -> (UpdateResult);
+    "get_frames": () -> (GetFramesResult);
+    "get_certificates": () -> (GetCertificatesResult);
 };

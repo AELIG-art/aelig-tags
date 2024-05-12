@@ -1,13 +1,12 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { useTags } from "../../contexts/TagsContext";
-import {TagExpanded} from "../../utils/types";
-import {intToHexId} from "../../utils/transformations";
 import "./styles.CertificatesList.css";
 import Table from "../../components/Table/Table";
+import {Certificate} from "../../declarations/backend/backend.did";
 
 const CertificatesList = () => {
-    const { tags } = useTags();
+    const { certificates } = useTags();
 
     return <div>
         <h1 className={"mt-5"}>Your certificates</h1>
@@ -15,22 +14,22 @@ const CertificatesList = () => {
             headers={["#", "Id", "Metadata created", "Registered", "Action"]}
         >
             {
-                tags.map((tag: TagExpanded, index: number) => {
+                certificates.map((certificate: Certificate, index: number) => {
                     return <tr key={index}>
-                        <td>{tag.short_id}</td>
-                        <td>{intToHexId(Number(tag.id))}</td>
-                        <td>{tag.metadata ? 'YES' : 'NO'}</td>
-                        <td>{tag.registered ? 'YES' : 'NO'}</td>
+                        <td>{certificate.short_id}</td>
+                        <td>{certificate.id}</td>
+                        <td>{certificate.metadata ? 'YES' : 'NO'}</td>
+                        <td>{certificate.registered ? 'YES' : 'NO'}</td>
                         <td>
                             <Link
-                                to={`/tag/${intToHexId(Number(tag.id))}`}
+                                to={`/tag/${certificate.id}`}
                                 className="link"
                             >
                                 {
                                     (() => {
-                                       if (tag.registered) {
+                                       if (certificate.registered) {
                                            return "OPEN";
-                                       } else if (tag.metadata) {
+                                       } else if (certificate.metadata.length > 0) {
                                            return "REGISTER";
                                        } else {
                                            return "ADD METADATA";

@@ -1,10 +1,8 @@
 import React, { useState } from "react";
 import { Form, Modal } from "react-bootstrap";
-import { canisterId, idlFactory} from "../../declarations/backend";
-import { Actor, HttpAgent } from "@dfinity/agent";
 import Button from "../../components/Button/Button";
 import {alertToast} from "../../utils/alerts";
-import {useSiweIdentity} from "ic-use-siwe-identity";
+import {useBackendActor} from "../../contexts/BackendActorContext";
 
 const NewTagModal = (props: {
     open: boolean,
@@ -16,51 +14,46 @@ const NewTagModal = (props: {
     const [tags, setTags] = useState([] as string[]);
     const [shortIds, setShortIds] = useState<string[]>([]);
     const [isLoading, setIsLoading] = useState(false);
-    const { identity } = useSiweIdentity();
+    const {backendActor} = useBackendActor();
 
     const addNewTag = () => {
         if (owner && tags.length === shortIds.length) {
             tags.forEach((tag, index) => {
-                if (identity) {
-                    const agent = new HttpAgent({ identity });
-                    agent.fetchRootKey().then(() => {
-                        const backendActor = Actor.createActor(
-                            idlFactory,
-                            {
-                                agent,
-                                canisterId
-                            }
-                        );
-                        setIsLoading(true);
-                        backendActor.add_tag(
-                            tag,
-                            {
-                                owner: owner,
-                                is_certificate: isNewTagCertificate,
-                                short_id: shortIds[index],
-                                id: BigInt(`0x${tag}`)
-                            }
-                        ).then((res: unknown) => {
-                            setIsLoading(false);
-                            const resTyped = res as {
-                                Ok?: string,
-                                Err?: string
-                            };
-                            if (resTyped.Ok) {
-                                close();
-                                alertToast("Success");
-                            } else {
-                                alertToast(resTyped.Err!, true);
-                            }
-                        });
+                if (backendActor) {
+                    setIsLoading(true);
+                    backendActor.add_tag(
+                        tag,
+                        {
+                            owner: owner,
+                            is_certificate: isNewTagCertificate,
+                            short_id: shortIds[index],
+                            id: tag
+                        }
+                    ).then((res: unknown) => {
+                        setIsLoading(false);
+                        const resTyped = res as {
+                            Ok?: string,
+                            Err?: string
+                        };
+                        if (resTyped.Ok) {
+                            close();
+                            alertToast("Success");
+                        } else {
+                            alertToast(resTyped.Err!, true);
+                        }
                     });
                 }
             });
         }
     }
 
+    const handleClose = () => {
+        setIsLoading(false);
+        close();
+    }
 
-    return <Modal show={open} onHide={close} contentClassName={"rounded-0"}>
+
+    return <Modal show={open} onHide={handleClose} contentClassName={"rounded-0"}>
         <Modal.Header closeButton>
             <Modal.Title>Add new tag</Modal.Title>
         </Modal.Header>

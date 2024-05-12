@@ -3,6 +3,7 @@ use ic_cdk::api::is_controller;
 use ic_cdk::caller;
 use ic_stable_structures::{DefaultMemoryImpl, StableBTreeMap};
 use ic_stable_structures::memory_manager::{MemoryId, MemoryManager};
+use crate::auth::is_authenticated;
 use crate::certificates::add_certificate;
 use crate::frames::add_frame;
 use crate::memory_ids::MemoryKeys;
@@ -21,11 +22,20 @@ thread_local! {
     );
 }
 
-#[ic_cdk::query]
-pub fn get_tag(id: String) -> Result<Tag, Error>  {
+#[ic_cdk::update]
+pub async fn get_tag(id: String) -> Result<Tag, Error>  {
+    if !(is_controller(&caller()) || is_authenticated(id.clone()).await) {
+        return Err(Error::PermissionDenied {
+            msg: "Caller is not controller or tag owner".to_string()
+        });
+    }
+    _get_tag(id)
+}
+
+pub fn _get_tag(id: String) -> Result<Tag, Error> {
     TAGS.with(|map| {
         match map.borrow().get(&id) {
-            Some(tag) => Ok(tag.clone()),
+            Some(tag) => Ok(tag),
             None => Err(Error::NotFound {
                 msg: "Tag does not exist".to_string()
             })
@@ -34,23 +44,16 @@ pub fn get_tag(id: String) -> Result<Tag, Error>  {
 }
 
 #[ic_cdk::query]
-fn get_tags_owned_by(owner: String) -> Vec<Tag> {
-    TAGS.with(|tags| {
-        tags.borrow()
-            .iter()
-            .filter_map(|(_, tag)| {
-                if tag.owner == owner {
-                    Some(tag.clone())
-                } else {
-                    None
-                }
-            })
-            .collect()
-    })
+fn get_tags() -> Result<Vec<Tag>, Error> {
+    if is_controller(&caller()) {
+        return Ok(_get_tags())
+    }
+    return Err(Error::PermissionDenied {
+        msg: "The caller is not a canister controller".to_string()
+    });
 }
 
-#[ic_cdk::query]
-fn get_tags() -> Vec<Tag> {
+pub fn _get_tags() -> Vec<Tag> {
     TAGS.with(|tags| {
         tags.borrow()
             .iter()
@@ -62,7 +65,7 @@ fn get_tags() -> Vec<Tag> {
 #[ic_cdk::update]
 fn add_tag(id: String, tag: Tag) -> Result<String, Error> {
     return if is_controller(&caller()) {
-        match get_tag(id.clone()) {
+        match _get_tag(id.clone()) {
             Ok(_) => {
                 Err(Error::PermissionDenied {
                     msg: "This tag already exists".to_string()
@@ -72,7 +75,7 @@ fn add_tag(id: String, tag: Tag) -> Result<String, Error> {
                 TAGS.with(|map| {
                     map.borrow_mut().insert(id.clone(), tag.clone());
                     if tag.is_certificate {
-                        add_certificate(id, tag.owner);
+                        add_certificate(id, tag.owner, tag.short_id);
                     } else {
                         add_frame(id);
                     }
@@ -89,7 +92,7 @@ fn add_tag(id: String, tag: Tag) -> Result<String, Error> {
 }
 
 pub fn update_tag_ownership(id: String, to: String) -> Result<String, Error> {
-    match get_tag(id.clone()) {
+    match _get_tag(id.clone()) {
         Ok(mut tag) => {
             tag.owner = to;
             TAGS.with(|map| {

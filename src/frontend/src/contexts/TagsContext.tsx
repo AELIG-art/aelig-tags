@@ -1,44 +1,36 @@
 import React, { useContext, useEffect, useState } from "react";
 import { createContext, ReactNode } from "react";
-import { TagExpanded } from "../utils/types";
-import { expandTag } from "../utils/datastore";
-import {backend} from "../declarations/backend";
 import {useSiweIdentity} from "ic-use-siwe-identity";
+import {Certificate, GetCertificatesResult} from "../declarations/backend/backend.did";
+import {useBackendActor} from "./BackendActorContext";
 
 const Context = createContext({} as TagsContextInterface);
 
 export const TagsContext = (props: {
     children: ReactNode;
 }) => {
-    const [tags, setTags] = useState([] as TagExpanded[]);
+    const [certificates, setCertificates] = useState([] as Certificate[]);
     const [sub, setSub] = useState("");
     const { identityAddress } = useSiweIdentity();
     const {children} = props;
 
-    const getTagsExpanded = async (address: string) => {
-        const tagsRes = await backend.get_tags_owned_by(address);
-        const tags: TagExpanded[] = [];
-
-        for (const tag of tagsRes) {
-            if (tag.is_certificate) {
-                const tagExpanded = await expandTag(tag);
-                tags.push(tagExpanded);
-            }
-        }
-
-        return tags;
-    }
+    const { backendActor } = useBackendActor();
 
     useEffect(() => {
-        if (identityAddress) {
-            getTagsExpanded(identityAddress).then((tags) => {
-                setTags(tags);
+        if (backendActor) {
+            backendActor.get_certificates().then((res) => {
+               const resTyped = res as GetCertificatesResult;
+               if ("Ok" in resTyped) {
+                   setCertificates(resTyped.Ok);
+               } else {
+                   // todo: show error
+               }
             });
         }
-    }, [identityAddress, sub]);
+    }, [identityAddress, sub, backendActor]);
 
     const context = {
-        tags: tags,
+        certificates: certificates,
         setSub: setSub
     }
 
@@ -56,6 +48,6 @@ export const useTags = () => {
 }
 
 export interface TagsContextInterface {
-    tags: TagExpanded[],
+    certificates: Certificate[],
     setSub: (sub: string) => void
 }

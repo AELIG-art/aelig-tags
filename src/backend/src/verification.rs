@@ -11,7 +11,7 @@ use crate::certificates::get_certificate;
 use crate::frames::get_frame;
 use crate::keys::get_key;
 use crate::memory_ids::MemoryKeys;
-use crate::tags::get_tag;
+use crate::tags::_get_tag;
 use crate::types::{Error, Memory, VerificationResult};
 
 
@@ -99,7 +99,7 @@ fn verify_tag(msg: String) -> Result<VerificationResult, Error> {
         });
     }
 
-    match get_tag(tag_id.clone()) {
+    match _get_tag(tag_id.clone()) {
         Ok(tag) => {
             if tag.is_certificate {
                 match get_certificate(tag_id) {

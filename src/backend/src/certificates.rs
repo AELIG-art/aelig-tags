@@ -1,9 +1,11 @@
 use std::cell::RefCell;
 use std::string::ToString;
+use ic_cdk::trap;
 use ic_stable_structures::{DefaultMemoryImpl, StableBTreeMap};
 use ic_stable_structures::memory_manager::{MemoryId, MemoryManager};
 use crate::ic_siwe_provider::get_caller_address;
 use crate::memory_ids::MemoryKeys;
+use crate::tags::{_get_tags};
 use crate::types::{Certificate, Error, Memory, NFTMetadata};
 
 thread_local! {
@@ -33,14 +35,13 @@ pub fn get_certificate(tag_id: String) -> Result<Certificate, Error> {
     })
 }
 
-pub fn add_certificate(tag_id: String, author: String) {
+pub fn add_certificate(tag_id: String, author: String, short_id: String) {
     CERTIFICATES.with(|map| {
-        let id_int = u128::from_str_radix(&tag_id, 16).expect("Id conversion error");
-        map.borrow_mut().insert(tag_id, Certificate {
-            id: id_int,
+        map.borrow_mut().insert(tag_id.clone(), Certificate {
+            id: tag_id,
             registered: false,
             metadata: None,
-            owner: author.clone(),
+            short_id,
             author
         });
     });
@@ -68,23 +69,14 @@ async fn save_certificate(
                             });
                         }
                         if !certificate.registered {
-                            match u128::from_str_radix(&tag_id, 16) {
-                                Ok(tag_id_int) => {
-                                    map.borrow_mut().insert(tag_id, Certificate {
-                                        id: tag_id_int,
-                                        registered: false,
-                                        metadata: Some(metadata),
-                                        owner: certificate.author.clone(),
-                                        author: certificate.author
-                                    });
-                                    Ok("Certificate saved".to_string())
-                                }
-                                Err(_) => {
-                                    Err(Error::ServerError {
-                                        msg: "Cannot convert string to int".to_string()
-                                    })
-                                }
-                            }
+                            map.borrow_mut().insert(tag_id.clone(), Certificate {
+                                id: tag_id,
+                                registered: false,
+                                metadata: Some(metadata),
+                                author: certificate.author,
+                                short_id: certificate.short_id
+                            });
+                            Ok("Certificate saved".to_string())
                         } else {
                             Err(Error::PermissionDenied {
                                 msg: "Owner does not coincide or certificate already registered"
@@ -136,7 +128,7 @@ async fn register_certificate(id: String) -> Result<String, Error> {
                                             metadata,
                                             author: certificate.author,
                                             registered: true,
-                                            owner: certificate.owner,
+                                            short_id: certificate.short_id
                                         }
                                     );
                                     Ok("Tag registered".to_string())
@@ -152,6 +144,25 @@ async fn register_certificate(id: String) -> Result<String, Error> {
                     })
                 }
             })
+        },
+        Err(e) => Err(e)
+    }
+}
+
+#[ic_cdk::update]
+async fn get_certificates() -> Result<Vec<Certificate>, Error> {
+    match get_caller_address().await {
+        Ok(address) => {
+            Ok(_get_tags().iter().filter(|tag| {
+                tag.owner == address
+            }).map(|tag| {
+                CERTIFICATES.with(|map| {
+                    match map.borrow().get(&tag.id) {
+                        Some(certificate) => certificate,
+                        None => trap("Certificate does not exist")
+                    }
+                })
+            }).collect())
         },
         Err(e) => Err(e)
     }
