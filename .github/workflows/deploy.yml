@@ -11,16 +11,15 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
-      - name: Install DFX Command
-        run: sh -ci "$(curl -fsSL https://internetcomputer.org/install.sh)"
-
-      - name: Setup Identity
-        run: |
-          echo "${{ secrets.IDENTITY_KEY }}" > identity.pem
-          dfx identity import git_identity identity.pem
+      - name: Setup dfx
+        uses: aviate-labs/setup-dfx@v0.3.2
+        with:
+          dfx-version: 0.18.0
+        env:
+          DFX_IDENTITY_PEM: ${{ secrets.IDENTITY_KEY }}
+        run: dfx identity use action
 
       - name: Deploy to the IC
-        run: dfx deploy --ic
-
+        run: dfx deploy --network ic --no-wallet
