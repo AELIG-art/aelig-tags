@@ -3,7 +3,7 @@ import { Outlet } from "react-router-dom";
 import { Container } from "react-bootstrap";
 import NavBar from "./NavBar";
 import Footer from "./Footer";
-import "./styles.VerifyLayout.css";
+import  "./styles.VerifyLayout.css";
 
 const DefaultLayout = () => {
 
@@ -11,7 +11,7 @@ const DefaultLayout = () => {
         document.getElementsByTagName("html")[0].style.backgroundColor = '#eae3d2';
     }, []);
 
-    return <div className="content">
+    return <div className="verify-content">
         <NavBar />
         <Container className="mt-3">
             <Outlet/>
