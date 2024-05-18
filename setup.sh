@@ -4,9 +4,9 @@ tag=""
 usage() {
     echo "Usage: $0 -n <network_name> -t <tag_key>"
     echo "Options:"
-    echo "  -n <network_name>    Specify the network name (e.g., 'local', 'ic')."
-    echo "  -t <tag_key>         Specify the mandatory tag key."
-    echo "  -h                   Show this help message and exit."
+    echo "  -n, --network <network_name>    Specify the network name (e.g., 'local', 'ic')."
+    echo "  -t, --tag <tag_key>             Specify the mandatory tag key."
+    echo "  -h, --help                      Show this help message and exit."
     exit 1
 }
 
