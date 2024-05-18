@@ -47,11 +47,6 @@ while getopts ":n:t:h" opt; do
 done
 shift $((OPTIND -1))
 
-if [[ -z "$network" ]]; then
-    echo "The --network argument is required"
-    usage
-fi
-
 if [[ -z "$tag" ]]; then
     echo "The --tag argument was not provided. Please enter a tag key:"
     read tag
