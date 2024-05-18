@@ -30,12 +30,13 @@ const Frames = (props: {
         >
             Register new tag
         </Button>
-        <Table headers={["#", "Id"]}>
+        <Table headers={["#", "Id", "Owner"]}>
             {
                 tags.map((tag) => {
                     return <tr key={tag.id}>
                         <td>{tag.short_id}</td>
                         <td>{tag.id}</td>
+                        <td>{tag.owner}</td>
                     </tr>
                 })
             }
