@@ -156,7 +156,7 @@ async fn get_certificates() -> Result<Vec<Certificate>, Error> {
             Ok(
                 _get_tags()
                 .iter()
-                .filter(|tag| tag.owner == address)
+                .filter(|tag| tag.owner == address && tag.is_certificate)
                 .map(|tag| {
                     CERTIFICATES.with(|certificates| {
                         match certificates.borrow().get(&tag.id) {
