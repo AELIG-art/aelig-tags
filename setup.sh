@@ -10,6 +10,20 @@ usage() {
     exit 1
 }
 
+if [ -f ".env" ]; then
+    set -o allexport
+    source ".env"
+    set +o allexport
+else
+    echo "Error: .env file not found."
+    exit 1
+fi
+
+if [ -z "$IC_SIWE_PROVIDER_SALT" ]; then
+    echo "The variable IC_SIWE_PROVIDER_SALT is not set in the .env file."
+    exit 1
+fi
+
 while getopts ":n:t:h" opt; do
     case ${opt} in
         n )
@@ -61,7 +75,7 @@ dfx deploy --network "$network" -q ic_siwe_provider --argument "( \
      record { \
          domain = \"aelig.art\"; \
          uri = \"https://aelig.art\"; \
-         salt = \"hKy3ftP8jQXvzMbT\"; \
+         salt = \"$IC_SIWE_PROVIDER_SALT\"; \
          chain_id = opt 1; \
          scheme = opt \"https\"; \
          statement = opt \"Login to the app\"; \
