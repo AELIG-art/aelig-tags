@@ -28,7 +28,6 @@ At first deploy, run `./setup.sh -n <network_name> -t <tag_key>`. This script wi
 
 - Replace `CANISTER_ID_ASSETS`, `CANISTER_ID_BACKEND`, and `CANISTER_ID_IC_SIWE_PROVIDER` with the corresponding values wrote in the .env file after local deploy;
 - tag_key is a secret value, stored [here](https://paste.digital/?p=Hdzu5BPjOnuaHq-Tmhyot) and protected by password (ask [giacomo@aelig.art](mailto:giacomo@aeliga.art) for the password);
-- `network_name` is set to local by default while `tag_key` is mandatory
 
 ## Note
 

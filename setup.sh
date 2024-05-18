@@ -39,8 +39,12 @@ if [[ -z "$network" ]]; then
 fi
 
 if [[ -z "$tag" ]]; then
-    echo "The --tag argument is required"
-    usage
+    echo "The --tag argument was not provided. Please enter a tag key:"
+    read tag
+    if [[ -z "$tag" ]]; then
+        echo "No tag key provided, cannot proceed."
+        exit 1
+    fi
 fi
 
 echo "--- Creating canisters ---"
