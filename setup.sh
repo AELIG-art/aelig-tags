@@ -86,7 +86,7 @@ dfx canister call backend set_key "(\"TAG_KEY\",\"$tag\")"
 echo "--- Setting siwe id key ---"
 dfx canister call backend set_key "(\"SIWE\",\"$ic_siwe_provider_canister_id\")"
 
-echo "---Setup completed ---"
+echo "--- Setup completed ---"
 echo "Backend canister id: $backend_canister_id"
 echo "Frontend canister id: $frontend_canister_id"
 echo "Assets canister id: $assets_canister_id"
