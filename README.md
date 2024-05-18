@@ -12,22 +12,22 @@
 - `npm run local-canister` Run ICP instance locally;
 - `npm run start`: Run frontend;
 - `npm run local-deploy`: Deploy canister in local ICP instance.
-- Set TAG_KEY with the tag key ([paste](https://paste.digital/?p=Hdzu5BPjOnuaHq-Tmhyot)). Ask password to giacomo@aelig.art.
 
 ## Canister setup
 
-After deploying backend and assets canisters:
+At first deploy, run `./setup.sh -n <network_name> -t <tag_key>`. This script will: 
 
-- Add assets canister to backend: `dfx canister call backend  backend add_storage_canister '(principal "{CANISTER_ID_ASSETS}")'`
-- Authorize backend canister to upload media to assets canister: ` dfx canister call assets authorize '(principal "{CANISTER_ID_BACKEND}")'`
-- Give backend canister commit permission for asset canister: `dfx canister call --ic assets grant_permission '(record{permission=variant {Commit};to_principal=principal "{CANISTER_ID_BACKEND}"})'`
-- Add tag key: `dfx canister call backend set_key '("TAG_KEY","***")''`
-- Add siwe principal: `dfx canister call backend set_key '("SIWE","{CANISTER_ID_IC_SIWE_PROVIDER}")'`
+- Create and deploy the canisters;
+- Add assets canister to backend: `dfx canister call backend add_storage_canister '(principal "{CANISTER_ID_ASSETS}")'`;
+- Authorize backend canister to upload media to assets canister: `dfx canister call assets authorize '(principal "{CANISTER_ID_BACKEND}")'`;
+- Give backend canister commit permission for asset canister: `dfx canister call --ic assets grant_permission '(record{permission=variant {Commit};to_principal=principal "{CANISTER_ID_BACKEND}"})'`;
+- Add tag key: `dfx canister call backend set_key '("TAG_KEY","***")''`;
+- Add siwe principal: `dfx canister call backend set_key '("SIWE","{CANISTER_ID_IC_SIWE_PROVIDER}")'`.
 
 **NOTES**
 
-- Replace `CANISTER_ID_ASSETS`, `CANISTER_ID_BACKEND`, and `CANISTER_ID_IC_SIWE_PROVIDER` with the corresponding values wrote in the .env file after local deploy. 
-- TAG_KEY is a secret value, stored [here](https://paste.digital/?p=Hdzu5BPjOnuaHq-Tmhyot) and protected by password.
+- Replace `CANISTER_ID_ASSETS`, `CANISTER_ID_BACKEND`, and `CANISTER_ID_IC_SIWE_PROVIDER` with the corresponding values wrote in the .env file after local deploy;
+- tag_key is a secret value, stored [here](https://paste.digital/?p=Hdzu5BPjOnuaHq-Tmhyot) and protected by password (ask [giacomo@aelig.art](mailto:giacomo@aeliga.art) for the password);
 
 ## Note
 
