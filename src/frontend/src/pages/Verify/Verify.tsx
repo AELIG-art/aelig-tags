@@ -19,11 +19,7 @@ const Verify = () => {
             backend.verify_tag(msg).then((res) => {
                 setIsValid("Ok" in res);
                 setIsLoading(false);
-                if ("Ok" in res) {
-                    setTagContent(res.Ok);
-                } else {
-                    setTagContent(undefined);
-                }
+                setTagContent("Ok" in res ? res.Ok : undefined);
             });
         }
     }, [msg, setIsValid, setIsLoading, setTagContent]);
