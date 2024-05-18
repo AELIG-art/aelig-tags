@@ -153,21 +153,20 @@ async fn register_certificate(id: String) -> Result<String, Error> {
 async fn get_certificates() -> Result<Vec<Certificate>, Error> {
     match get_caller_address().await {
         Ok(address) => {
-            let owned_tags: Vec<String> = _get_tags().iter()
+            Ok(
+                _get_tags()
+                .iter()
                 .filter(|tag| tag.owner == address)
-                .map(|tag| tag.id.clone())
-                .collect();
-            let result: Vec<Certificate> = CERTIFICATES.with(|certificates| {
-                let certificates = certificates.borrow();
-                owned_tags.iter().filter_map(|tag_id| {
-                    match certificates.get(tag_id) {
-                        Some(certificate) => Some(certificate.clone()),
-                        None => trap("Certificate does not exist"),
-                    }
-                }).collect()
-            });
-
-            Ok(result)
+                .map(|tag| {
+                    CERTIFICATES.with(|certificates| {
+                        match certificates.borrow().get(&tag.id) {
+                            Some(certificate) => certificate,
+                            None => trap("Certificate does not exist")
+                        }
+                    })
+                })
+                .collect()
+            )
         },
         Err(e) => Err(e)
     }
