@@ -91,7 +91,7 @@ export const getMetadataFromNft = async (nft: NFT): Promise<NFTMetadata> => {
     const provider = new ethers.providers.JsonRpcProvider(rpc);
     const contract = new ethers.Contract(nft.contract_address, REDUCED_ABI, provider);
     const standard = await getContractStandard(contract);
-    let tokenURI = "";
+    let tokenURI;
     if (standard === "721") {
         tokenURI = await contract.tokenURI(nft.id);
     } else {
