@@ -78,15 +78,18 @@ const getContractStandard = async (contract: ethers.Contract) => {
     return isErc721 ? "721" : "1155";
 }
 
+const fixOpenSeaUri = (uri: string, id: string) => {
+    if (uri.includes("0x{id}")) {
+        uri = uri.replace("0x{id}", `0x${BigInt(id).toString(16)}`);
+    }
+    return uri;
+}
 
 
 export const getMetadataFromNft = async (nft: NFT): Promise<NFTMetadata> => {
     const rpc = getRPC(nft.chain);
     const provider = new ethers.providers.JsonRpcProvider(rpc);
     const contract = new ethers.Contract(nft.contract_address, REDUCED_ABI, provider);
-    const metadataUri = transformUrl(await contract.tokenURI(nft.id));
-    const response = await fetch(metadataUri, {method: "GET", headers: {accept: 'application/json'}});
-    return await response.json() as NFTMetadata;
     const standard = await getContractStandard(contract);
     let tokenURI = "";
     if (standard === "721") {
@@ -95,6 +98,7 @@ export const getMetadataFromNft = async (nft: NFT): Promise<NFTMetadata> => {
         tokenURI = await contract.uri(nft.id);
     }
     tokenURI = transformUrl(tokenURI);
+    tokenURI = fixOpenSeaUri(tokenURI, nft.id);
     const response = await fetch(tokenURI, {method: "GET", headers: {accept: 'application/json'}});
     const responseJSON = await response.json();
     return responseJSON as NFTMetadata;
