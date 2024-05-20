@@ -32,8 +32,52 @@ const REDUCED_ABI = [
         ],
         "stateMutability": "view",
         "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "tokenId",
+                "type": "uint256"
+            }
+        ],
+        "name": "uri",
+        "outputs": [
+            {
+                "internalType": "string",
+                "name": "",
+                "type": "string"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "bytes4",
+                "name": "interfaceId",
+                "type": "bytes4"
+            }
+        ],
+        "name": "supportsInterface",
+        "outputs": [
+            {
+                "internalType": "bool",
+                "name": "",
+                "type": "bool"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
     }
 ];
+
+const getContractStandard = async (contract: ethers.Contract) => {
+    const isErc721 = await contract.supportsInterface("0x80ac58cd");
+    return isErc721 ? "721" : "1155";
+}
+
 
 
 export const getMetadataFromNft = async (nft: NFT): Promise<NFTMetadata> => {
@@ -43,4 +87,15 @@ export const getMetadataFromNft = async (nft: NFT): Promise<NFTMetadata> => {
     const metadataUri = transformUrl(await contract.tokenURI(nft.id));
     const response = await fetch(metadataUri, {method: "GET", headers: {accept: 'application/json'}});
     return await response.json() as NFTMetadata;
+    const standard = await getContractStandard(contract);
+    let tokenURI = "";
+    if (standard === "721") {
+        tokenURI = await contract.tokenURI(nft.id);
+    } else {
+        tokenURI = await contract.uri(nft.id);
+    }
+    tokenURI = transformUrl(tokenURI);
+    const response = await fetch(tokenURI, {method: "GET", headers: {accept: 'application/json'}});
+    const responseJSON = await response.json();
+    return responseJSON as NFTMetadata;
 }
