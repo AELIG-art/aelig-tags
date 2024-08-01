@@ -78,7 +78,11 @@ const getContractStandard = async (contract: ethers.Contract) => {
     return isErc721 ? "721" : "1155";
 }
 
-const fixOpenSeaUri = (uri: string, id: string) => {
+const formatUri = (uri: string, id: string) => {
+    /*
+        The URI of many NFTs minted on OpenSea use their own format for IDs.
+        This case is covered if the following condition.
+    */
     if (uri.includes("0x{id}")) {
         uri = uri.replace("0x{id}", `0x${BigInt(id).toString(16)}`);
     }
@@ -98,7 +102,7 @@ export const getMetadataFromNft = async (nft: NFT): Promise<NFTMetadata> => {
         tokenURI = await contract.uri(nft.id);
     }
     tokenURI = transformUrl(tokenURI);
-    tokenURI = fixOpenSeaUri(tokenURI, nft.id);
+    tokenURI = formatUri(tokenURI, nft.id);
     const response = await fetch(tokenURI, {method: "GET", headers: {accept: 'application/json'}});
     const responseJSON = await response.json();
     return responseJSON as NFTMetadata;
