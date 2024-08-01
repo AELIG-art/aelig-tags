@@ -2,6 +2,11 @@ import {NFT, NFTMetadata} from "../declarations/backend/backend.did";
 import { ethers } from "ethers";
 import {transformUrl} from "./transformations";
 
+enum NftStandard {
+    ERC721 = "721",
+    ERC1155 = "1155"
+}
+
 const getRPC = (chain: string) => {
     switch (chain) {
         case "eth":
@@ -75,7 +80,7 @@ const REDUCED_ABI = [
 
 const getContractStandard = async (contract: ethers.Contract) => {
     const isErc721 = await contract.supportsInterface("0x80ac58cd");
-    return isErc721 ? "721" : "1155";
+    return isErc721 ? NftStandard.ERC721 : NftStandard.ERC1155;
 }
 
 const formatUri = (uri: string, id: string) => {
@@ -96,7 +101,7 @@ export const getMetadataFromNft = async (nft: NFT): Promise<NFTMetadata> => {
     const contract = new ethers.Contract(nft.contract_address, REDUCED_ABI, provider);
     const standard = await getContractStandard(contract);
     let tokenURI;
-    if (standard === "721") {
+    if (standard === NftStandard.ERC721) {
         tokenURI = await contract.tokenURI(nft.id);
     } else {
         tokenURI = await contract.uri(nft.id);
