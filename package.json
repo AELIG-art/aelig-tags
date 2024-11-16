@@ -8,7 +8,7 @@
     "test": "npm run test --workspaces --if-present",
     "local-canister": "dfx start",
     "local-canister-clean": "dfx start --clean && ./setup.sh",
-    "local-deploy": "npm run build && dfx deploy",
+    "local-deploy": "dfx generate && npm run build && dfx deploy",
     "generate": "dfx generate"
   },
   "type": "module",
