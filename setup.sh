@@ -74,7 +74,7 @@ dfx deploy --network "$network" -q ic_siwe_provider --argument "( \
          chain_id = opt 1; \
          scheme = opt \"https\"; \
          statement = opt \"Login to the app\"; \
-         sign_in_expires_in = opt 300000000000; /* 5 minutes */ \
+         sign_in_expires_in = opt 1800000000000; /* 30 minutes */ \
          session_expires_in = opt 14515200000000000; /* 6 months */ \
          targets = opt vec { \
              \"$ic_siwe_provider_canister_id\"; \
