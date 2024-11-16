@@ -38,7 +38,7 @@ The project is organized into the following components:
 
 **NOTES**
 
-- tag_key must be the same AES key used for NFC tags. It is stored [here](https://paste.digital/?p=Hdzu5BPjOnuaHq-Tmhyot), protected by password (ask [giacomo@aelig.art](mailto:giacomo@aeliga.art));
+- tag_key must be the same AES key used for NFC tags. It is stored [here](https://paste.digital/?p=Hdzu5BPjOnuaHq-Tmhyot), protected by password (ask [giacomo@aelig.art](mailto:giacomo@aelig.art));
 - There is no native support for `dfx` on Windows [[source](https://internetcomputer.org/docs/current/developer-docs/getting-started/install/windows-wsl)].
 - Add `--ic` flag to run configurations on Internet Computer main net.
 - You must be a canister controller to make configurations effective.
