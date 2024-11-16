@@ -77,7 +77,7 @@ const Tag = () => {
                         {
                             image ? <img
                                 src={image}
-                                alt="Certificate"
+                                alt="Certificate Image"
                                 className={"w-100 h-100"}
                             /> : null
                         }
