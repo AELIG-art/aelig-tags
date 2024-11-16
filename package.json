@@ -3,9 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "start": "dfx generate backend && npm run start --workspaces --if-present",
+    "start": "npm run start --workspaces --if-present",
     "build": "npm run build --workspaces --if-present",
-    "test": "npm run test --workspaces --if-present",
     "local-canister": "dfx start",
     "local-canister-clean": "dfx start --clean && ./setup.sh",
     "local-deploy": "dfx generate && npm run build && dfx deploy",
