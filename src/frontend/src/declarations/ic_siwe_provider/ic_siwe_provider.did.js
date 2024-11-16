@@ -1,6 +1,12 @@
 export const idlFactory = ({ IDL }) => {
+  const RuntimeFeature = IDL.Variant({
+    'IncludeUriInSeed' : IDL.Null,
+    'DisableEthToPrincipalMapping' : IDL.Null,
+    'DisablePrincipalToEthMapping' : IDL.Null,
+  });
   const SettingsInput = IDL.Record({
     'uri' : IDL.Text,
+    'runtime_features' : IDL.Opt(IDL.Vec(RuntimeFeature)),
     'domain' : IDL.Text,
     'statement' : IDL.Opt(IDL.Text),
     'scheme' : IDL.Opt(IDL.Text),
@@ -63,8 +69,14 @@ export const idlFactory = ({ IDL }) => {
   });
 };
 export const init = ({ IDL }) => {
+  const RuntimeFeature = IDL.Variant({
+    'IncludeUriInSeed' : IDL.Null,
+    'DisableEthToPrincipalMapping' : IDL.Null,
+    'DisablePrincipalToEthMapping' : IDL.Null,
+  });
   const SettingsInput = IDL.Record({
     'uri' : IDL.Text,
+    'runtime_features' : IDL.Opt(IDL.Vec(RuntimeFeature)),
     'domain' : IDL.Text,
     'statement' : IDL.Opt(IDL.Text),
     'scheme' : IDL.Opt(IDL.Text),

@@ -25,9 +25,13 @@ export type PrepareLoginResponse = { 'Ok' : SiweMessage } |
   { 'Err' : string };
 export type Principal = Uint8Array | number[];
 export type PublicKey = Uint8Array | number[];
+export type RuntimeFeature = { 'IncludeUriInSeed' : null } |
+  { 'DisableEthToPrincipalMapping' : null } |
+  { 'DisablePrincipalToEthMapping' : null };
 export type SessionKey = PublicKey;
 export interface SettingsInput {
   'uri' : string,
+  'runtime_features' : [] | [Array<RuntimeFeature>],
   'domain' : string,
   'statement' : [] | [string],
   'scheme' : [] | [string],
