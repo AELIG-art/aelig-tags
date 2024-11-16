@@ -4,3 +4,5 @@ export interface TagExpanded extends Tag {
     metadata?: NFTMetadata,
     registered?: boolean
 }
+
+export type SupportedChain = 'eth' | 'polygon';
