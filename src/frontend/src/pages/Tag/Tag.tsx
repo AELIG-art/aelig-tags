@@ -65,7 +65,7 @@ const Tag = () => {
                 }
             });
         }
-    }, [id, identityAddress, isInitializing, subscription, navigate]);
+    }, [id, identityAddress, isInitializing, subscription, navigate, backendActor]);
 
     return <div className={"pb-3"}>
         <h1 className="mt-5">{tag?.short_id || tag?.id}</h1>
