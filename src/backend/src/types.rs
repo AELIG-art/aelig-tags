@@ -76,6 +76,27 @@ pub struct NFT {
 }
 
 #[derive(CandidType, Deserialize, Clone)]
+pub struct FramesLending {
+    pub(crate) to: String,
+    pub(crate) expire_timestamp: u64, // expressed in seconds
+}
+
+impl Storable for FramesLending {
+    fn to_bytes(&self) -> std::borrow::Cow<[u8]> {
+        Cow::Owned(Encode!(self).unwrap())
+    }
+
+    fn from_bytes(bytes: std::borrow::Cow<[u8]>) -> Self {
+        Decode!(bytes.as_ref(), Self).unwrap()
+    }
+
+    const BOUND: Bound = Bound::Bounded {
+        max_size: MAX_VALUE_SIZE,
+        is_fixed_size: false,
+    };
+}
+
+#[derive(CandidType, Deserialize, Clone)]
 pub struct Frame {
     pub(crate) id: String,
     pub(crate) nft: Option<NFT>

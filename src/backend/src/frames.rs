@@ -6,7 +6,7 @@ use crate::auth::is_authenticated;
 use crate::ic_siwe_provider::get_caller_address;
 use crate::memory_ids::MemoryKeys;
 use crate::tags::{_get_tags, update_tag_ownership};
-use crate::types::{Error, Frame, Memory, NFT};
+use crate::types::{Error, Frame, Memory, NFT, FramesLending};
 
 thread_local! {
     static MEMORY_MANAGER: RefCell<MemoryManager<DefaultMemoryImpl>> =
@@ -17,6 +17,14 @@ thread_local! {
             MEMORY_MANAGER.with(|m| m.borrow().get(
                 MemoryId::new(MemoryKeys::Frames as u8))
             ),
+        )
+    );
+    
+    static FRAMES_LENDING: RefCell<StableBTreeMap<String, FramesLending, Memory>> = RefCell::new(
+        StableBTreeMap::init(
+            MEMORY_MANAGER.with(|m| m.borrow().get(
+                MemoryId::new(MemoryKeys::FramesLendings as u8)
+            ))
         )
     );
 }
