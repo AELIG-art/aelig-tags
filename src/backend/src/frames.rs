@@ -5,7 +5,7 @@ use ic_stable_structures::memory_manager::{MemoryId, MemoryManager};
 use crate::auth::is_authenticated;
 use crate::ic_siwe_provider::get_caller_address;
 use crate::memory_ids::MemoryKeys;
-use crate::tags::{_get_tags, update_tag_ownership};
+use crate::tags::{_get_tag, _get_tags, update_tag_ownership};
 use crate::types::{Error, Frame, Memory, NFT, FramesLending};
 
 thread_local! {
@@ -19,7 +19,7 @@ thread_local! {
             ),
         )
     );
-    
+
     static FRAMES_LENDING: RefCell<StableBTreeMap<String, FramesLending, Memory>> = RefCell::new(
         StableBTreeMap::init(
             MEMORY_MANAGER.with(|m| m.borrow().get(
@@ -55,12 +55,7 @@ pub fn add_frame(tag_id: String) {
 
 #[ic_cdk::update]
 async fn set_nft_on_frame(tag_id: String, nft: NFT) -> Result<String, Error> {
-    if !is_authenticated(tag_id.clone()).await {
-        return Err(Error::PermissionDenied {
-            msg: "Caller is not the owner of frame".to_string(),
-        });
-    }
-
+    validate_ownership(tag_id.clone()).await?;
     FRAMES.with(|map| {
         let frame_opt = map.borrow().get(&tag_id);
         match frame_opt {
@@ -83,12 +78,7 @@ async fn set_nft_on_frame(tag_id: String, nft: NFT) -> Result<String, Error> {
 
 #[ic_cdk::update]
 async fn clean_frame(tag_id: String) -> Result<String, Error> {
-    if !is_authenticated(tag_id.clone()).await {
-        return Err(Error::PermissionDenied {
-            msg: "Caller is not the owner of frame".to_string(),
-        });
-    }
-
+    validate_ownership(tag_id.clone()).await?;
     FRAMES.with(|map| {
         let frame_opt = map.borrow().get(&tag_id);
         match frame_opt {
@@ -111,21 +101,21 @@ async fn clean_frame(tag_id: String) -> Result<String, Error> {
 
 #[ic_cdk::update]
 pub async fn get_frames() -> Result<Vec<Frame>, Error> {
-    match get_caller_address().await {
-        Ok(address) => {
-            Ok(_get_tags().iter().filter(|tag| {
-                tag.owner == address && !tag.is_certificate
-            }).map(|tag| {
-                FRAMES.with(|map| {
-                    match map.borrow().get(&tag.id) {
-                        Some(frame) => frame,
-                        None => trap("Frame does not exist")
-                    }
-                })
-            }).collect())
-        },
-        Err(e) => Err(e)
+    let address = get_caller_address().await?;
+    let mut frames = Vec::new();
+    for tag in _get_tags() {
+        let is_lent = is_frame_lent_to_caller(tag.id.clone()).await;
+        if (tag.owner == address || is_lent) && !tag.is_certificate {
+            if let Some(frame) = FRAMES.with(|map| map.borrow().get(&tag.id)) {
+                frames.push(frame);
+            } else {
+                return Err(Error::NotFound {
+                    msg: format!("Frame with id {} does not exist", tag.id),
+                });
+            }
+        }
     }
+    Ok(frames)
 }
 
 #[ic_cdk::update]
@@ -164,11 +154,33 @@ pub fn get_frame_lending(tag_id: String) -> Result<FramesLending, Error> {
 
 pub fn is_frame_lent(tag_id: String) -> bool {
     FRAMES_LENDING.with(|map| {
-        map.borrow().get(&tag_id).map_or(false, |lending| {
-            let current_sec = ic_cdk::api::time() / 1_000_000_000;
-            current_sec < lending.expire_timestamp
+        map.borrow().get(&tag_id).map_or(false, |_| {
+            true
         })
     })
+}
+
+pub async fn is_frame_lent_to_caller(tag_id: String) -> bool {
+    let caller_siwe_address_res = get_caller_address().await;
+    match caller_siwe_address_res {
+        Ok(address) => {
+            FRAMES_LENDING.with(|map| {
+                map.borrow().get(&tag_id).map_or(false, |lending| {
+                    lending.to == address
+                })
+            })
+        }
+        Err(_) => false
+    }
+}
+
+async fn validate_ownership(tag_id: String) -> Result<(), Error> {
+    if !is_authenticated(tag_id.clone()).await && !is_frame_lent_to_caller(tag_id.clone()).await {
+        return Err(Error::PermissionDenied {
+            msg: "Caller is not the owner of the frame".to_string(),
+        });
+    }
+    Ok(())
 }
 
 #[ic_cdk::update]
