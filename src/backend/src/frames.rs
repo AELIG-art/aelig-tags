@@ -140,3 +140,61 @@ async fn transfer_frame(tag_id: String, to_address: String) -> Result<String, Er
         Err(e) => Err(e)
     }
 }
+
+#[ic_cdk::query]
+pub fn get_frame_lending(tag_id: String) -> Result<FramesLending, Error> {
+    let msg_error = format!("No active lendings for frame with id {}", tag_id);
+
+    FRAMES_LENDING.with(|map| {
+        match map.borrow().get(&tag_id) {
+            Some(lending) => {
+                let current_sec = ic_cdk::api::time() / 1_000_000_000;
+                if current_sec >= lending.expire_timestamp {
+                    Err(Error::NotFound { msg: msg_error })
+                } else {
+                    Ok(lending.clone())
+                }
+            }
+            None => {
+                Err(Error::NotFound { msg: msg_error })
+            }
+        }
+    })
+}
+
+pub fn is_frame_lent(tag_id: String) -> bool {
+    FRAMES_LENDING.with(|map| {
+        map.borrow().get(&tag_id).map_or(false, |lending| {
+            let current_sec = ic_cdk::api::time() / 1_000_000_000;
+            current_sec < lending.expire_timestamp
+        })
+    })
+}
+
+#[ic_cdk::update]
+async fn lend_frame(
+    tag_id: String,
+    to_address: String,
+    expire_timestamp: u64,
+) -> Result<String, Error> {
+    if !is_authenticated(tag_id.clone()).await {
+        return Err(Error::PermissionDenied {
+            msg: "Caller is not the owner of the frame".to_string(),
+        });
+    }
+    if is_frame_lent(tag_id.clone()) {
+        return Err(Error::PermissionDenied {
+            msg: "Frame is already lent".to_string(),
+        });
+    }
+    FRAMES_LENDING.with(|map| {
+        map.borrow_mut().insert(
+            tag_id,
+            FramesLending {
+                to: to_address,
+                expire_timestamp,
+            },
+        );
+    });
+    Ok("Tag ownership updated".to_string())
+}
