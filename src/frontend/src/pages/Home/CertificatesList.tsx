@@ -9,9 +9,9 @@ const CertificatesList = () => {
     const { certificates } = useTags();
 
     return <div>
-        <h1 className={"mt-5"}>Your certificates</h1>
+        <h1 className={"mt-5"}>Your Certificates</h1>
         <Table
-            headers={["#", "Id", "Metadata created", "Registered", "Action"]}
+            headers={["#", "Id", "Metadata Created", "Registered", "Action"]}
         >
             {
                 certificates.map((certificate: Certificate, index: number) => {

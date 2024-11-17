@@ -1,4 +1,6 @@
-import {ID_LENGTH} from "./constants";
+import {CHAIN_MAPPING_OPENSEA, ID_LENGTH} from "./constants";
+import {NFT} from "../declarations/backend/backend.did";
+import {SupportedChain} from "./types";
 
 export const intToHexId = (id: number) => {
     const hex = id.toString(16);
@@ -13,4 +15,8 @@ export const transformUrl = (oldUrl: string) => {
     } else {
         return oldUrl;
     }
+}
+
+export const nftToOpenSeaUrl = (nft: NFT) => {
+    return `https://opensea.io/assets/${CHAIN_MAPPING_OPENSEA[nft.chain as SupportedChain]}/${nft.contract_address}/${nft.id}`;
 }

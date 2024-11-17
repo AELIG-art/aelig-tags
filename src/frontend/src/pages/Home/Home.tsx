@@ -1,8 +1,8 @@
 import React from "react";
-import CertificatesList from "./CertificatesList";
 import Disconnected from "./Disconnected";
 import Loading from "./Loading";
 import {useSiweIdentity} from "ic-use-siwe-identity";
+import Connected from "./Connected";
 
 const Home = () => {
     const { isInitializing, identityAddress } = useSiweIdentity();
@@ -10,7 +10,7 @@ const Home = () => {
     if (isInitializing) {
         return <Loading />;
     } else {
-        return identityAddress ? <CertificatesList /> : <Disconnected />;
+        return identityAddress ? <Connected /> : <Disconnected />;
     }
 };
 
