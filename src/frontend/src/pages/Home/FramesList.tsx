@@ -11,23 +11,25 @@ const CertificatesList = () => {
     return <div>
         <h1 className={"mt-5"}>Your Frames</h1>
         <Table
-            headers={["#", "Has NFT", "Link"]}
+            headers={["#", "Has NFT", "Lent To", "Link"]}
         >
             {
                 frames.map((frame: Frame, index: number) => {
                     const nft = frame.nft.length === 1 ? frame.nft[0] : undefined;
+                    const lending = frame.lending.length === 1 ? frame.lending[0] : undefined;
                     return <tr key={index}>
                         <td>{frame.id}</td>
                         <td>{nft ? "Yes" : "No"}</td>
+                        <td>{lending ? lending.to_address : "-"}</td>
                         <td>
                             {
-                                nft && <Link
+                                nft ? <Link
                                     to={nftToOpenSeaUrl(nft)}
                                     target="_blank"
                                     className="link"
                                 >
                                     See on OpenSea
-                                </Link>
+                                </Link> : "-"
                             }
                         </td>
                     </tr>
