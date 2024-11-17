@@ -5,7 +5,7 @@ use crate::auth::is_authenticated;
 use crate::ic_siwe_provider::get_caller_address;
 use crate::memory_ids::MemoryKeys;
 use crate::tags::{_get_tags, update_tag_ownership};
-use crate::types::{Error, Frame, Memory, NFT, FramesLending};
+use crate::types::{Error, Frame, Memory, NFT, Lending};
 
 thread_local! {
     static MEMORY_MANAGER: RefCell<MemoryManager<DefaultMemoryImpl>> =
@@ -159,7 +159,7 @@ pub async fn is_frame_lent_to_caller(tag_id: String) -> bool {
                 map.borrow().get(&tag_id).map_or(false, |frame| {
                     match frame.lending {
                         Some(lending) => {
-                            lending.expire_timestamp > ic_cdk::api::time() / 1_000_000_000 && lending.to == address
+                            lending.expire_timestamp > ic_cdk::api::time() / 1_000_000_000 && lending.to_address == address
                         },
                         None => {
                             false
@@ -205,8 +205,8 @@ async fn lend_frame(
                     Frame {
                         id: tag_id,
                         nft: frame.nft,
-                        lending: Some(FramesLending {
-                            to: to_address,
+                        lending: Some(Lending {
+                            to_address,
                             expire_timestamp,
                         }),
                     }

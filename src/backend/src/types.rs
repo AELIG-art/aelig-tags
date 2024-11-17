@@ -76,12 +76,12 @@ pub struct NFT {
 }
 
 #[derive(CandidType, Deserialize, Clone)]
-pub struct FramesLending {
-    pub(crate) to: String,
+pub struct Lending {
+    pub(crate) to_address: String,
     pub(crate) expire_timestamp: u64, // expressed in seconds
 }
 
-impl Storable for FramesLending {
+impl Storable for Lending {
     fn to_bytes(&self) -> std::borrow::Cow<[u8]> {
         Cow::Owned(Encode!(self).unwrap())
     }
@@ -100,7 +100,7 @@ impl Storable for FramesLending {
 pub struct Frame {
     pub(crate) id: String,
     pub(crate) nft: Option<NFT>,
-    pub(crate) lending: Option<FramesLending>
+    pub(crate) lending: Option<Lending>
 }
 
 impl Storable for Frame {
