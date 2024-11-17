@@ -127,7 +127,6 @@ async fn transfer_frame(tag_id: String, to_address: String) -> Result<String, Er
 
 #[ic_cdk::query]
 pub fn get_frame_lending(tag_id: String) -> Result<Option<FramesLending>, Error> {
-    let msg_error = format!("No active lendings for frame with id {}", tag_id);
     FRAMES.with(|map| {
         match map.borrow().get(&tag_id) {
             Some(frame) => Ok(frame.lending),
