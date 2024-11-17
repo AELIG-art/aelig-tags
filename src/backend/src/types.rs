@@ -99,7 +99,8 @@ impl Storable for FramesLending {
 #[derive(CandidType, Deserialize, Clone)]
 pub struct Frame {
     pub(crate) id: String,
-    pub(crate) nft: Option<NFT>
+    pub(crate) nft: Option<NFT>,
+    pub(crate) lending: Option<FramesLending>
 }
 
 impl Storable for Frame {
