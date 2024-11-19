@@ -39,7 +39,15 @@ export const idlFactory = ({ IDL }) => {
     'chain' : IDL.Text,
     'contract_address' : IDL.Text,
   });
-  const Frame = IDL.Record({ 'id' : IDL.Text, 'nft' : IDL.Opt(NFT) });
+  const Lending = IDL.Record({
+    'expire_timestamp' : IDL.Nat,
+    'to_address' : IDL.Text,
+  });
+  const Frame = IDL.Record({
+    'id' : IDL.Text,
+    'nft' : IDL.Opt(NFT),
+    'lending' : IDL.Opt(Lending),
+  });
   const FrameResult = IDL.Variant({ 'Ok' : Frame, 'Err' : Error });
   const GetFramesResult = IDL.Variant({ 'Ok' : IDL.Vec(Frame), 'Err' : Error });
   const LastStorageResult = IDL.Variant({
@@ -77,6 +85,7 @@ export const idlFactory = ({ IDL }) => {
     'get_tag' : IDL.Func([IDL.Text], [GetTagResult], []),
     'get_tags' : IDL.Func([], [GetTagsResult], ['query']),
     'is_admin' : IDL.Func([IDL.Principal], [IDL.Bool], ['query']),
+    'lend_frame' : IDL.Func([IDL.Text, IDL.Text, IDL.Nat], [UpdateResult], []),
     'register_certificate' : IDL.Func([IDL.Text], [UpdateResult], []),
     'save_certificate' : IDL.Func([IDL.Text, NFTMetadata], [UpdateResult], []),
     'set_key' : IDL.Func([IDL.Text, IDL.Text], [UpdateResult], []),

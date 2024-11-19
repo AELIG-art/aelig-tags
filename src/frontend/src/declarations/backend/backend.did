@@ -28,9 +28,15 @@ type ErrorReason = record {
     msg: text;
 };
 
+type Lending = record {
+    to_address: text;
+    expire_timestamp: nat;
+};
+
 type Frame = record {
     id: text;
-    nft: opt NFT
+    nft: opt NFT;
+    lending: opt Lending
 };
 
 type Tag = record {
@@ -127,4 +133,5 @@ service : {
     "transfer_frame": (tag_id: text, to_address: text) -> (UpdateResult);
     "get_frames": () -> (GetFramesResult);
     "get_certificates": () -> (GetCertificatesResult);
+    "lend_frame": (tag_id: text, to_address: text, expire_timestamp: nat) -> (UpdateResult);
 };

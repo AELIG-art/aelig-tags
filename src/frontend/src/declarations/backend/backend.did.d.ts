@@ -14,7 +14,11 @@ export type Error = { 'NotFound' : ErrorReason } |
   { 'PermissionDenied' : ErrorReason } |
   { 'Validation' : ErrorReason };
 export interface ErrorReason { 'msg' : string }
-export interface Frame { 'id' : string, 'nft' : [] | [NFT] }
+export interface Frame {
+  'id' : string,
+  'nft' : [] | [NFT],
+  'lending' : [] | [Lending],
+}
 export type FrameResult = { 'Ok' : Frame } |
   { 'Err' : Error };
 export type GetCertificateResult = { 'Ok' : Certificate } |
@@ -31,6 +35,7 @@ export type GetTagsResult = { 'Ok' : Array<Tag> } |
   { 'Err' : Error };
 export type LastStorageResult = { 'Ok' : Principal } |
   { 'Err' : Error };
+export interface Lending { 'expire_timestamp' : bigint, 'to_address' : string }
 export interface NFT {
   'id' : string,
   'chain' : string,
@@ -75,6 +80,7 @@ export interface _SERVICE {
   'get_tag' : ActorMethod<[string], GetTagResult>,
   'get_tags' : ActorMethod<[], GetTagsResult>,
   'is_admin' : ActorMethod<[Principal], boolean>,
+  'lend_frame' : ActorMethod<[string, string, bigint], UpdateResult>,
   'register_certificate' : ActorMethod<[string], UpdateResult>,
   'save_certificate' : ActorMethod<[string, NFTMetadata], UpdateResult>,
   'set_key' : ActorMethod<[string, string], UpdateResult>,
