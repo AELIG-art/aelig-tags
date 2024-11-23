@@ -24,6 +24,7 @@ const Tag = () => {
     const {backendActor} = useBackendActor();
     const navigate = useNavigate();
     const { isInitializing, identityAddress } = useSiweIdentity();
+    const [isLoading, setIsLoading] = useState(true);
 
     const [tag, setTag] = useState<undefined|TagExpanded>();
     const [isCertificate, setIsCertificate] = useState(false);
@@ -39,6 +40,7 @@ const Tag = () => {
                     if (tagResTyped.Ok.owner === identityAddress) {
                         setIsCertificate(tagResTyped.Ok.is_certificate);
                         setTag(tagResTyped.Ok);
+                        setIsLoading(false);
                     } else {
                         navigate("/");
                     }
@@ -52,7 +54,7 @@ const Tag = () => {
     return <div className={"pb-3"}>
         <h1 className="mt-5">{tag?.short_id || tag?.id}</h1>
         <Link to={isCertificate ? "/" : "/#frames"} className="back">Back</Link>
-        <Content isCertificate={isCertificate} id={id!} />
+        {!isLoading && <Content isCertificate={isCertificate} id={id!}/>}
     </div>;
 }
 
