@@ -1,17 +1,20 @@
 import {useTags} from "../../contexts/TagsContext";
-import React from "react";
+import React, {useState} from "react";
 import Table from "../../components/Table/Table";
 import {Frame} from "../../declarations/backend/backend.did";
 import {Link} from "react-router-dom";
 import {nftToOpenSeaUrl} from "../../utils/transformations";
+import TransferFrameModal from "./TransferFrameModal";
 
 const CertificatesList = () => {
-    const { frames } = useTags();
+    const { frames, setSub } = useTags();
+    const [frameId, setFrameId] = useState<string>("");
+    const [modalOpen, setModalOpen] = useState(false);
 
     return <div>
         <h1 className={"mt-5"}>Your Frames</h1>
         <Table
-            headers={["#", "Has NFT", "Lent To", "Link"]}
+            headers={["#", "Has NFT", "Lent To", "Link", "Action"]}
         >
             {
                 frames.map((frame: Frame, index: number) => {
@@ -32,10 +35,27 @@ const CertificatesList = () => {
                                 </Link> : "-"
                             }
                         </td>
+                        <td
+                            className="text-decoration-underline"
+                            style={{cursor: 'pointer'}}
+                            onClick={() => {
+                                setFrameId(frame.id);
+                                setModalOpen(true);
+                            }}
+                        >
+                            transfer
+                        </td>
                     </tr>
                 })
             }
         </Table>
+        <TransferFrameModal
+            open={modalOpen}
+            close={() => {
+                setSub(new Date().toISOString());
+                setModalOpen(false);
+            }} frameId={frameId}
+        />
     </div>;
 }
 
