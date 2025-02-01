@@ -144,11 +144,11 @@ const MetadataForm = (props: {
                     image: image || tag?.metadata?.image || "",
                     attributes: []
                 } as NFTMetadata;
-                const nftDetails = isNFT ? {
+                const nftDetails = isNFT ? [{
                     chain: chain || tag?.nftDetails?.chain || "",
                     address: address || tag?.nftDetails?.address || "",
                     id: nftId || tag?.nftDetails?.id || "",
-                } as NFTDetails : undefined;
+                }] as NFTDetails[] : [];
 
                 backendActor.save_certificate(
                     id!,
