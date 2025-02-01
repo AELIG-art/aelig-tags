@@ -1,51 +1,45 @@
 {
-    "canisters": {
-        "backend": {
-            "candid": "src/backend/backend.did",
-            "package": "backend",
-            "type": "rust",
-            "optimize": "cycles",
-            "declarations": {
-                "output": "src/frontend/src/declarations/backend"
-            }
-        },
-        "frontend": {
-            "dependencies": [
-                "backend",
-                "assets",
-                "ic_siwe_provider"
-            ],
-            "source": [
-                "src/frontend/dist"
-            ],
-            "type": "assets",
-            "workspace": "src/frontend",
-            "optimize": "size"
-        },
-        "assets": {
-            "candid": "src/assets/assets.did",
-            "package": "assets",
-            "type": "rust",
-            "optimize": "cycles",
-            "declarations": {
-                "output": "src/frontend/src/declarations/assets"
-            }
-        },
-        "ic_siwe_provider": {
-            "type": "custom",
-            "candid": "https://github.com/kristoferlund/ic-siwe/releases/download/v0.0.6/ic_siwe_provider.did",
-            "wasm": "https://github.com/kristoferlund/ic-siwe/releases/download/v0.0.6/ic_siwe_provider.wasm.gz",
-            "declarations": {
-                "output": "src/frontend/src/declarations/ic_siwe_provider"
-            }
-        }
+  "canisters": {
+    "backend": {
+      "candid": "src/backend/backend.did",
+      "package": "backend",
+      "type": "rust",
+      "optimize": "cycles",
+      "declarations": {
+        "output": "src/frontend/src/declarations/backend"
+      }
     },
-    "defaults": {
-        "build": {
-            "args": "",
-            "packtool": ""
-        }
+    "frontend": {
+      "dependencies": ["backend", "assets", "ic_siwe_provider"],
+      "source": ["src/frontend/dist"],
+      "type": "assets",
+      "workspace": "src/frontend",
+      "optimize": "size"
     },
-    "output_env_file": ".env",
-    "version": 1
+    "assets": {
+      "candid": "src/assets/assets.did",
+      "package": "assets",
+      "type": "rust",
+      "optimize": "cycles",
+      "declarations": {
+        "output": "src/frontend/src/declarations/assets"
+      }
+    },
+    "ic_siwe_provider": {
+      "type": "custom",
+      "candid": "https://github.com/kristoferlund/ic-siwe/releases/download/v0.0.6/ic_siwe_provider.did",
+      "wasm": "https://github.com/kristoferlund/ic-siwe/releases/download/v0.0.6/ic_siwe_provider.wasm.gz",
+      "declarations": {
+        "output": "src/frontend/src/declarations/ic_siwe_provider"
+      }
+    }
+  },
+  "defaults": {
+    "build": {
+      "args": "",
+      "packtool": ""
+    }
+  },
+  "output_env_file": ".env",
+  "version": 1
 }

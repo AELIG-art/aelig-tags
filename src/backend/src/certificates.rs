@@ -1,12 +1,12 @@
-use std::cell::RefCell;
-use std::string::ToString;
-use ic_cdk::trap;
-use ic_stable_structures::{DefaultMemoryImpl, StableBTreeMap};
-use ic_stable_structures::memory_manager::{MemoryId, MemoryManager};
 use crate::ic_siwe_provider::get_caller_address;
 use crate::memory_ids::MemoryKeys;
-use crate::tags::{_get_tags};
+use crate::tags::_get_tags;
 use crate::types::{Certificate, Error, Memory, NFTDetails, NFTMetadata};
+use ic_cdk::trap;
+use ic_stable_structures::memory_manager::{MemoryId, MemoryManager};
+use ic_stable_structures::{DefaultMemoryImpl, StableBTreeMap};
+use std::cell::RefCell;
+use std::string::ToString;
 
 thread_local! {
     static MEMORY_MANAGER: RefCell<MemoryManager<DefaultMemoryImpl>> =
@@ -23,28 +23,27 @@ thread_local! {
 
 #[ic_cdk::query]
 pub fn get_certificate(tag_id: String) -> Result<Certificate, Error> {
-    CERTIFICATES.with(|map| {
-        match map.borrow().get(&tag_id) {
-            Some(certificate) => {
-                Ok(certificate)
-            },
-            None => Err(Error::NotFound {
-                msg: format!("Certificate with id {} does not exist", tag_id)
-            })
+    CERTIFICATES.with(|map| match map.borrow().get(&tag_id) {
+        Some(certificate) => Ok(certificate),
+        None => {
+            Err(Error::NotFound { msg: format!("Certificate with id {} does not exist", tag_id) })
         }
     })
 }
 
 pub fn add_certificate(tag_id: String, author: String, short_id: String) {
     CERTIFICATES.with(|map| {
-        map.borrow_mut().insert(tag_id.clone(), Certificate {
-            id: tag_id,
-            registered: false,
-            metadata: None,
-            nft_details: None,
-            short_id,
-            author
-        });
+        map.borrow_mut().insert(
+            tag_id.clone(),
+            Certificate {
+                id: tag_id,
+                registered: false,
+                metadata: None,
+                nft_details: None,
+                short_id,
+                author,
+            },
+        );
     });
 }
 
@@ -57,47 +56,39 @@ async fn save_certificate(
     let caller_siwe_address_res = get_caller_address().await;
 
     match caller_siwe_address_res {
-        Ok(address) => {
-            CERTIFICATES.with(|map| {
-                let certificate_option = CERTIFICATES.with(
-                    |map| {
-                    map.borrow().get(&tag_id)
-                });
-                match certificate_option {
-                    Some(certificate) => {
-                        if certificate.author != address {
-                            return Err(Error::PermissionDenied {
-                                msg: "You are not the author of this certificate".to_string()
-                            });
-                        }
-                        if !certificate.registered {
-                            map.borrow_mut().insert(tag_id.clone(), Certificate {
+        Ok(address) => CERTIFICATES.with(|map| {
+            let certificate_option = CERTIFICATES.with(|map| map.borrow().get(&tag_id));
+            match certificate_option {
+                Some(certificate) => {
+                    if certificate.author != address {
+                        return Err(Error::PermissionDenied {
+                            msg: "You are not the author of this certificate".to_string(),
+                        });
+                    }
+                    if !certificate.registered {
+                        map.borrow_mut().insert(
+                            tag_id.clone(),
+                            Certificate {
                                 id: tag_id,
                                 registered: false,
                                 metadata: Some(metadata),
                                 nft_details,
                                 author: certificate.author,
-                                short_id: certificate.short_id
-                            });
-                            Ok("Certificate saved".to_string())
-                        } else {
-                            Err(Error::PermissionDenied {
-                                msg: "Owner does not coincide or certificate already registered"
-                                    .to_string()
-                            })
-                        }
-                    },
-                    None => {
-                        Err(Error::NotFound {
-                            msg: "Certificate does not exist".to_string()
+                                short_id: certificate.short_id,
+                            },
+                        );
+                        Ok("Certificate saved".to_string())
+                    } else {
+                        Err(Error::PermissionDenied {
+                            msg: "Owner does not coincide or certificate already registered"
+                                .to_string(),
                         })
                     }
                 }
-            })
-        },
-        Err(e) => {
-            Err(e)
-        }
+                None => Err(Error::NotFound { msg: "Certificate does not exist".to_string() }),
+            }
+        }),
+        Err(e) => Err(e),
     }
 }
 
@@ -106,73 +97,65 @@ async fn register_certificate(id: String) -> Result<String, Error> {
     let caller_siwe_address_res = get_caller_address().await;
 
     match caller_siwe_address_res {
-        Ok(address) => {
-            CERTIFICATES.with(|map| {
-                let certificate = map.borrow().get(&id);
-                match certificate {
-                    Some(certificate) => {
-                        if certificate.author != address {
-                            return Err(Error::PermissionDenied {
-                                msg: "You are not the author of this certificate".to_string()
-                            });
-                        }
-                        if certificate.registered {
-                            Err(Error::Validation {
-                                msg: "Certificate is already registered".to_string()
-                            })
-                        } else {
-                            let metadata = certificate.metadata;
-                            let nft_details = certificate.nft_details;
-                            match metadata {
-                                Some(_) => {
-                                    map.borrow_mut().insert(
-                                        id,
-                                        Certificate {
-                                            id: certificate.id,
-                                            metadata,
-                                            nft_details,
-                                            author: certificate.author,
-                                            registered: true,
-                                            short_id: certificate.short_id
-                                        }
-                                    );
-                                    Ok("Tag registered".to_string())
-                                },
-                                None => Err(Error::Validation {
-                                    msg: "Metadata are not set".to_string()
-                                })
+        Ok(address) => CERTIFICATES.with(|map| {
+            let certificate = map.borrow().get(&id);
+            match certificate {
+                Some(certificate) => {
+                    if certificate.author != address {
+                        return Err(Error::PermissionDenied {
+                            msg: "You are not the author of this certificate".to_string(),
+                        });
+                    }
+                    if certificate.registered {
+                        Err(Error::Validation {
+                            msg: "Certificate is already registered".to_string(),
+                        })
+                    } else {
+                        let metadata = certificate.metadata;
+                        let nft_details = certificate.nft_details;
+                        match metadata {
+                            Some(_) => {
+                                map.borrow_mut().insert(
+                                    id,
+                                    Certificate {
+                                        id: certificate.id,
+                                        metadata,
+                                        nft_details,
+                                        author: certificate.author,
+                                        registered: true,
+                                        short_id: certificate.short_id,
+                                    },
+                                );
+                                Ok("Tag registered".to_string())
+                            }
+                            None => {
+                                Err(Error::Validation { msg: "Metadata are not set".to_string() })
                             }
                         }
-                    },
-                    None => Err(Error::NotFound {
-                        msg: format!("Cannot find the certificate with id: {}", id)
-                    })
+                    }
                 }
-            })
-        },
-        Err(e) => Err(e)
+                None => Err(Error::NotFound {
+                    msg: format!("Cannot find the certificate with id: {}", id),
+                }),
+            }
+        }),
+        Err(e) => Err(e),
     }
 }
 
 #[ic_cdk::update]
 async fn get_certificates() -> Result<Vec<Certificate>, Error> {
     match get_caller_address().await {
-        Ok(address) => {
-            Ok(
-                _get_tags()
-                .iter()
-                .filter(|tag| tag.owner == address && tag.is_certificate)
-                .map(|tag| {
-                    CERTIFICATES.with(|certificates| {
-                        match certificates.borrow().get(&tag.id) {
-                            Some(certificate) => certificate,
-                            None => trap("Certificate does not exist")
-                        }
-                    })
+        Ok(address) => Ok(_get_tags()
+            .iter()
+            .filter(|tag| tag.owner == address && tag.is_certificate)
+            .map(|tag| {
+                CERTIFICATES.with(|certificates| match certificates.borrow().get(&tag.id) {
+                    Some(certificate) => certificate,
+                    None => trap("Certificate does not exist"),
                 })
-                .collect()
-            )
-        },
-        Err(e) => Err(e)
+            })
+            .collect()),
+        Err(e) => Err(e),
     }
 }

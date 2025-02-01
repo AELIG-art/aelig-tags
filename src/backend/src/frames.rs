@@ -1,11 +1,11 @@
-use std::cell::RefCell;
-use ic_stable_structures::{DefaultMemoryImpl, StableBTreeMap};
-use ic_stable_structures::memory_manager::{MemoryId, MemoryManager};
 use crate::auth::is_authenticated;
 use crate::ic_siwe_provider::get_caller_address;
 use crate::memory_ids::MemoryKeys;
 use crate::tags::{_get_tags, update_tag_ownership};
-use crate::types::{Error, Frame, Memory, NFT, Lending};
+use crate::types::{Error, Frame, Lending, Memory, NFT};
+use ic_stable_structures::memory_manager::{MemoryId, MemoryManager};
+use ic_stable_structures::{DefaultMemoryImpl, StableBTreeMap};
+use std::cell::RefCell;
 
 thread_local! {
     static MEMORY_MANAGER: RefCell<MemoryManager<DefaultMemoryImpl>> =
@@ -22,26 +22,15 @@ thread_local! {
 
 #[ic_cdk::query]
 pub fn get_frame(tag_id: String) -> Result<Frame, Error> {
-    FRAMES.with(|map| {
-        match map.borrow().get(&tag_id) {
-            Some(frame) => Ok(frame.clone()),
-            None => Err(Error::NotFound {
-                msg: format!("Frame with id {} does not exist", tag_id)
-            }),
-        }
+    FRAMES.with(|map| match map.borrow().get(&tag_id) {
+        Some(frame) => Ok(frame.clone()),
+        None => Err(Error::NotFound { msg: format!("Frame with id {} does not exist", tag_id) }),
     })
 }
 
 pub fn add_frame(tag_id: String) {
     FRAMES.with(|map| {
-        map.borrow_mut().insert(
-            tag_id.clone(),
-            Frame {
-                id: tag_id,
-                nft: None,
-                lending: None,
-            }
-        );
+        map.borrow_mut().insert(tag_id.clone(), Frame { id: tag_id, nft: None, lending: None });
     });
 }
 
@@ -52,19 +41,11 @@ async fn set_nft_on_frame(tag_id: String, nft: NFT) -> Result<String, Error> {
         let frame_opt = map.borrow().get(&tag_id);
         match frame_opt {
             Some(frame) => {
-                map.borrow_mut().insert(
-                    tag_id,
-                    Frame {
-                        id: frame.id,
-                        nft: Some(nft),
-                        lending: frame.lending,
-                    },
-                );
+                map.borrow_mut()
+                    .insert(tag_id, Frame { id: frame.id, nft: Some(nft), lending: frame.lending });
                 Ok("NFT set on the frame".to_string())
-            },
-            None => Err(Error::NotFound {
-                msg: "Frame not found".to_string(),
-            }),
+            }
+            None => Err(Error::NotFound { msg: "Frame not found".to_string() }),
         }
     })
 }
@@ -76,19 +57,11 @@ async fn clean_frame(tag_id: String) -> Result<String, Error> {
         let frame_opt = map.borrow().get(&tag_id);
         match frame_opt {
             Some(frame) => {
-                map.borrow_mut().insert(
-                    tag_id,
-                    Frame {
-                        id: frame.id,
-                        nft: None,
-                        lending: frame.lending,
-                    },
-                );
+                map.borrow_mut()
+                    .insert(tag_id, Frame { id: frame.id, nft: None, lending: frame.lending });
                 Ok("Frame cleaned".to_string())
-            },
-            None => Err(Error::NotFound {
-                msg: "Frame not found".to_string(),
-            }),
+            }
+            None => Err(Error::NotFound { msg: "Frame not found".to_string() }),
         }
     })
 }
@@ -121,42 +94,33 @@ async fn transfer_frame(tag_id: String, to_address: String) -> Result<String, Er
     }
     match update_tag_ownership(tag_id, to_address) {
         Ok(_) => Ok("Frame ownership updated".to_string()),
-        Err(e) => Err(e)
+        Err(e) => Err(e),
     }
 }
 
 pub fn is_frame_lent(tag_id: String) -> bool {
-    FRAMES.with(|map| {
-        match map.borrow().get(&tag_id) {
-            Some(frame) => {
-                match frame.lending {
-                    Some(lending) => lending.expire_timestamp > ic_cdk::api::time() / 1_000_000_000,
-                    None => false
-                }
-            },
-            None => false
-        }
+    FRAMES.with(|map| match map.borrow().get(&tag_id) {
+        Some(frame) => match frame.lending {
+            Some(lending) => lending.expire_timestamp > ic_cdk::api::time() / 1_000_000_000,
+            None => false,
+        },
+        None => false,
     })
 }
 
 pub async fn is_frame_lent_to_caller(tag_id: String) -> bool {
     let caller_siwe_address_res = get_caller_address().await;
     match caller_siwe_address_res {
-        Ok(address) => {
-            FRAMES.with(|map| {
-                map.borrow().get(&tag_id).map_or(false, |frame| {
-                    match frame.lending {
-                        Some(lending) => {
-                            lending.expire_timestamp > ic_cdk::api::time() / 1_000_000_000 && lending.to_address == address
-                        },
-                        None => {
-                            false
-                        }
-                    }
-                })
+        Ok(address) => FRAMES.with(|map| {
+            map.borrow().get(&tag_id).map_or(false, |frame| match frame.lending {
+                Some(lending) => {
+                    lending.expire_timestamp > ic_cdk::api::time() / 1_000_000_000
+                        && lending.to_address == address
+                }
+                None => false,
             })
-        }
-        Err(_) => false
+        }),
+        Err(_) => false,
     }
 }
 
@@ -181,30 +145,20 @@ async fn lend_frame(
         });
     }
     if is_frame_lent(tag_id.clone()) {
-        return Err(Error::PermissionDenied {
-            msg: "Frame is already lent".to_string(),
-        });
+        return Err(Error::PermissionDenied { msg: "Frame is already lent".to_string() });
     }
-    FRAMES.with(|map| {
-        match map.borrow().get(&tag_id) {
-            Some(frame) => {
-                map.borrow_mut().insert(
-                    frame.id,
-                    Frame {
-                        id: tag_id,
-                        nft: frame.nft,
-                        lending: Some(Lending {
-                            to_address,
-                            expire_timestamp,
-                        }),
-                    }
-                );
-                Ok("Frame lend on the frame".to_string())
-            },
-            None => Err(Error::NotFound {
-                msg: format!("Frame with id {} does not exist", tag_id),
-            })
+    FRAMES.with(|map| match map.borrow().get(&tag_id) {
+        Some(frame) => {
+            map.borrow_mut().insert(
+                frame.id,
+                Frame {
+                    id: tag_id,
+                    nft: frame.nft,
+                    lending: Some(Lending { to_address, expire_timestamp }),
+                },
+            );
+            Ok("Frame lend on the frame".to_string())
         }
-        
+        None => Err(Error::NotFound { msg: format!("Frame with id {} does not exist", tag_id) }),
     })
 }

@@ -1,10 +1,10 @@
-mod types;
-mod verification;
-mod tags;
+mod auth;
 mod certificates;
 mod frames;
-mod keys;
-mod memory_ids;
-mod media;
 mod ic_siwe_provider;
-mod auth;
+mod keys;
+mod media;
+mod memory_ids;
+mod tags;
+mod types;
+mod verification;

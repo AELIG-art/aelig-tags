@@ -48,6 +48,27 @@ The project is organized into the following components:
 
 For deployment, refer to the [official guide](https://internetcomputer.org/docs/current/developer-docs/developer-tools/cli-tools/cli-reference/dfx-deploy).
 
+## Code formatter
+
+The package.json file includes two scripts for formatting code:
+
+- `npm run format:<project_name>` – Applies the code formatter to the specified project.
+- `npm run format-check:<project_name>` – Checks the code formatting without making changes.
+
+Here, <project_name> can be either react or rust, depending on which part of the project you want to format.
+
+## Pre-Commit Hook
+
+A pre-commit hook is set up to automatically check and format the code for both Rust and React before each commit.
+
+To manually run the pre-commit hook, use:
+
+```shell
+.husky/pre-commit
+```
+
+This ensures that your code adheres to the project’s formatting standards before being committed.
+
 ## Custom Domain
 
 Follow [this guide](https://internetcomputer.org/docs/current/developer-docs/web-apps/custom-domains/using-custom-domains) to set up a custom domain.
