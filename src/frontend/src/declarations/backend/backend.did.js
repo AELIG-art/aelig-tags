@@ -93,7 +93,11 @@ export const idlFactory = ({ IDL }) => {
     'is_admin' : IDL.Func([IDL.Principal], [IDL.Bool], ['query']),
     'lend_frame' : IDL.Func([IDL.Text, IDL.Text, IDL.Nat], [UpdateResult], []),
     'register_certificate' : IDL.Func([IDL.Text], [UpdateResult], []),
-    'save_certificate' : IDL.Func([IDL.Text, NFTMetadata], [UpdateResult], []),
+    'save_certificate' : IDL.Func(
+        [IDL.Text, NFTMetadata, IDL.Opt(NFTDetails)],
+        [UpdateResult],
+        [],
+      ),
     'set_key' : IDL.Func([IDL.Text, IDL.Text], [UpdateResult], []),
     'set_nft_on_frame' : IDL.Func([IDL.Text, NFT], [UpdateResult], []),
     'transfer_frame' : IDL.Func([IDL.Text, IDL.Text], [UpdateResult], []),

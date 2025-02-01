@@ -129,7 +129,7 @@ service : {
     "get_tags": () -> (GetTagsResult) query;
     "is_admin": (user: principal) -> (bool) query;
     "register_certificate": (id: text) -> (UpdateResult);
-    "save_certificate": (tag_id: text, metadata: NFTMetadata) -> (UpdateResult);
+    "save_certificate": (tag_id: text, metadata: NFTMetadata, nft_details: opt NFTDetails) -> (UpdateResult);
     "set_key": (key: text, value: text) -> (UpdateResult);
     "upload_media": (tag_id: text, media: StoreArg) -> (UpdateResult);
     "verify_tag": (msg: text) -> (VerifyResult);
