@@ -1,23 +1,24 @@
-import React, {useEffect} from "react";
-import { Outlet } from "react-router-dom";
-import { Container } from "react-bootstrap";
-import NavBar from "./NavBar";
-import Footer from "./Footer";
-import  "./styles.VerifyLayout.css";
+import React, { useEffect } from 'react';
+import { Outlet } from 'react-router-dom';
+import { Container } from 'react-bootstrap';
+import NavBar from './NavBar';
+import Footer from './Footer';
+import './styles.VerifyLayout.css';
 
 const DefaultLayout = () => {
+  useEffect(() => {
+    document.getElementsByTagName('html')[0].style.backgroundColor = '#eae3d2';
+  }, []);
 
-    useEffect(() => {
-        document.getElementsByTagName("html")[0].style.backgroundColor = '#eae3d2';
-    }, []);
-
-    return <div className="verify-content">
-        <NavBar />
-        <Container className="mt-3">
-            <Outlet/>
-        </Container>
-        <Footer />
+  return (
+    <div className="verify-content">
+      <NavBar />
+      <Container className="mt-3">
+        <Outlet />
+      </Container>
+      <Footer />
     </div>
-}
+  );
+};
 
 export default DefaultLayout;

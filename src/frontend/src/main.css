@@ -1,13 +1,13 @@
 :root {
-    --primary-color: #8c380d;
-    --secondary-color: #eae3d2;
+  --primary-color: #8c380d;
+  --secondary-color: #eae3d2;
 }
 
 .bg-danger {
-    background-color: var(--primary-color) !important;
+  background-color: var(--primary-color) !important;
 }
 
 .bg-success {
-    background-color: var(--secondary-color) !important;
-    color: var(--primary-color) !important;
+  background-color: var(--secondary-color) !important;
+  color: var(--primary-color) !important;
 }

@@ -1,9 +1,13 @@
-import {NFTDetails, NFTMetadata, Tag} from "../declarations/backend/backend.did";
+import {
+  NFTDetails,
+  NFTMetadata,
+  Tag,
+} from '../declarations/backend/backend.did';
 
 export interface TagExpanded extends Tag {
-    metadata?: NFTMetadata,
-    nftDetails?: NFTDetails,
-    registered?: boolean
+  metadata?: NFTMetadata;
+  nftDetails?: NFTDetails;
+  registered?: boolean;
 }
 
 export type SupportedChain = 'eth' | 'polygon';
