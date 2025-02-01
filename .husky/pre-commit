@@ -1,5 +1,7 @@
-echo "Checking Prettier formatting for React files..."
-if ! npm run format:check; then
-  npm run format
-  git add .
+if !npm run format-check:react; then
+  npm run format:react
+fi
+
+if !npm run format-check:rust; then
+  npm run format:rust
 fi
