@@ -99,7 +99,7 @@ const Certificate = ({tagId}: Props) => {
                     setChain={setChain}
                     setAddress={setAddress}
                     setNftId={setNftId}
-                /> : <MetadataInfo name={name} description={description} />
+                /> : <MetadataInfo tag={tag}  />
             }
         </div>
     </div> : <Loading />
