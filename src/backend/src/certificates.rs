@@ -6,7 +6,7 @@ use ic_stable_structures::memory_manager::{MemoryId, MemoryManager};
 use crate::ic_siwe_provider::get_caller_address;
 use crate::memory_ids::MemoryKeys;
 use crate::tags::{_get_tags};
-use crate::types::{Certificate, Error, Memory, NFTMetadata};
+use crate::types::{Certificate, Error, Memory, NFTDetails, NFTMetadata};
 
 thread_local! {
     static MEMORY_MANAGER: RefCell<MemoryManager<DefaultMemoryImpl>> =
@@ -41,6 +41,7 @@ pub fn add_certificate(tag_id: String, author: String, short_id: String) {
             id: tag_id,
             registered: false,
             metadata: None,
+            nft_details: None,
             short_id,
             author
         });
@@ -51,6 +52,7 @@ pub fn add_certificate(tag_id: String, author: String, short_id: String) {
 async fn save_certificate(
     tag_id: String,
     metadata: NFTMetadata,
+    nft_details: Option<NFTDetails>,
 ) -> Result<String, Error> {
     let caller_siwe_address_res = get_caller_address().await;
 
@@ -73,6 +75,7 @@ async fn save_certificate(
                                 id: tag_id,
                                 registered: false,
                                 metadata: Some(metadata),
+                                nft_details,
                                 author: certificate.author,
                                 short_id: certificate.short_id
                             });
@@ -119,6 +122,7 @@ async fn register_certificate(id: String) -> Result<String, Error> {
                             })
                         } else {
                             let metadata = certificate.metadata;
+                            let nft_details = certificate.nft_details;
                             match metadata {
                                 Some(_) => {
                                     map.borrow_mut().insert(
@@ -126,6 +130,7 @@ async fn register_certificate(id: String) -> Result<String, Error> {
                                         Certificate {
                                             id: certificate.id,
                                             metadata,
+                                            nft_details,
                                             author: certificate.author,
                                             registered: true,
                                             short_id: certificate.short_id
