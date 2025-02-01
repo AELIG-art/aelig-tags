@@ -43,7 +43,7 @@ const CertificatesList = () => {
                     } else if (certificate.metadata.length > 0) {
                       return 'REGISTER';
                     } else {
-                      return 'ADD METADATA';
+                      return 'UPDATE';
                     }
                   })()}
                 </Link>
