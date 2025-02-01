@@ -74,15 +74,23 @@ const Certificate = ({ tagId }: Props) => {
   }, [backendActor, navigate, tagId, subscription]);
 
   return !isLoading ? (
-    <div className={'row mt-4'}>
-      <div className={'col-6'}>
-        <div className={`d-flex w-100 h-100 ${!image ? 'border' : ''}`}>
+    <div className="row mt-4 row mt-4 d-flex flex-column flex-md-row">
+      <div className={'col'}>
+        <div
+          className={`d-flex w-100 h-100 ${!image ? 'border' : ''}`}
+          style={{ minHeight: '200px', maxHeight: '572px' }}
+        >
           {image ? (
-            <img src={image} alt="Certificate" className={'w-100 h-100'} />
+            <img
+              src={image}
+              alt="Certificate"
+              className={'w-100 h-100'}
+              style={{ minHeight: '200px', maxHeight: '572px' }}
+            />
           ) : null}
         </div>
       </div>
-      <div className={'col-6'}>
+      <div className={'col'}>
         {!certificateRegistered ? (
           <MetadataForm
             tag={tag}
