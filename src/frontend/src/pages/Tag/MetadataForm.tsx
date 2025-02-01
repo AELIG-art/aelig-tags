@@ -1,13 +1,14 @@
 import React, {useEffect, useRef, useState} from "react";
 import {Form} from "react-bootstrap";
-import {NFTMetadata, UpdateResult} from "../../declarations/backend/backend.did";
+import {NFTDetails, NFTMetadata, UpdateResult} from "../../declarations/backend/backend.did";
 import {backend} from "../../declarations/backend";
-import {TagExpanded} from "../../utils/types";
+import {SupportedChain, TagExpanded} from "../../utils/types";
 import {useTags} from "../../contexts/TagsContext";
 import Button from "../../components/Button/Button";
 import {alertToast} from "../../utils/alerts";
 import {useSiweIdentity} from "ic-use-siwe-identity";
 import {useBackendActor} from "../../contexts/BackendActorContext";
+import {SUPPORTED_CHAINS_FOR_SELECT} from "../../utils/constants";
 
 const MetadataForm = (props: {
     id: string|undefined,
@@ -17,9 +18,15 @@ const MetadataForm = (props: {
     image: string|undefined,
     name: string|undefined,
     description: string|undefined,
+    chain: SupportedChain|undefined,
+    address: string|undefined,
+    nftId: string|undefined,
     setName: (name: string) => void,
     setDescription: (description: string) => void,
-    setImage: (image: string) => void
+    setImage: (image: string) => void,
+    setChain: (chain: SupportedChain) => void,
+    setAddress: (address: string) => void,
+    setNftId: (id: string) => void,
 }) => {
     const {
         id,
@@ -29,9 +36,15 @@ const MetadataForm = (props: {
         name,
         setName,
         description,
+        chain,
+        address,
+        nftId,
         setDescription,
         image,
-        setImage
+        setImage,
+        setChain,
+        setAddress,
+        setNftId,
     } = props;
 
     const inputRef = useRef<HTMLInputElement>(null);
@@ -40,6 +53,7 @@ const MetadataForm = (props: {
     const [isLoadingButton, setIsLoadingButton] = useState(false);
     const [isDataMissing, setIsDataMissing] = useState(true);
     const [buttonText, setButtonText] = useState("");
+    const [isNFT, setIsNFT] = useState(Boolean(tag?.nftDetails));
     const [
         buttonAction,
         setButtonAction
@@ -52,8 +66,14 @@ const MetadataForm = (props: {
     const {backendActor} = useBackendActor();
 
     useEffect(() => {
-        setIsDataMissing(!image || image === "" || !name || name === "" || !description || description === "");
-    }, [image, name, description]);
+        const isMetadataMissing = !image || image === "" || !name || name === "" || !description || description === "";
+        if (isNFT) {
+            const isNftDetailsMissing = !address || address === "" || !nftId || nftId === "";
+            setIsDataMissing(isMetadataMissing || isNftDetailsMissing);
+        } else {
+            setIsDataMissing(isMetadataMissing);
+        }
+    }, [image, name, description, isNFT, address, nftId, chain]);
 
     useEffect(() => {
         if (tag) {
@@ -124,10 +144,16 @@ const MetadataForm = (props: {
                     image: image || tag?.metadata?.image || "",
                     attributes: []
                 } as NFTMetadata;
+                const nftDetails = isNFT ? {
+                    chain: chain || tag?.nftDetails?.chain || "",
+                    address: address || tag?.nftDetails?.address || "",
+                    id: nftId || tag?.nftDetails?.id || "",
+                } as NFTDetails : undefined;
 
                 backendActor.save_certificate(
                     id!,
-                    metadata
+                    metadata,
+                    nftDetails
                 )
                     .then((res: unknown) => {
                         const typedResult = res as UpdateResult;
@@ -217,6 +243,75 @@ const MetadataForm = (props: {
                     The image of the certificate.
                 </Form.Text>
             </Form.Group>
+
+            <Form.Group controlId="isNFT" className="mb-3">
+                <Form.Check
+                    type="checkbox"
+                    onChange={(event) => setIsNFT(event.target.checked)}
+                    className="rounded-0"
+                    label="Is NFT"
+                    checked={isNFT}
+                />
+            </Form.Group>
+
+            {
+                isNFT && <div>
+                    <Form.Group controlId="formFile" className="mb-3">
+                        <Form.Label>Chain</Form.Label>
+                        <Form.Select
+                            onChange={(event) => {
+                                setChain(event.target.value as SupportedChain);
+                                setDataUpdated(true);
+                            }}
+                            value={chain || tag?.nftDetails?.chain || ""}
+                            className={"rounded-0"}
+                        >
+                            <option disabled value="">-- Select an option --</option>
+                            {
+                                SUPPORTED_CHAINS_FOR_SELECT.map((
+                                    chain,
+                                    index
+                                ) => <option key={index} value={chain.value}>{chain.label}</option>)
+                            }
+                        </Form.Select>
+                        <Form.Text className="text-muted">
+                            The chain in which the NFT is minted
+                        </Form.Text>
+                    </Form.Group>
+                    <Form.Group className="mb-3" controlId="formBasicPassword">
+                        <Form.Label>Address</Form.Label>
+                        <Form.Control
+                            type="text"
+                            placeholder="Smart contract's address"
+                            value={address || tag?.nftDetails?.address || ""}
+                            onChange={(event) => {
+                                setAddress(event.target.value);
+                                setDataUpdated(true);
+                            }}
+                            className={"rounded-0"}
+                        />
+                        <Form.Text className="text-muted">
+                            The address of the NFT's smart contract
+                        </Form.Text>
+                    </Form.Group>
+                    <Form.Group className="mb-3" controlId="formBasicPassword">
+                        <Form.Label>Id</Form.Label>
+                        <Form.Control
+                            type="text"
+                            placeholder="NFT's Id"
+                            value={nftId || tag?.nftDetails?.id || ""}
+                            onChange={(event) => {
+                                setNftId(event.target.value);
+                                setDataUpdated(true);
+                            }}
+                            className={"rounded-0"}
+                        />
+                        <Form.Text className="text-muted">
+                            The id of the NFT
+                        </Form.Text>
+                    </Form.Group>
+                </div>
+            }
         </Form>
         <div className={"d-flex flex-row-reverse"}>
             {

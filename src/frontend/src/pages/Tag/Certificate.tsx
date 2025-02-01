@@ -1,6 +1,6 @@
 import {useEffect, useState} from "react";
 import MetadataForm from "./MetadataForm";
-import {TagExpanded} from "../../utils/types";
+import {SupportedChain, TagExpanded} from "../../utils/types";
 import MetadataInfo from "./MetadataInfo";
 import {GetCertificateResult, GetTagResult} from "../../declarations/backend/backend.did";
 import {useBackendActor} from "../../contexts/BackendActorContext";
@@ -18,6 +18,9 @@ const Certificate = ({tagId}: Props) => {
     const [tag, setTag] = useState<undefined|TagExpanded>();
     const [name, setName] = useState<undefined|string>();
     const [description, setDescription] = useState<undefined|string>();
+    const [chain, setChain] = useState<undefined|SupportedChain>();
+    const [address, setAddress] = useState<undefined|string>();
+    const [nftId, setNftId] = useState<undefined|string>();
     const [image, setImage] = useState<undefined|string>();
     const [isLoading, setIsLoading] = useState(true);
     const [subscription, setSubscription] = useState("");
@@ -44,6 +47,11 @@ const Certificate = ({tagId}: Props) => {
                                 setName(certificateResTyped.Ok.metadata[0]!.name);
                                 setDescription(certificateResTyped.Ok.metadata[0]!.description);
                                 setImage(certificateResTyped.Ok.metadata[0]!.image);
+                            }
+                            if (certificateResTyped.Ok.nft_details.length > 0) {
+                                setChain(certificateResTyped.Ok.nft_details[0]!.chain as SupportedChain);
+                                setAddress(certificateResTyped.Ok.nft_details[0]!.address);
+                                setNftId(certificateResTyped.Ok.nft_details[0]!.id);
                             }
                             setIsLoading(false);
                         } else {
@@ -80,10 +88,16 @@ const Certificate = ({tagId}: Props) => {
                     name={name}
                     setName={setName}
                     description={description}
+                    chain={chain}
+                    address={address}
+                    nftId={nftId}
                     setDescription={setDescription}
                     image={image}
                     setImage={setImage}
-                /> : <MetadataInfo name={name} description={description}/>
+                    setChain={setChain}
+                    setAddress={setAddress}
+                    setNftId={setNftId}
+                /> : <MetadataInfo name={name} description={description} />
             }
         </div>
     </div> : <Loading />
