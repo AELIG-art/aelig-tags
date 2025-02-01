@@ -10,7 +10,8 @@
     "local-deploy": "dfx generate && npm run build && dfx deploy",
     "generate": "dfx generate",
     "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "format:check": "prettier --check .",
+    "prepare": "husky"
   },
   "type": "module",
   "workspaces": [
@@ -22,5 +23,9 @@
   },
   "dependencies": {
     "prettier": "^3.4.2"
+  },
+  "devDependencies": {
+    "husky": "^9.1.7",
+    "lint-staged": "^15.4.3"
   }
 }
