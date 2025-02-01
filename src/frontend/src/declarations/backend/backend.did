@@ -10,10 +10,17 @@ type Attribute = record {
     value: text;
 };
 
+type NFTDetails = record {
+    chain: text;
+    address: text;
+    id: text;
+};
+
 type Certificate = record {
     id: text;
     registered: bool;
     metadata: opt NFTMetadata;
+    nft_details: opt NFTDetails;
     author: text;
     short_id: text;
 };

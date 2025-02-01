@@ -19,10 +19,16 @@ export const idlFactory = ({ IDL }) => {
     'attributes' : IDL.Vec(Attribute),
     'image' : IDL.Text,
   });
+  const NFTDetails = IDL.Record({
+    'id' : IDL.Text,
+    'chain' : IDL.Text,
+    'address' : IDL.Text,
+  });
   const Certificate = IDL.Record({
     'id' : IDL.Text,
     'metadata' : IDL.Opt(NFTMetadata),
     'author' : IDL.Text,
+    'nft_details' : IDL.Opt(NFTDetails),
     'short_id' : IDL.Text,
     'registered' : IDL.Bool,
   });

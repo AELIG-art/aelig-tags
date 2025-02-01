@@ -7,6 +7,7 @@ export interface Certificate {
   'id' : string,
   'metadata' : [] | [NFTMetadata],
   'author' : string,
+  'nft_details' : [] | [NFTDetails],
   'short_id' : string,
   'registered' : boolean,
 }
@@ -40,6 +41,11 @@ export interface NFT {
   'id' : string,
   'chain' : string,
   'contract_address' : string,
+}
+export interface NFTDetails {
+  'id' : string,
+  'chain' : string,
+  'address' : string,
 }
 export interface NFTMetadata {
   'name' : string,
