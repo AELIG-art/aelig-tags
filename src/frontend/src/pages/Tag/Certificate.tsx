@@ -41,6 +41,8 @@ const Certificate = ({tagId}: Props) => {
                                 ...tagResTyped.Ok,
                                 registered: certificateResTyped.Ok.registered,
                                 metadata: certificateResTyped.Ok.metadata.length > 0 ? certificateResTyped.Ok.metadata[0]
+                                    : undefined,
+                                nftDetails: certificateResTyped.Ok.nft_details.length > 0 ? certificateResTyped.Ok.nft_details[0]
                                     : undefined
                             });
                             if (certificateResTyped.Ok.metadata.length > 0) {
