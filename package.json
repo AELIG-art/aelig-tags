@@ -8,7 +8,9 @@
     "local-canister": "dfx start",
     "local-canister-clean": "dfx start --clean && ./setup.sh",
     "local-deploy": "dfx generate && npm run build && dfx deploy",
-    "generate": "dfx generate"
+    "generate": "dfx generate",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
   },
   "type": "module",
   "workspaces": [
@@ -17,5 +19,8 @@
   "engines": {
     "node": ">=16.0.0",
     "npm": ">=7.0.0"
+  },
+  "dependencies": {
+    "prettier": "^3.4.2"
   }
 }
