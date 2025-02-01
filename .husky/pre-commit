@@ -1,7 +1,9 @@
 if !npm run format-check:react; then
   npm run format:react
+  exit 1
 fi
 
 if !npm run format-check:rust; then
   npm run format:rust
+  exit 1
 fi
