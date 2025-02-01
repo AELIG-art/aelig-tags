@@ -1,9 +1,9 @@
-use std::borrow::Cow;
 use candid::{CandidType, Decode, Deserialize, Encode};
-use ic_stable_structures::{DefaultMemoryImpl, Storable};
 use ic_stable_structures::memory_manager::VirtualMemory;
 use ic_stable_structures::storable::Bound;
+use ic_stable_structures::{DefaultMemoryImpl, Storable};
 use serde::Serialize;
+use std::borrow::Cow;
 
 const MAX_VALUE_SIZE: u32 = 1000;
 
@@ -12,13 +12,13 @@ pub struct NFTMetadata {
     pub(crate) name: String,
     pub(crate) description: String,
     pub(crate) image: String,
-    pub(crate) attributes: Vec<Attribute>
+    pub(crate) attributes: Vec<Attribute>,
 }
 
 #[derive(CandidType, Deserialize, Clone, Serialize)]
 pub struct Attribute {
     trait_type: String,
-    value: String
+    value: String,
 }
 
 #[derive(CandidType, Deserialize, Clone)]
@@ -38,10 +38,7 @@ impl Storable for Tag {
         Decode!(bytes.as_ref(), Self).unwrap()
     }
 
-    const BOUND: Bound = Bound::Bounded {
-        max_size: MAX_VALUE_SIZE,
-        is_fixed_size: false,
-    };
+    const BOUND: Bound = Bound::Bounded { max_size: MAX_VALUE_SIZE, is_fixed_size: false };
 }
 
 #[derive(CandidType, Deserialize, Clone)]
@@ -70,10 +67,7 @@ impl Storable for Certificate {
         Decode!(bytes.as_ref(), Self).unwrap()
     }
 
-    const BOUND: Bound = Bound::Bounded {
-        max_size: MAX_VALUE_SIZE,
-        is_fixed_size: false,
-    };
+    const BOUND: Bound = Bound::Bounded { max_size: MAX_VALUE_SIZE, is_fixed_size: false };
 }
 
 #[derive(CandidType, Deserialize, Clone)]
@@ -98,17 +92,14 @@ impl Storable for Lending {
         Decode!(bytes.as_ref(), Self).unwrap()
     }
 
-    const BOUND: Bound = Bound::Bounded {
-        max_size: MAX_VALUE_SIZE,
-        is_fixed_size: false,
-    };
+    const BOUND: Bound = Bound::Bounded { max_size: MAX_VALUE_SIZE, is_fixed_size: false };
 }
 
 #[derive(CandidType, Deserialize, Clone)]
 pub struct Frame {
     pub(crate) id: String,
     pub(crate) nft: Option<NFT>,
-    pub(crate) lending: Option<Lending>
+    pub(crate) lending: Option<Lending>,
 }
 
 impl Storable for Frame {
@@ -120,10 +111,7 @@ impl Storable for Frame {
         Decode!(bytes.as_ref(), Self).unwrap()
     }
 
-    const BOUND: Bound = Bound::Bounded {
-        max_size: MAX_VALUE_SIZE,
-        is_fixed_size: false,
-    };
+    const BOUND: Bound = Bound::Bounded { max_size: MAX_VALUE_SIZE, is_fixed_size: false };
 }
 
 #[derive(CandidType)]
@@ -131,7 +119,6 @@ pub enum VerificationResult {
     Certificate(Certificate),
     Frame(Frame),
 }
-
 
 #[derive(candid::CandidType, Deserialize, Serialize)]
 pub enum Error {
@@ -149,5 +136,5 @@ pub struct SignMessage {
     pub(crate) description: String,
     pub(crate) image: String,
     pub(crate) attributes: Vec<Attribute>,
-    pub(crate) id: String
+    pub(crate) id: String,
 }

@@ -1,19 +1,15 @@
-use std::cell::RefCell;
-use aes::Aes128;
-use aes::cipher::{
-    BlockDecrypt, KeyInit,
-    generic_array::GenericArray,
-};
-use hex::{decode, encode};
-use ic_stable_structures::{DefaultMemoryImpl, StableBTreeMap};
-use ic_stable_structures::memory_manager::{MemoryId, MemoryManager};
 use crate::certificates::get_certificate;
 use crate::frames::get_frame;
 use crate::keys::get_key;
 use crate::memory_ids::MemoryKeys;
 use crate::tags::_get_tag;
 use crate::types::{Error, Memory, VerificationResult};
-
+use aes::cipher::{generic_array::GenericArray, BlockDecrypt, KeyInit};
+use aes::Aes128;
+use hex::{decode, encode};
+use ic_stable_structures::memory_manager::{MemoryId, MemoryManager};
+use ic_stable_structures::{DefaultMemoryImpl, StableBTreeMap};
+use std::cell::RefCell;
 
 thread_local! {
     static MEMORY_MANAGER: RefCell<MemoryManager<DefaultMemoryImpl>> =
@@ -33,21 +29,19 @@ thread_local! {
 fn verify_tag(msg: String) -> Result<VerificationResult, Error> {
     let key = match get_key("TAG_KEY".to_string()) {
         Ok(key) => key,
-        Err(e) => return Err(e)
+        Err(e) => return Err(e),
     };
     let key_bytes = match decode(key) {
         Ok(decoded) => decoded,
-        Err(_) => return Err(Error::Validation {
-            msg: "Key error".to_string()
-        })
+        Err(_) => return Err(Error::Validation { msg: "Key error".to_string() }),
     };
     let key = GenericArray::from_slice(&key_bytes);
 
     let block_bytes = match decode(msg) {
         Ok(decoded) => decoded,
-        Err(_) => return Err(Error::Validation {
-            msg: "Error in decoding input message".to_string()
-        })
+        Err(_) => {
+            return Err(Error::Validation { msg: "Error in decoding input message".to_string() })
+        }
     };
     let mut block = GenericArray::clone_from_slice(&block_bytes);
 
@@ -59,20 +53,13 @@ fn verify_tag(msg: String) -> Result<VerificationResult, Error> {
     let tag_id = encode(&decrypted_hex[1..8]);
     let mut counter_vec = decrypted_hex[8..11].to_vec();
     counter_vec.reverse();
-    let counter = match u128::from_str_radix(
-        &encode(counter_vec),
-        16
-    ) {
+    let counter = match u128::from_str_radix(&encode(counter_vec), 16) {
         Ok(num) => num,
-        Err(_) => return Err(Error::Validation {
-            msg: "Counter not valid".to_string()
-        }),
+        Err(_) => return Err(Error::Validation { msg: "Counter not valid".to_string() }),
     };
 
     if check != "c7" {
-        return Err(Error::Validation {
-            msg: "Check value failed".to_string()
-        });
+        return Err(Error::Validation { msg: "Check value failed".to_string() });
     }
 
     let is_valid_counter = TAG_COUNTERS.with(|map| {
@@ -85,7 +72,7 @@ fn verify_tag(msg: String) -> Result<VerificationResult, Error> {
                 } else {
                     false
                 }
-            },
+            }
             None => {
                 map_mut.insert(tag_id.clone(), 0);
                 true
@@ -94,9 +81,7 @@ fn verify_tag(msg: String) -> Result<VerificationResult, Error> {
     });
 
     if !is_valid_counter {
-        return Err(Error::Validation {
-            msg: "Counter expired".to_string()
-        });
+        return Err(Error::Validation { msg: "Counter expired".to_string() });
     }
 
     match _get_tag(tag_id.clone()) {
@@ -104,15 +89,15 @@ fn verify_tag(msg: String) -> Result<VerificationResult, Error> {
             if tag.is_certificate {
                 match get_certificate(tag_id) {
                     Ok(certificate) => Ok(VerificationResult::Certificate(certificate)),
-                    Err(e) => Err(e)
+                    Err(e) => Err(e),
                 }
             } else {
                 match get_frame(tag_id) {
                     Ok(frame) => Ok(VerificationResult::Frame(frame)),
-                    Err(e) => Err(e)
+                    Err(e) => Err(e),
                 }
             }
-        },
-        Err(e) => Err(e)
+        }
+        Err(e) => Err(e),
     }
 }
