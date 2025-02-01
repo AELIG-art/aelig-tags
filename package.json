@@ -9,8 +9,8 @@
     "local-canister-clean": "dfx start --clean && ./setup.sh",
     "local-deploy": "dfx generate && npm run build && dfx deploy",
     "generate": "dfx generate",
-    "format": "prettier --write .",
-    "format:check": "prettier --check .",
+    "format": "prettier --write . && cargo fmt",
+    "format:check": "prettier --check . && cargo fmt --check",
     "prepare": "husky"
   },
   "type": "module",
