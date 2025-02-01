@@ -27,7 +27,7 @@ const CertificatesList = () => {
     return <div>
         <h1 className={"mt-5"}>Your Certificates</h1>
         <Table
-            headers={["#", "Id", "Status", "Has NFT", "Action"]}
+            headers={["#", "Id", "Status", "Is NFT", "Action"]}
         >
             {
                 certificates.map((certificate: Certificate, index: number) => {
