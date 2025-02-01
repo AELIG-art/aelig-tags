@@ -1,1 +1,5 @@
-prettier --check .
+echo "Checking Prettier formatting for React files..."
+if ! npm run format:check; then
+  npm run format
+  git add .
+fi
