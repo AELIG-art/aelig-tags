@@ -5,6 +5,11 @@ import "./styles.CertificatesList.css";
 import Table from "../../components/Table/Table";
 import {Certificate} from "../../declarations/backend/backend.did";
 
+/*
+    DRAFT -> User inserted metadata, but the tag is not registered (meaning that metadata can be still updated)
+    REGISTERED ->  The metadata is inserted and immutable
+    EMPTY -> No metadata is inserted
+ */
 enum CertificateStatus {
     DRAFT = "Draft",
     REGISTERED = "Registered",
