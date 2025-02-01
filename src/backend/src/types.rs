@@ -45,10 +45,18 @@ impl Storable for Tag {
 }
 
 #[derive(CandidType, Deserialize, Clone)]
+pub struct NFTDetails {
+    chain: String,
+    address: String,
+    id: String,
+}
+
+#[derive(CandidType, Deserialize, Clone)]
 pub struct Certificate {
     pub(crate) id: String,
     pub(crate) registered: bool,
     pub(crate) metadata: Option<NFTMetadata>,
+    pub(crate) nft_details: Option<NFTDetails>,
     pub(crate) author: String,
     pub(crate) short_id: String,
 }

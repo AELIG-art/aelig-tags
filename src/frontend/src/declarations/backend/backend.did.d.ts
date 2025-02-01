@@ -7,6 +7,7 @@ export interface Certificate {
   'id' : string,
   'metadata' : [] | [NFTMetadata],
   'author' : string,
+  'nft_details' : [] | [NFTDetails],
   'short_id' : string,
   'registered' : boolean,
 }
@@ -40,6 +41,11 @@ export interface NFT {
   'id' : string,
   'chain' : string,
   'contract_address' : string,
+}
+export interface NFTDetails {
+  'id' : string,
+  'chain' : string,
+  'address' : string,
 }
 export interface NFTMetadata {
   'name' : string,
@@ -82,7 +88,10 @@ export interface _SERVICE {
   'is_admin' : ActorMethod<[Principal], boolean>,
   'lend_frame' : ActorMethod<[string, string, bigint], UpdateResult>,
   'register_certificate' : ActorMethod<[string], UpdateResult>,
-  'save_certificate' : ActorMethod<[string, NFTMetadata], UpdateResult>,
+  'save_certificate' : ActorMethod<
+    [string, NFTMetadata, [] | [NFTDetails]],
+    UpdateResult
+  >,
   'set_key' : ActorMethod<[string, string], UpdateResult>,
   'set_nft_on_frame' : ActorMethod<[string, NFT], UpdateResult>,
   'transfer_frame' : ActorMethod<[string, string], UpdateResult>,
