@@ -23,25 +23,30 @@ thread_local! {
     );
 }
 
+pub fn _get_certificate(tag_id: String) -> Result<Certificate, Error> {
+    match CERTIFICATES.with(|map| map.borrow().get(&tag_id)) {
+        Some(certificate) => Ok(certificate),
+        None => {
+            Err(Error::NotFound { msg: format!("Certificate with ID {} does not exist", tag_id) })
+        }
+    }
+}
+
 #[ic_cdk::query]
 pub async fn get_certificate(tag_id: String) -> Result<Certificate, Error> {
-    match CERTIFICATES.with(|map| map.borrow().get(&tag_id).cloned()) {
-        Some(certificate) => {
+    match _get_certificate(tag_id.clone()) {
+        Ok(certificate) => {
             if !certificate.registered
                 && !is_controller(&caller())
                 && !is_authenticated(tag_id.clone()).await
             {
                 return Err(Error::PermissionDenied {
-                    msg:
-                        "Caller is not the controller or the tag owner or the tag is not registered"
-                            .to_string(),
+                    msg: "Caller is not the controller, not the tag owner, or the tag is not registered.".to_string(),
                 });
             }
             Ok(certificate)
         }
-        None => {
-            Err(Error::NotFound { msg: format!("Certificate with id {} does not exist", tag_id) })
-        }
+        Err(e) => Err(e),
     }
 }
 
