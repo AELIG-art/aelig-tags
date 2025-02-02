@@ -39,52 +39,59 @@ const Certificate = ({ tagId }: Props) => {
   );
 
   useEffect(() => {
-    backendCaller.get_tag(tagId).then((tagRes) => {
-      console.log(tagRes);
-      const tagResTyped = tagRes as GetTagResult;
-      if ('Ok' in tagResTyped) {
-        backendCaller
-          .get_certificate(tagId)
-          .then((certificateRes) => {
-            const certificateResTyped = certificateRes as GetCertificateResult;
-            if ('Ok' in certificateResTyped) {
-              setTag({
-                ...tagResTyped.Ok,
-                registered: certificateResTyped.Ok.registered,
-                metadata:
-                  certificateResTyped.Ok.metadata.length > 0
-                    ? certificateResTyped.Ok.metadata[0]
-                    : undefined,
-                nftDetails:
-                  certificateResTyped.Ok.nft_details.length > 0
-                    ? certificateResTyped.Ok.nft_details[0]
-                    : undefined,
-              });
-              setCertificateRegistered(certificateResTyped.Ok.registered);
-              if (certificateResTyped.Ok.metadata.length > 0) {
-                setName(certificateResTyped.Ok.metadata[0]!.name);
-                setDescription(certificateResTyped.Ok.metadata[0]!.description);
-                setImage(certificateResTyped.Ok.metadata[0]!.image);
+    backendCaller
+      .get_tag(tagId)
+      .then((tagRes) => {
+        console.log(tagRes);
+        const tagResTyped = tagRes as GetTagResult;
+        if ('Ok' in tagResTyped) {
+          backendCaller
+            .get_certificate(tagId)
+            .then((certificateRes) => {
+              const certificateResTyped =
+                certificateRes as GetCertificateResult;
+              if ('Ok' in certificateResTyped) {
+                setTag({
+                  ...tagResTyped.Ok,
+                  registered: certificateResTyped.Ok.registered,
+                  metadata:
+                    certificateResTyped.Ok.metadata.length > 0
+                      ? certificateResTyped.Ok.metadata[0]
+                      : undefined,
+                  nftDetails:
+                    certificateResTyped.Ok.nft_details.length > 0
+                      ? certificateResTyped.Ok.nft_details[0]
+                      : undefined,
+                });
+                setCertificateRegistered(certificateResTyped.Ok.registered);
+                if (certificateResTyped.Ok.metadata.length > 0) {
+                  setName(certificateResTyped.Ok.metadata[0]!.name);
+                  setDescription(
+                    certificateResTyped.Ok.metadata[0]!.description
+                  );
+                  setImage(certificateResTyped.Ok.metadata[0]!.image);
+                }
+                if (certificateResTyped.Ok.nft_details.length > 0) {
+                  setChain(
+                    certificateResTyped.Ok.nft_details[0]!
+                      .chain as SupportedChain
+                  );
+                  setAddress(certificateResTyped.Ok.nft_details[0]!.address);
+                  setNftId(certificateResTyped.Ok.nft_details[0]!.id);
+                }
+                setIsLoading(false);
+              } else {
+                setIsLoading(false);
               }
-              if (certificateResTyped.Ok.nft_details.length > 0) {
-                setChain(
-                  certificateResTyped.Ok.nft_details[0]!.chain as SupportedChain
-                );
-                setAddress(certificateResTyped.Ok.nft_details[0]!.address);
-                setNftId(certificateResTyped.Ok.nft_details[0]!.id);
-              }
-              setIsLoading(false);
-            } else {
-              setIsLoading(false);
-            }
-          })
-          .catch((e) => {
-            console.log(e);
-          });
-      } else {
-        navigate('/');
-      }
-    });
+            })
+            .catch((e) => {
+              console.log(e);
+            });
+        } else {
+          navigate('/');
+        }
+      })
+      .catch((e) => console.log(e));
   }, [backendCaller, navigate, tagId, subscription]);
 
   if (isLoading) {
@@ -92,7 +99,15 @@ const Certificate = ({ tagId }: Props) => {
   }
 
   if (showMustBeLoggedMessage) {
-    return <div></div>;
+    return (
+      <div>
+        {identityAddress ? (
+          <p>You do not own this tag.</p>
+        ) : (
+          <p>Connect your wallet to see details.</p>
+        )}
+      </div>
+    );
   }
 
   return (

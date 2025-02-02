@@ -32,7 +32,7 @@ pub fn _get_certificate(tag_id: String) -> Result<Certificate, Error> {
     }
 }
 
-#[ic_cdk::query]
+#[ic_cdk::update]
 pub async fn get_certificate(tag_id: String) -> Result<Certificate, Error> {
     match _get_certificate(tag_id.clone()) {
         Ok(certificate) => {

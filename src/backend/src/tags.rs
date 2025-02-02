@@ -28,7 +28,7 @@ pub fn _get_tag(id: String) -> Result<Tag, Error> {
     })
 }
 
-#[ic_cdk::update]
+#[ic_cdk::query]
 pub async fn get_tag(id: String) -> Result<Tag, Error> {
     _get_tag(id)
 }
