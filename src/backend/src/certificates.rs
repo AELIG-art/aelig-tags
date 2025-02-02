@@ -1,8 +1,10 @@
+use crate::auth::is_authenticated;
 use crate::ic_siwe_provider::get_caller_address;
 use crate::memory_ids::MemoryKeys;
 use crate::tags::_get_tags;
 use crate::types::{Certificate, Error, Memory, NFTDetails, NFTMetadata};
-use ic_cdk::trap;
+use ic_cdk::api::is_controller;
+use ic_cdk::{caller, trap};
 use ic_stable_structures::memory_manager::{MemoryId, MemoryManager};
 use ic_stable_structures::{DefaultMemoryImpl, StableBTreeMap};
 use std::cell::RefCell;
@@ -22,13 +24,25 @@ thread_local! {
 }
 
 #[ic_cdk::query]
-pub fn get_certificate(tag_id: String) -> Result<Certificate, Error> {
-    CERTIFICATES.with(|map| match map.borrow().get(&tag_id) {
-        Some(certificate) => Ok(certificate),
+pub async fn get_certificate(tag_id: String) -> Result<Certificate, Error> {
+    match CERTIFICATES.with(|map| map.borrow().get(&tag_id).cloned()) {
+        Some(certificate) => {
+            if !certificate.registered
+                && !is_controller(&caller())
+                && !is_authenticated(tag_id.clone()).await
+            {
+                return Err(Error::PermissionDenied {
+                    msg:
+                        "Caller is not the controller or the tag owner or the tag is not registered"
+                            .to_string(),
+                });
+            }
+            Ok(certificate)
+        }
         None => {
             Err(Error::NotFound { msg: format!("Certificate with id {} does not exist", tag_id) })
         }
-    })
+    }
 }
 
 pub fn add_certificate(tag_id: String, author: String, short_id: String) {
