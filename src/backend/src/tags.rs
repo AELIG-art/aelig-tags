@@ -22,16 +22,16 @@ thread_local! {
     );
 }
 
-#[ic_cdk::update]
-pub async fn get_tag(id: String) -> Result<Tag, Error> {
-    _get_tag(id)
-}
-
 pub fn _get_tag(id: String) -> Result<Tag, Error> {
     TAGS.with(|map| match map.borrow().get(&id) {
         Some(tag) => Ok(tag),
         None => Err(Error::NotFound { msg: "Tag does not exist".to_string() }),
     })
+}
+
+#[ic_cdk::update]
+pub async fn get_tag(id: String) -> Result<Tag, Error> {
+    _get_tag(id)
 }
 
 #[ic_cdk::query]
