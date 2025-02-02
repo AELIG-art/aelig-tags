@@ -34,7 +34,7 @@ const Tag = () => {
           setTag(tagResTyped.Ok);
           setIsLoading(false);
         } else {
-          // todo: show tag does not exist error
+          navigate('/');
         }
       });
     }
