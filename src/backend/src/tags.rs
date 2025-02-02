@@ -39,9 +39,7 @@ fn get_tags() -> Result<Vec<Tag>, Error> {
     if is_controller(&caller()) {
         return Ok(_get_tags());
     }
-    return Err(Error::PermissionDenied {
-        msg: "The caller is not a canister controller".to_string(),
-    });
+    Err(Error::PermissionDenied { msg: "The caller is not a canister controller".to_string() })
 }
 
 pub fn _get_tags() -> Vec<Tag> {
