@@ -1,4 +1,3 @@
-use crate::auth::is_authenticated;
 use crate::certificates::add_certificate;
 use crate::frames::add_frame;
 use crate::memory_ids::MemoryKeys;
