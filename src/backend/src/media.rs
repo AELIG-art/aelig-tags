@@ -1,4 +1,4 @@
-use crate::certificates::get_certificate;
+use crate::certificates::_get_certificate;
 use crate::memory_ids::MemoryKeys;
 use crate::types::{Error, Memory};
 use candid::Principal;
@@ -37,7 +37,7 @@ thread_local! {
 
 #[ic_cdk::update]
 async fn upload_media(tag_id: String, media: StoreArg) -> Result<String, Error> {
-    if get_certificate(tag_id.clone()).is_err() {
+    if _get_certificate(tag_id.clone()).is_err() {
         return Err(Error::NotFound { msg: "Certificate does not exist".to_string() });
     }
     match get_storage_principal(tag_id.clone()) {
