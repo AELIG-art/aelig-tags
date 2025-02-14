@@ -1,12 +1,12 @@
 {
+  "assets": {
+    "ic": "5ts2p-laaaa-aaaap-qhfja-cai"
+  },
   "backend": {
-    "ic": "6awjl-pyaaa-aaaap-qhc4a-cai"
+    "ic": "36fjb-yaaaa-aaaak-apbja-cai"
   },
   "frontend": {
     "ic": "4c2ic-gqaaa-aaaal-ai4qq-cai"
-  },
-  "assets": {
-    "ic": "5ts2p-laaaa-aaaap-qhfja-cai"
   },
   "ic_siwe_provider": {
     "ic": "mboye-aiaaa-aaaak-akqrq-cai"
