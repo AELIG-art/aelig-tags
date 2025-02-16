@@ -1,4 +1,3 @@
-use crate::auth::is_authenticated;
 use crate::certificates::add_certificate;
 use crate::frames::add_frame;
 use crate::memory_ids::MemoryKeys;
@@ -22,16 +21,6 @@ thread_local! {
     );
 }
 
-#[ic_cdk::update]
-pub async fn get_tag(id: String) -> Result<Tag, Error> {
-    if !(is_controller(&caller()) || is_authenticated(id.clone()).await) {
-        return Err(Error::PermissionDenied {
-            msg: "Caller is not controller or tag owner".to_string(),
-        });
-    }
-    _get_tag(id)
-}
-
 pub fn _get_tag(id: String) -> Result<Tag, Error> {
     TAGS.with(|map| match map.borrow().get(&id) {
         Some(tag) => Ok(tag),
@@ -40,13 +29,16 @@ pub fn _get_tag(id: String) -> Result<Tag, Error> {
 }
 
 #[ic_cdk::query]
+pub async fn get_tag(id: String) -> Result<Tag, Error> {
+    _get_tag(id)
+}
+
+#[ic_cdk::query]
 fn get_tags() -> Result<Vec<Tag>, Error> {
     if is_controller(&caller()) {
         return Ok(_get_tags());
     }
-    return Err(Error::PermissionDenied {
-        msg: "The caller is not a canister controller".to_string(),
-    });
+    Err(Error::PermissionDenied { msg: "The caller is not a canister controller".to_string() })
 }
 
 pub fn _get_tags() -> Vec<Tag> {
@@ -55,7 +47,7 @@ pub fn _get_tags() -> Vec<Tag> {
 
 #[ic_cdk::update]
 fn add_tag(id: String, tag: Tag) -> Result<String, Error> {
-    return if is_controller(&caller()) {
+    if is_controller(&caller()) {
         match _get_tag(id.clone()) {
             Ok(_) => Err(Error::PermissionDenied { msg: "This tag already exists".to_string() }),
             Err(_) => TAGS.with(|map| {
@@ -70,7 +62,7 @@ fn add_tag(id: String, tag: Tag) -> Result<String, Error> {
         }
     } else {
         Err(Error::PermissionDenied { msg: "You are not allowed".to_string() })
-    };
+    }
 }
 
 pub fn update_tag_ownership(id: String, to: String) -> Result<String, Error> {
