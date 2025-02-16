@@ -191,18 +191,26 @@ const MetadataForm = (props: {
             setIsLoadingButton(false);
           });
       } else {
-        backendActor.register_certificate(id!).then((res: unknown) => {
-          const typedResult = res as UpdateResult;
-          if ('Ok' in typedResult) {
-            alertToast('Success');
-            setCertificateRegistered(true);
-            setSubscription(new Date().toISOString());
-            setSub(new Date().toISOString());
-          } else {
-            alertToast(typedResult.Err.toString(), true);
-          }
+        if (
+          window.confirm(
+            'This action is irreversible!\nOnce the metadata is registered, it will become permanent and unchangeable.'
+          )
+        ) {
+          backendActor.register_certificate(id!).then((res: unknown) => {
+            const typedResult = res as UpdateResult;
+            if ('Ok' in typedResult) {
+              alertToast('Success');
+              setCertificateRegistered(true);
+              setSubscription(new Date().toISOString());
+              setSub(new Date().toISOString());
+            } else {
+              alertToast(typedResult.Err.toString(), true);
+            }
+            setIsLoadingButton(false);
+          });
+        } else {
           setIsLoadingButton(false);
-        });
+        }
       }
     }
   };
