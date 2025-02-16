@@ -109,7 +109,11 @@ const Certificate = ({ tagId }: Props) => {
               src={image}
               alt="Certificate"
               className={'w-100 h-100'}
-              style={{ minHeight: '200px', maxHeight: '572px' }}
+              style={{
+                minHeight: '200px',
+                maxHeight: '572px',
+                objectFit: 'contain',
+              }}
             />
           ) : null}
         </div>
