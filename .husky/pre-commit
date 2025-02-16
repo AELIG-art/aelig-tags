@@ -1,1 +1,2 @@
 npm run precommit
+git add . -u

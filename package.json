@@ -13,14 +13,8 @@
     "precommit": "lint-staged"
   },
   "lint-staged": {
-    "**/*": [
-      "prettier --write",
-      "git add -u ."
-    ],
-    "**/*.{rs,toml}": [
-      "cargo fmt",
-      "git add -u ."
-    ]
+    "**/*.{js,jsx,ts,tsx,json,html,txt,sh,css}": "prettier --write",
+    "**/*.{rs,toml}": "cargo fmt"
   },
   "type": "module",
   "workspaces": [
