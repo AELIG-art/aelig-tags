@@ -22,7 +22,6 @@ jobs:
 
       - run: |
           dfx identity use action
-          dfx deploy --network ic --no-wallet
 
       - name: Deploy
         env:
