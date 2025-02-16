@@ -9,11 +9,18 @@
     "local-canister-clean": "dfx start --clean && ./setup.sh",
     "local-deploy": "dfx generate && npm run build && dfx deploy",
     "generate": "dfx generate",
-    "format:react": "prettier --write .",
-    "format:rust": "cargo fmt",
-    "format-check:react": "prettier --check .",
-    "format-check:rust": "cargo fmt --check",
-    "prepare": "husky"
+    "prepare": "husky",
+    "precommit": "lint-staged"
+  },
+  "lint-staged": {
+    "**/*": [
+      "prettier --write",
+      "git add -u ."
+    ],
+    "**/*.{rs,toml}": [
+      "cargo fmt",
+      "git add -u ."
+    ]
   },
   "type": "module",
   "workspaces": [

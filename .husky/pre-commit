@@ -1,14 +1,1 @@
-EXIT_VAL=0
-
-if ! npm run format-check:react; then
-    npm run format:react
-    $EXIT_VAL=1
-    exit 1
-fi
-
-if ! npm run format-check:rust; then
-    npm run format:rust
-    $EXIT_VAL=1
-fi
-
-exit $EXIT_VAL
+npm run precommit
