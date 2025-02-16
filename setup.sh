@@ -69,7 +69,7 @@ dfx deploy --network "$network" -q assets
 dfx deploy --network "$network" -q ic_siwe_provider --argument "( \
      record { \
          domain = \"aelig.art\"; \
-         uri = \"https://aelig.art\"; \
+         uri = \"https://tag.aelig.art\"; \
          salt = \"$IC_SIWE_PROVIDER_SALT\"; \
          chain_id = opt 1; \
          scheme = opt \"https\"; \
