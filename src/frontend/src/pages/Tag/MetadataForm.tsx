@@ -264,7 +264,7 @@ const MetadataForm = (props: {
             className={'rounded-0'}
           />
           <Form.Text className="text-muted">
-            The image of the certificate.
+            The image of the certificate. Maximum file size: 2MB.
           </Form.Text>
         </Form.Group>
 
