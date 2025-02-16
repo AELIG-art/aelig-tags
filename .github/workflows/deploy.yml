@@ -3,7 +3,7 @@ name: Deploy canisters
 on:
   push:
     branches:
-      - master
+      - main
 
 jobs:
   deploy:
@@ -18,8 +18,15 @@ jobs:
         with:
           dfx-version: 0.18.0
         env:
-          DFX_IDENTITY_PEM: ${{ secrets.IDENTITY_KEY }}
-        run: dfx identity use action
+          DFX_IDENTITY_PEM: ${{ secrets.DFX_IDENTITY_PEM }}
 
-      - name: Deploy to the IC
-        run: dfx deploy --network ic --no-wallet
+      - run: |
+          dfx identity use action
+          dfx deploy --network ic --no-wallet
+
+      - name: Deploy
+        env:
+          IC_SIWE_PROVIDER_SALT: ${{ secrets.IC_SIWE_PROVIDER_SALT }}
+          TAG_KEY: ${{ secrets.TAG_KEY }}
+        run:
+          ./setup.sh -n ic
