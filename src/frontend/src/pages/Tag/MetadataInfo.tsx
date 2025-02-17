@@ -20,7 +20,7 @@ const MetadataInfo = (props: { tag: TagExpanded | undefined }) => {
       {isNft && (
         <div>
           <h4>NFT</h4>
-          <a href={scanUri} target="_blank">
+          <a href={scanUri} target="_blank" rel="noreferrer">
             {nftDetails!.chain}:{nftDetails!.address}:{nftDetails!.id}
           </a>
         </div>
