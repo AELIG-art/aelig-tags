@@ -1,10 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import {
   Certificate,
   Frame,
+  NFTDetails,
   NFTMetadata,
 } from '../../declarations/backend/backend.did';
-import { getMetadataFromNft } from '../../utils/evm';
+import { getMetadataFromNft, getScanUrl } from '../../utils/evm';
 import { transformUrl } from '../../utils/transformations';
 
 const Success = (props: {
@@ -14,12 +15,18 @@ const Success = (props: {
   const [isCertificate, setIsCertificate] = useState(false);
   const [metadata, setMetadata] = useState<undefined | NFTMetadata>();
   const [isLoading, setIsLoading] = useState(true);
+  const [nftDetails, setNftDetails] = useState<NFTDetails>();
+  const isNft = useMemo(() => nftDetails, [nftDetails]);
+  const scanUri = useMemo(() => getScanUrl(nftDetails), [nftDetails]);
 
   useEffect(() => {
     if (tagContent) {
       setIsCertificate('Certificate' in tagContent);
       if ('Certificate' in tagContent) {
         setMetadata(tagContent.Certificate.metadata[0]);
+        if (tagContent.Certificate.nft_details.length > 0) {
+          setNftDetails(tagContent.Certificate.nft_details[0]);
+        }
         setIsLoading(false);
       } else {
         if (tagContent.Frame.nft.length === 1) {
@@ -64,6 +71,14 @@ const Success = (props: {
           <p>{metadata?.name}</p>
           <h5>Description</h5>
           <p>{metadata?.description}</p>
+          {isNft && (
+            <div>
+              <h4>NFT</h4>
+              <a href={scanUri} target="_blank" rel="noreferrer">
+                {nftDetails!.chain}:{nftDetails!.address}:{nftDetails!.id}
+              </a>
+            </div>
+          )}
         </div>
       ) : (
         <p>The frame is empty.</p>
