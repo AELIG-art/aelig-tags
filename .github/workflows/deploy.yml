@@ -19,12 +19,10 @@ jobs:
           dfx-version: 0.18.0
 
       - run: |
-          echo "$PEM_KEY" > dev_key.pem
-          dfx identity import dev dev_key.pem
+          echo "${{ secrets.DFX_IDENTITY_PEM }}" > dev_key.pem
           chmod 600 my_key.pem
+          dfx identity import dev dev_key.pem
           dfx identity use dev
-        env:
-          PEM_KEY: "${{ secrets.DFX_IDENTITY_PEM }}"
 
       - name: Deploy
         env:
