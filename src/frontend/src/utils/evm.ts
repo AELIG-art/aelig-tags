@@ -1,6 +1,11 @@
-import { NFT, NFTMetadata } from '../declarations/backend/backend.did';
+import {
+  NFT,
+  NFTDetails,
+  NFTMetadata,
+} from '../declarations/backend/backend.did';
 import { ethers } from 'ethers';
 import { transformUrl } from './transformations';
+import { SupportedChain } from './types';
 
 enum NftStandard {
   ERC721 = '721',
@@ -117,4 +122,18 @@ export const getMetadataFromNft = async (nft: NFT): Promise<NFTMetadata> => {
   });
   const responseJSON = await response.json();
   return responseJSON as NFTMetadata;
+};
+
+const chainToExplorerMapping: Record<SupportedChain, string> = {
+  eth: 'https://etherscan.io/nft',
+  polygon: 'https://polygonscan.com/nft',
+  base: 'https://basescan.org/nft',
+};
+
+export const getScanUrl = (nftDetails: NFTDetails | undefined) => {
+  if (!nftDetails) {
+    return '';
+  }
+  const { chain, address, id } = nftDetails;
+  return `${chainToExplorerMapping[chain as SupportedChain]}/${address}/${id}`;
 };

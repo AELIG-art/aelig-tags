@@ -1,12 +1,15 @@
 import React, { useMemo } from 'react';
 import './styles.Tag.css';
 import { TagExpanded } from '../../utils/types';
+import { getScanUrl } from '../../utils/evm';
 
 const MetadataInfo = (props: { tag: TagExpanded | undefined }) => {
   const { tag } = props;
   const nftDetails = tag?.nftDetails;
   const metadata = tag?.metadata;
   const isNft = useMemo(() => nftDetails, [nftDetails]);
+
+  const scanUri = useMemo(() => getScanUrl(nftDetails), [nftDetails]);
 
   return (
     <div>
@@ -16,12 +19,10 @@ const MetadataInfo = (props: { tag: TagExpanded | undefined }) => {
       <p className="description">{metadata?.description}</p>
       {isNft && (
         <div>
-          <h4>Chain</h4>
-          <p>{nftDetails?.chain}</p>
-          <h4>Address</h4>
-          <p>{nftDetails?.address}</p>
-          <h4>Id</h4>
-          <p>{nftDetails?.id}</p>
+          <h4>NFT</h4>
+          <a href={scanUri} target="_blank">
+            {nftDetails!.chain}:{nftDetails!.address}:{nftDetails!.id}
+          </a>
         </div>
       )}
     </div>
