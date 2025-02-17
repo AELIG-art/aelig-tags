@@ -20,7 +20,7 @@ jobs:
 
       - run: |
           echo "${{ secrets.DFX_IDENTITY_PEM }}" > dev_key.pem
-          chmod 600 my_key.pem
+          chmod 600 dev_key.pem
           dfx identity import dev dev_key.pem
           dfx identity use dev
 
