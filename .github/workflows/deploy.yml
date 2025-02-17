@@ -21,7 +21,10 @@ jobs:
           DFX_IDENTITY_PEM: ${{ secrets.DFX_IDENTITY_PEM }}
 
       - run: |
-          dfx identity use action
+          echo "${{ secrets.DFX_IDENTITY_PEM }}" > dev_key.pem
+          dfx identity import dev dev_key.pem
+          chmod 600 my_key.pem
+          dfx identity use dev
 
       - name: Deploy
         env:

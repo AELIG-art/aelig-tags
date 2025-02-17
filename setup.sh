@@ -73,7 +73,7 @@ dfx deploy --network "$network" -q ic_siwe_provider --argument "( \
          }; \
      } \
  )"
- dfx deploy --network "$network" -q frontend
+ dfx deploy --network "$network" -q frontend --yes
 
 echo "--- Adding asset canister to the backend canister ---"
 dfx canister call backend add_storage_canister "(principal \"$assets_canister_id\")"
