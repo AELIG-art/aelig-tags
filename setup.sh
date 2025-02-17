@@ -8,22 +8,13 @@ usage() {
     exit 1
 }
 
-if [ -f ".env" ]; then
-    set -o allexport
-    source ".env"
-    set +o allexport
-else
-    echo "Error: .env file not found."
-    exit 1
-fi
-
 if [ -z "$IC_SIWE_PROVIDER_SALT" ]; then
-    echo "The variable `IC_SIWE_PROVIDER_SALT` is not set in the .env file."
+    echo "The variable `IC_SIWE_PROVIDER_SALT` is not set as env variable."
     exit 1
 fi
 
 if [ -z "$TAG_KEY" ]; then
-    echo "The variable `TAG_KEY` is not set in the .env file."
+    echo "The variable `TAG_KEY` is not set as env variable."
     exit 1
 fi
 
