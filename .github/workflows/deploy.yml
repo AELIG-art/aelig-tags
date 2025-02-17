@@ -17,14 +17,14 @@ jobs:
         uses: aviate-labs/setup-dfx@v0.3.2
         with:
           dfx-version: 0.18.0
-        env:
-          DFX_IDENTITY_PEM: ${{ secrets.DFX_IDENTITY_PEM }}
 
       - run: |
-          echo "${{ secrets.DFX_IDENTITY_PEM }}" | base64 -d > dev_key.pem
+          echo "$PEM_KEY" > dev_key.pem
           dfx identity import dev dev_key.pem
           chmod 600 my_key.pem
           dfx identity use dev
+        env:
+          PEM_KEY: "${{ secrets.DFX_IDENTITY_PEM }}"
 
       - name: Deploy
         env:
