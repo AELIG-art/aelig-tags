@@ -7,6 +7,8 @@ import {
 } from '../../declarations/backend/backend.did';
 import { getMetadataFromNft, getScanUrl } from '../../utils/evm';
 import { transformUrl } from '../../utils/transformations';
+import Empty from './Empty';
+import './styles.Success.css';
 
 const Success = (props: {
   tagContent: undefined | { Frame: Frame } | { Certificate: Certificate };
@@ -18,6 +20,12 @@ const Success = (props: {
   const [nftDetails, setNftDetails] = useState<NFTDetails>();
   const isNft = useMemo(() => nftDetails, [nftDetails]);
   const scanUri = useMemo(() => getScanUrl(nftDetails), [nftDetails]);
+  const isDraft = useMemo(() => {
+    if (!tagContent || !('Certificate' in tagContent)) {
+      return false;
+    }
+    return !tagContent.Certificate.registered;
+  }, [tagContent]);
 
   useEffect(() => {
     if (tagContent) {
@@ -51,6 +59,7 @@ const Success = (props: {
     <p>Loading…</p>
   ) : (
     <div className="container d-flex flex-column justify-content-center text-break">
+      {isDraft && <div className="banner">DRAFT</div>}
       {metadata ? (
         <div className="mt-3 mb-3">
           <div className={'row'}>
@@ -81,7 +90,7 @@ const Success = (props: {
           )}
         </div>
       ) : (
-        <p>The frame is empty.</p>
+        <Empty />
       )}
     </div>
   );
