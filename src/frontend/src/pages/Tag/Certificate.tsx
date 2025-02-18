@@ -28,14 +28,19 @@ const Certificate = ({ tagId }: Props) => {
   const [address, setAddress] = useState<undefined | string>();
   const [nftId, setNftId] = useState<undefined | string>();
   const [image, setImage] = useState<undefined | string>();
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoadingCertificate, setIsLoadingCertificateCertificate] =
+    useState(true);
+  const [isLoadingImage, setIsLoadingCertificateImage] = useState(false);
   const [subscription, setSubscription] = useState('');
   const [certificateRegistered, setCertificateRegistered] = useState(false);
 
   const backendCaller = useMemo(() => backendActor || backend, [backendActor]);
   const showMustBeLoggedMessage = useMemo(
-    () => !isLoading && !Boolean(identityAddress) && !certificateRegistered,
-    [certificateRegistered, identityAddress, isLoading]
+    () =>
+      !isLoadingCertificate &&
+      !Boolean(identityAddress) &&
+      !certificateRegistered,
+    [certificateRegistered, identityAddress, isLoadingCertificate]
   );
 
   useEffect(() => {
@@ -70,9 +75,9 @@ const Certificate = ({ tagId }: Props) => {
               setAddress(certificateResTyped.Ok.nft_details[0]!.address);
               setNftId(certificateResTyped.Ok.nft_details[0]!.id);
             }
-            setIsLoading(false);
+            setIsLoadingCertificateCertificate(false);
           } else {
-            setIsLoading(false);
+            setIsLoadingCertificateCertificate(false);
           }
         });
       } else {
@@ -81,7 +86,7 @@ const Certificate = ({ tagId }: Props) => {
     });
   }, [backendCaller, navigate, tagId, subscription]);
 
-  if (isLoading) {
+  if (isLoadingCertificate) {
     return <Loading />;
   }
 
@@ -104,7 +109,8 @@ const Certificate = ({ tagId }: Props) => {
           className={`d-flex w-100 h-100 ${!image ? 'border' : ''}`}
           style={{ minHeight: '200px', maxHeight: '572px' }}
         >
-          {image ? (
+          {isLoadingImage && <p className="p-2">Uploading…</p>}
+          {image && (
             <img
               src={image}
               alt="Certificate"
@@ -115,7 +121,7 @@ const Certificate = ({ tagId }: Props) => {
                 objectFit: 'contain',
               }}
             />
-          ) : null}
+          )}
         </div>
       </div>
       <div className={'col'}>
@@ -137,6 +143,7 @@ const Certificate = ({ tagId }: Props) => {
             setChain={setChain}
             setAddress={setAddress}
             setNftId={setNftId}
+            setIsLoadingCertificateImage={setIsLoadingCertificateImage}
           />
         ) : (
           <MetadataInfo tag={tag} />

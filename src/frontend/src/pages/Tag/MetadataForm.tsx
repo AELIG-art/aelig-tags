@@ -31,6 +31,7 @@ const MetadataForm = (props: {
   setChain: (chain: SupportedChain) => void;
   setAddress: (address: string) => void;
   setNftId: (id: string) => void;
+  setIsLoadingCertificateImage: (isLoading: boolean) => void;
 }) => {
   const {
     id,
@@ -49,6 +50,7 @@ const MetadataForm = (props: {
     setChain,
     setAddress,
     setNftId,
+    setIsLoadingCertificateImage,
   } = props;
 
   const inputRef = useRef<HTMLInputElement>(null);
@@ -111,6 +113,7 @@ const MetadataForm = (props: {
 
   const uploadFile = () => {
     if (inputRef.current?.files && identity) {
+      setIsLoadingCertificateImage(true);
       const file = inputRef.current.files[0];
       file.arrayBuffer().then((buffer) => {
         const bytes = new Uint8Array(buffer);
@@ -141,12 +144,15 @@ const MetadataForm = (props: {
                 alertToast('Server error', true);
                 // todo: fix this code ->  alertToast(typedRes.Err.Err.msg, true);
               }
+              setIsLoadingCertificateImage(false);
             })
             .catch(() => {
               alertToast('Server error', true);
+              setIsLoadingCertificateImage(false);
             });
         } else {
           alertToast('Id not found', true);
+          setIsLoadingCertificateImage(false);
         }
       });
     }
