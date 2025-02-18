@@ -39,16 +39,16 @@ done
 shift $((OPTIND -1))
 
 echo "--- Creating canisters ---"
-dfx canister create --all -q
-backend_canister_id=$(dfx canister id backend)
-ic_siwe_provider_canister_id=$(dfx canister id ic_siwe_provider)
-assets_canister_id=$(dfx canister id assets)
-frontend_canister_id=$(dfx canister id frontend)
+dfx canister create --all -q --network "$network"
+backend_canister_id=$(dfx canister id backend --network "$network" )
+ic_siwe_provider_canister_id=$(dfx canister id ic_siwe_provider --network "$network" )
+assets_canister_id=$(dfx canister id assets --network "$network" )
+frontend_canister_id=$(dfx canister id frontend --network "$network" )
 
 echo "--- Deploying canisters ---"
-dfx deploy --network "$network" -q backend
-dfx deploy --network "$network" -q assets
-dfx deploy --network "$network" -q ic_siwe_provider --argument "( \
+dfx deploy --network "$network" -q backend --yes
+dfx deploy --network "$network" -q assets --yes
+dfx deploy --network "$network" -q ic_siwe_provider --yes --argument "( \
      record { \
          domain = \"aelig.art\"; \
          uri = \"https://tag.aelig.art\"; \
