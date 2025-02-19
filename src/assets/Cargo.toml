@@ -8,6 +8,6 @@ edition = "2021"
 crate-type = ["cdylib"]
 
 [dependencies]
-candid = "0.10"
-ic-cdk = "0.13.1"
+candid = "0.10.13"
+ic-cdk = "0.17.1"
 ic-certified-assets = { git = "https://github.com/dfinity/sdk.git" }

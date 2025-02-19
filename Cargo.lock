@@ -54,7 +54,7 @@ name = "assets"
 version = "0.1.0"
 dependencies = [
  "candid",
- "ic-cdk 0.13.2",
+ "ic-cdk 0.17.1",
  "ic-certified-assets",
 ]
 
