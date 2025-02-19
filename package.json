@@ -14,7 +14,7 @@
   },
   "lint-staged": {
     "**/*.{js,jsx,ts,tsx,json,html,txt,css}": "prettier --write",
-    "**/*.{rs,toml}": "cargo fmt"
+    "**/*.{rs}": "cargo fmt"
   },
   "type": "module",
   "workspaces": [

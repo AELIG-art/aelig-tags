@@ -7,11 +7,11 @@ edition = "2021"
 crate-type = ["cdylib"]
 
 [dependencies]
-candid = "0.10"
-ic-cdk = "0.17.0"
-serde = { version = "1", features = ["derive"] }
+candid = "0.10.13"
+ic-cdk = "0.17.1"
+serde = { version = "1.0.217", features = ["derive"] }
 hex = "0.4.3"
 aes = "0.8.4"
-ic-stable-structures = "0.6.3"
+ic-stable-structures = "0.6.7"
 ic-certified-assets = { git = "https://github.com/dfinity/sdk.git" }
-serde_bytes = "0.11.14"
+serde_bytes = "0.11.15"
