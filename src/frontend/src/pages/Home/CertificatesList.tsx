@@ -42,15 +42,7 @@ const CertificatesList = () => {
               <td>{certificate.nft_details.length > 0 ? 'Yes' : 'No'}</td>
               <td>
                 <Link to={`/tag/${certificate.id}`} className="link">
-                  {(() => {
-                    if (certificate.registered) {
-                      return 'OPEN';
-                    } else if (certificate.metadata.length > 0) {
-                      return 'REGISTER';
-                    } else {
-                      return 'UPDATE';
-                    }
-                  })()}
+                  {certificate.registered ? 'DETAILS' : 'MANAGE'}
                 </Link>
               </td>
             </tr>
