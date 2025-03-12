@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import Table from '../../components/Table/Table';
 import { Frame } from '../../declarations/backend/backend.did';
 import { Link } from 'react-router-dom';
-import { nftToOpenSeaUrl } from '../../utils/transformations';
+import { nftToMarketplaceUrl } from '../../utils/transformations';
 import TransferFrameModal from './TransferFrameModal';
 
 const CertificatesList = () => {
@@ -27,7 +27,7 @@ const CertificatesList = () => {
               <td>
                 {nft ? (
                   <Link
-                    to={nftToOpenSeaUrl(nft)}
+                    to={nftToMarketplaceUrl(nft)}
                     target="_blank"
                     className="link"
                   >
