@@ -7,7 +7,7 @@ import {
   NFT,
 } from '../../declarations/backend/backend.did';
 import Loading from './Loading';
-import { nftToOpenSeaUrl } from '../../utils/transformations';
+import { nftToMarketplaceUrl } from '../../utils/transformations';
 
 type Props = {
   tagId: string;
@@ -48,7 +48,7 @@ const Frame = ({ tagId }: Props) => {
     <div>
       {nft ? (
         <div>
-          <a href={nftToOpenSeaUrl(nft)} className="text-center">
+          <a href={nftToMarketplaceUrl(nft)} className="text-center">
             Check the NFT on OpenSea
           </a>
         </div>

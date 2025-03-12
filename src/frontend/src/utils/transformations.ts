@@ -1,4 +1,4 @@
-import { CHAIN_MAPPING_OPENSEA, ID_LENGTH } from './constants';
+import { MARKETPLACE_CHAIN_MAPPING, ID_LENGTH } from './constants';
 import { NFT } from '../declarations/backend/backend.did';
 import { SupportedChain } from './types';
 
@@ -17,6 +17,15 @@ export const transformUrl = (oldUrl: string) => {
   }
 };
 
-export const nftToOpenSeaUrl = (nft: NFT) => {
-  return `https://opensea.io/assets/${CHAIN_MAPPING_OPENSEA[nft.chain as SupportedChain]}/${nft.contract_address}/${nft.id}`;
+const marketplaceMapping: Record<SupportedChain, string> = {
+  eth: 'https://opensea.io/assets',
+  polygon: 'https://opensea.io/assets',
+  base: 'https://opensea.io/assets',
+  abstract: 'https://magiceden.io/item-details',
+};
+
+export const nftToMarketplaceUrl = (nft: NFT) => {
+  const chain = nft.chain as SupportedChain;
+  const marketplaceBaseUrl = marketplaceMapping[chain];
+  return `${marketplaceBaseUrl}/${MARKETPLACE_CHAIN_MAPPING[chain]}/${nft.contract_address}/${nft.id}`;
 };

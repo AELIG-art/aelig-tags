@@ -10,4 +10,4 @@ export interface TagExpanded extends Tag {
   registered?: boolean;
 }
 
-export type SupportedChain = 'eth' | 'polygon' | 'base';
+export type SupportedChain = 'eth' | 'polygon' | 'base' | 'abstract';

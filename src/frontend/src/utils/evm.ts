@@ -12,12 +12,16 @@ enum NftStandard {
   ERC1155 = '1155',
 }
 
-const getRPC = (chain: string) => {
+const getRPC = (chain: SupportedChain) => {
   switch (chain) {
     case 'eth':
       return 'https://1.rpc.thirdweb.com';
     case 'polygon':
       return 'https://137.rpc.thirdweb.com';
+    case 'base':
+      return 'https://8453.rpc.thirdweb.com';
+    case 'abstract':
+      return 'https://2741.rpc.thirdweb.com';
     default:
       throw Error('Chain not found.');
   }
@@ -100,7 +104,7 @@ const formatUri = (uri: string, id: string) => {
 };
 
 export const getMetadataFromNft = async (nft: NFT): Promise<NFTMetadata> => {
-  const rpc = getRPC(nft.chain);
+  const rpc = getRPC(nft.chain as SupportedChain);
   const provider = new ethers.providers.JsonRpcProvider(rpc);
   const contract = new ethers.Contract(
     nft.contract_address,
@@ -124,10 +128,11 @@ export const getMetadataFromNft = async (nft: NFT): Promise<NFTMetadata> => {
   return responseJSON as NFTMetadata;
 };
 
-const chainToExplorerMapping: Record<SupportedChain, string> = {
+const chainToExplorerMapping: Record<SupportedChain, string | undefined> = {
   eth: 'https://etherscan.io/nft',
   polygon: 'https://polygonscan.com/nft',
   base: 'https://basescan.org/nft',
+  abstract: undefined,
 };
 
 export const getScanUrl = (nftDetails: NFTDetails | undefined) => {
@@ -135,5 +140,6 @@ export const getScanUrl = (nftDetails: NFTDetails | undefined) => {
     return '';
   }
   const { chain, address, id } = nftDetails;
-  return `${chainToExplorerMapping[chain as SupportedChain]}/${address}/${id}`;
+  const explorerUrl = chainToExplorerMapping[chain as SupportedChain];
+  return explorerUrl ? `${explorerUrl}/${address}/${id}` : undefined;
 };
